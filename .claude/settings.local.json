@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn clean verify:*)",
+      "Bash(java:*)",
+      "Bash(del:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(find:*)"
+    ]
+  }
+}

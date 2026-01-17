@@ -157,28 +157,32 @@ public class PlayerListener implements Listener {
 
             for (Map.Npc npc : Pit.getMap().getInstance().getNpcs()) {
                 Location npcLocation = npc.getLocation().of();
-                Npc createdNpc = FancyNpcsPlugin.get().getNpcAdapter().apply(npc.getPitNpc().getNpcData(player, npcLocation));
-                createdNpc.setSaveToFile(false);
-                FancyNpcsPlugin.get().getNpcManager().registerNpc(createdNpc);
-                createdNpc.create();
-                FancyNpcsPlugin.get().getNpcThread().submit(() -> createdNpc.spawn(player));
+                Npc bot = FancyNpcsPlugin.get().getNpcAdapter().apply(npc.getPitNpc().getNpcData(player, npcLocation));
+                bot.setSaveToFile(false);
 
-                PitHologram hologram = npc.getPitNpc().getHologram();
-                String hologramName = npc.getPitNpc().name() + "_" + player.getUniqueId();
-                Location holoLocation = npcLocation.clone().add(0, 2, 0);
+                FancyNpcsPlugin.get().getNpcManager().registerNpc(bot);
+                bot.create();
 
-                hologramManager.getHologram(hologramName).ifPresentOrElse(
-                        h -> h.forceShowHologram(player),
-                        () -> {
-                            TextHologramData data = new TextHologramData(hologramName, holoLocation);
+                FancyNpcsPlugin.get().getNpcThread().submit(() -> {
+                    bot.spawn(player);
 
-                            data.setText(hologram.getLines(player));
-                            data.setBackground(null);
+                    PitHologram hologram = npc.getPitNpc().getHologram();
+                    String name = npc.getPitNpc().name() + "_" + player.getUniqueId();
+                    Location loc = npcLocation.clone().add(0, 1.9, 0);
 
-                            Hologram created = hologramManager.create(data);
-                            created.forceShowHologram(player);
-                        }
-                );
+                    hologramManager.getHologram(name).ifPresentOrElse(
+                            h -> h.forceShowHologram(player),
+                            () -> {
+                                TextHologramData data = new TextHologramData(name, loc);
+
+                                data.setText(hologram.getLines(player));
+                                data.setBackground(null);
+
+                                Hologram created = hologramManager.create(data);
+                                created.forceShowHologram(player);
+                            }
+                    );
+                });
             }
         }
 

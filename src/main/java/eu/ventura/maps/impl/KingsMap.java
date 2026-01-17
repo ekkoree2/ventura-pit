@@ -2,7 +2,7 @@ package eu.ventura.maps.impl;
 
 import eu.ventura.constants.PitHologram;
 import eu.ventura.constants.PitMap;
-import eu.ventura.constants.PitNPCs;
+import eu.ventura.constants.PitNPC;
 import eu.ventura.maps.Map;
 import org.bukkit.util.Vector;
 
@@ -43,8 +43,8 @@ public class KingsMap implements Map {
     @Override
     public Npc[] getNpcs() {
         return new Npc[]{
-                new Npc(PitNPCs.PERKS_NPC, new PitLocation(-1.5, 95, 12.5, 180, 0)),
-                new Npc(PitNPCs.SHOP_NPC, new PitLocation(2.5, 95, 12.5, 180, 0)),
+                new Npc(PitNPC.PERKS_NPC, new PitLocation(-1.5, 95, 12.5, 180, 0)),
+                new Npc(PitNPC.SHOP_NPC, new PitLocation(2.5, 95, 12.5, 180, 0)),
         };
     }
 

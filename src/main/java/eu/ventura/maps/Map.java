@@ -2,7 +2,7 @@ package eu.ventura.maps;
 
 import eu.ventura.constants.PitHologram;
 import eu.ventura.constants.PitMap;
-import eu.ventura.constants.PitNPCs;
+import eu.ventura.constants.PitNPC;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
@@ -38,7 +38,7 @@ public interface Map {
     @RequiredArgsConstructor
     @Getter
     public static class Npc {
-        private final PitNPCs pitNpc;
+        private final PitNPC pitNpc;
         private final PitLocation location;
     }
 

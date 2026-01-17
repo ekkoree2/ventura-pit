@@ -1,5 +1,8 @@
 package eu.ventura.listener;
 
+import de.oliver.fancynpcs.api.events.NpcInteractEvent;
+import eu.ventura.Pit;
+import eu.ventura.constants.PitNPC;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -28,5 +31,16 @@ public class ServerListener implements Listener {
         world.setStorm(false);
         world.setThundering(false);
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onInteract(NpcInteractEvent event) {
+        for (PitNPC pitNPC : PitNPC.values()) {
+            String name = event.getNpc().getData().getName();
+            if (pitNPC.getSkin().equals(name)) {
+                pitNPC.getTask().accept(event.getPlayer());
+                break;
+            }
+        }
     }
 }

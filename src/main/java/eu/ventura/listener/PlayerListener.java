@@ -1,11 +1,5 @@
 package eu.ventura.listener;
 
-import de.oliver.fancyholograms.api.FancyHologramsPlugin;
-import de.oliver.fancyholograms.api.HologramManager;
-import de.oliver.fancyholograms.api.data.TextHologramData;
-import de.oliver.fancyholograms.api.hologram.Hologram;
-import de.oliver.fancynpcs.api.FancyNpcsPlugin;
-import de.oliver.fancynpcs.api.Npc;
 import eu.ventura.Pit;
 import eu.ventura.constants.*;
 import eu.ventura.event.PitDeathEvent;
@@ -18,6 +12,10 @@ import eu.ventura.service.MapService;
 import eu.ventura.util.EnchantmentHelper;
 import eu.ventura.util.EquipmentUtil;
 import eu.ventura.util.PlayerUtil;
+import hvh.ventura.hologram.Hologram;
+import hvh.ventura.npc.NPC;
+import hvh.ventura.npc.api.NpcApi;
+import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -30,11 +28,21 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 /**
- * author: ekkoree
- * created at: 1/15/2025
- */
+* author: ekkoree
+* created at: 1/15/2025
+  */
+@RequiredArgsConstructor
 public class PlayerListener implements Listener {
+    private final NpcApi npcApi;
+    private final hvh.ventura.hologram.api.HologramApi hologramApi;
+
+    private final HashMap<String, Hologram> holograms = new HashMap<>();
+    private final HashMap<String, NPC> npcs = new HashMap<>();
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(PitDeathEvent event) {
         Player victim = event.data.victim;
@@ -138,51 +146,41 @@ public class PlayerListener implements Listener {
         }
 
         if (event.getReason() == RespawnReason.JOIN) {
-            HologramManager hologramManager = FancyHologramsPlugin.get().getHologramManager();
             for (Map.Hologram hologram : Pit.getMap().getInstance().getHolograms()) {
                 String hologramName = hologram.getPitHologram().name();
-                hologramManager.getHologram(hologramName).ifPresentOrElse(
-                        h -> h.forceShowHologram(player),
-                        () -> {
-                            TextHologramData data = new TextHologramData(hologramName, hologram.getLocation().of());
 
-                            data.setText(hologram.getPitHologram().getLines(player));
-                            data.setBackground(null);
-
-                            Hologram created = hologramManager.create(data);
-                            created.forceShowHologram(player);
-                        }
-                );
+                if (!holograms.containsKey(hologramName)) {
+                    Location loc = hologram.getLocation().of();
+                    String[] lines = hologram.getPitHologram().getLines(player).toArray(new String[0]);
+                    holograms.put(hologramName, hologramApi.createHologram(loc, lines));
+                }
+                holograms.get(hologramName).spawn(player);
             }
 
             for (Map.Npc npc : Pit.getMap().getInstance().getNpcs()) {
                 Location npcLocation = npc.getLocation().of();
-                Npc bot = FancyNpcsPlugin.get().getNpcAdapter().apply(npc.getPitNpc().getNpcData(player, npcLocation));
-                bot.setSaveToFile(false);
+                String npcName = npc.getPitNpc().name();
+                String skin = npc.getPitNpc().getSkin();
+                UUID npcUuid = UUID.nameUUIDFromBytes(npcName.getBytes());
 
-                FancyNpcsPlugin.get().getNpcManager().registerNpc(bot);
-                bot.create();
+                if (!npcs.containsKey(npcName)) {
+                    NPC created = npcApi.createNPC(npcName, npcLocation, npcUuid, skin, null);
+                    if (npc.getPitNpc().getTask() != null) {
+                        created.setInteractAction(p -> npc.getPitNpc().getTask().accept(p));
+                    }
+                    npcs.put(npcName, created);
+                }
+                npcs.get(npcName).spawn(player);
 
-                FancyNpcsPlugin.get().getNpcThread().submit(() -> {
-                    bot.spawn(player);
+                PitHologram pitHologram = npc.getPitNpc().getHologram();
+                String holoName = npcName + "_" + player.getUniqueId();
+                Location holoLoc = npcLocation.clone().add(0, 2.1, 0);
 
-                    PitHologram hologram = npc.getPitNpc().getHologram();
-                    String name = npc.getPitNpc().name() + "_" + player.getUniqueId();
-                    Location loc = npcLocation.clone().add(0, 1.9, 0);
-
-                    hologramManager.getHologram(name).ifPresentOrElse(
-                            h -> h.forceShowHologram(player),
-                            () -> {
-                                TextHologramData data = new TextHologramData(name, loc);
-
-                                data.setText(hologram.getLines(player));
-                                data.setBackground(null);
-
-                                Hologram created = hologramManager.create(data);
-                                created.forceShowHologram(player);
-                            }
-                    );
-                });
+                if (!holograms.containsKey(holoName)) {
+                    String[] lines = pitHologram.getLines(player).toArray(new String[0]);
+                    holograms.put(holoName, hologramApi.createHologram(holoLoc, lines));
+                }
+                holograms.get(holoName).spawn(player);
             }
         }
 

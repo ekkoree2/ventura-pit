@@ -62,13 +62,17 @@
 > If adding any string (message, line ....) Always use Strings class. ALWAYS. Same for all Sounds.
 > When adding new class, ALWAYS INCLUDE:
 """
+Example:
+
+import com.example.ExampleImport;
+
 /**
 * author: ekkoree
-* created at: mm/dd/yyyy
+* created at: 1/18/2026
   */
-public class TestClass {
-
+public class ClassName {
+  // Code goes here.
 }
 """
-* on top of it
+* Above class
 > WHEN IMPLEMENTING SOMETHING FROM THE-PIT, DO NOT ADD YOUR OWN CUSTOM STUFF TO CODE. RE-IMPLEMENT 1:1 LOGIC, BASICALLY EVERYTHING, UNLESS SPECIFIED 

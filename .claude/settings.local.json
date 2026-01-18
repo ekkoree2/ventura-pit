@@ -6,7 +6,11 @@
       "Bash(del:*)",
       "Bash(dir:*)",
       "Bash(findstr:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(mvn clean install:*)",
+      "Bash(mvn:*)",
+      "Bash(cmd /c \"cd /d C:\\\\Users\\\\Admin\\\\Desktop\\\\Data\\\\projects\\\\ventura-npcs && mvn clean install -DskipTests\")",
+      "Bash(cmd:*)"
     ]
   }
 }

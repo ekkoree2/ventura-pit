@@ -1,6 +1,8 @@
 package eu.ventura.service;
 
 import eu.ventura.perks.Perk;
+import eu.ventura.perks.permanent.Calculated;
+import eu.ventura.perks.permanent.GoldenHeads;
 import eu.ventura.perks.permanent.GravityMace;
 
 import java.util.*;
@@ -10,6 +12,8 @@ public class PerkService {
     private static final Map<String, Perk> perks = new HashMap<>();
 
     static {
+        registerPerk(new Calculated());
+        registerPerk(new GoldenHeads());
         registerPerk(new GravityMace());
     }
 
@@ -37,7 +41,7 @@ public class PerkService {
     public static List<Perk> getSortedPerks() {
         List<Perk> sorted = new ArrayList<>(perks.values());
         sorted.sort(Comparator.comparingInt(Perk::getPrestigeRequirement)
-                .thenComparing(Perk::getDisplayName));
+                .thenComparing(Perk::getId));
         return sorted;
     }
 }

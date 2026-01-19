@@ -16,11 +16,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import eu.ventura.util.NBTHelper;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerAnimationType;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Map;
@@ -205,6 +211,43 @@ public class DamageListener implements Listener {
             Perk perk = PerkService.getPerk(entry.getValue());
             if (perk != null && !perk.isCancelled()) {
                 perk.onAssist(event);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPerkInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+        String perkId = NBTHelper.getString(item, "pit-perk-item");
+        if (perkId == null) {
+            return;
+        }
+
+        Perk perk = PerkService.getPerk(perkId);
+        if (perk != null) {
+            perk.onInteract(event);
+        }
+    }
+
+    @EventHandler
+    public void onPerkSwing(PlayerAnimationEvent event) {
+        if (event.getAnimationType() != PlayerAnimationType.ARM_SWING) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        PlayerModel playerModel = PlayerModel.getInstance(player);
+
+        for (Map.Entry<Integer, String> entry : playerModel.equippedPerks.entrySet()) {
+            Perk perk = PerkService.getPerk(entry.getValue());
+            if (perk != null && !perk.isCancelled()) {
+                perk.onSwing(event);
             }
         }
     }

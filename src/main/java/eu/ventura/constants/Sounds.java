@@ -30,6 +30,8 @@ public class Sounds {
     public static final SoundEffect ENDERMAN_NO = new SoundEffect(Sound.ENTITY_ENDERMAN_HURT, 1.1, 1.0);
     public static final SoundEffect YES = new SoundEffect(Sound.ENTITY_VILLAGER_YES, 1.1, 1.0);
     public static final SoundEffect ITEM_PURCHASE = new SoundEffect(Sound.ENTITY_PLAYER_LEVELUP, 1.0, 2.0);
+    public static final SoundEffect GOLDEN_HEADS = new SoundEffect(Sound.ENTITY_GENERIC_EAT, 1.0, 0.85);
+    public static final SoundEffect GOLDEN_HEADS_COOLDOWN = new SoundEffect(Sound.ENTITY_VILLAGER_NO, 1.0, 1.0);
 
     public static final SoundEffect DOUBLE_KILL = new SoundEffect()
             .add(new SoundMoment(0).add(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5, 1.8))

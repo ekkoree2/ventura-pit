@@ -6,6 +6,7 @@ package eu.ventura.constants;
  */
 public enum EffectSource {
     ENCHANT,
+    PERK,
     KILL,
     CUSTOM
 }

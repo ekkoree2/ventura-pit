@@ -5,6 +5,7 @@ import dev.kyro.arcticapi.ArcticAPI;
 import eu.ventura.commands.*;
 import eu.ventura.constants.PitMap;
 import eu.ventura.listener.*;
+import eu.ventura.perks.permanent.Calculated;
 import eu.ventura.service.CombatService;
 import hvh.ventura.VenturaCore;
 import lombok.Getter;

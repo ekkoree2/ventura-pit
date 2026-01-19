@@ -1,15 +1,30 @@
 package eu.ventura.constants;
 
 import eu.ventura.model.PlayerModel;
+import eu.ventura.util.LoreBuilder;
+import eu.ventura.util.LoreBuilderWrapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 /**
  * author: ekkoree
  * created at: 1/15/2025
  */
 public class Strings {
+    private static final String COLOR_PATTERN = "&([0-9a-fk-or])";
+    private static final String COLOR_REPLACEMENT = "§$1";
+
+    private static String colorize(String text) {
+        return text.replaceAll(COLOR_PATTERN, COLOR_REPLACEMENT);
+    }
+
+    private static Language getLanguage(Player player) {
+        return PlayerModel.getInstance(player).getLanguage();
+    }
+
     @RequiredArgsConstructor
     @Getter
     public enum Language {
@@ -28,18 +43,12 @@ public class Strings {
 
                     if (count == 1) yield s;
                     if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
-                        switch (ending) {
-                            case "a" -> {
-                                yield root + "y";
-                            }
-                            case "k" -> {
-                                yield root + "ki";
-                            }
-                            case "g" -> {
-                                yield root + "gi";
-                            }
-                        }
-                        yield s + "y";
+                        yield switch (ending) {
+                            case "a" -> root + "y";
+                            case "k" -> root + "ki";
+                            case "g" -> root + "gi";
+                            default -> s + "y";
+                        };
                     }
                     yield root + "ów";
                 }
@@ -47,12 +56,17 @@ public class Strings {
         }
     }
 
+    @RequiredArgsConstructor
     public enum Simple {
         DEATH("&c&lŚMIERC!", "&c&lDEATH!"),
         MAXED("§fXP: §bᴍᴀᴋѕʏᴍᴀʟɴʏ", "§fXP: §bᴍᴀхᴇᴅ"),
         CRATER_EXTRA("&aʜɪᴛʏ ᴏᴅʙɪᴊᴀᴊᴀ ᴡ ɢᴏʀᴇ!", "&aʜɪᴛѕ ᴘᴜɴᴄʜ ᴜᴘᴡᴀʀᴅѕ!"),
         RARE_PREFIX("&dʀᴀʀᴇ "),
         CRIT("&9&lKRYT!", "&9&lCRIT!"),
+        PERK_GOLDEN_HEADS("Złote Głowy", "Golden Heads"),
+        PERK_GRAVITY_MACE("Buława Grawitacji", "Gravity Mace"),
+        PERK_CALCULATED("Wyrachowany", "Calculated"),
+
         KILL_1("§a§lZABÓJSTWO!", "§a§lKILL!"),
         KILL_2("§a§lPODWÓJNE ZABÓJSTWO!", "§a§lDOUBLE KILL!"),
         KILL_3("§a§lPOTRÓJNE ZABÓJSTWO!", "§a§lTRIPLE KILL!"),
@@ -61,7 +75,6 @@ public class Strings {
         KILL_MULTI("§a§lWIELE ZABÓJSTW! §7({0})", "§a§lMULTI KILL! §7({0})"),
         CANT_RESPAWN_HERE("§cNie mozesz /respawn tutaj!", "§cYou cannot /respawn here!"),
         RESPAWN_COOLDOWN("§cMozesz uzyc /respawn co 10 sekund!", "§cYou may only /respawn every 10 seconds!"),
-        GRAVITY_MACE("&7Zadawaj &c+10%&7 obrazen podczas spadania.", "&7Deal &c+10%&7 damage while falling."),
         PERK_BACK("&7&lWRÓĆ", "&7&lBACK"),
         PERK_NO_PERK("&7Brak zainstalowanego perka", "&7No perk equipped"),
         PERK_SLOT_LOCKED_MSG("&cSlot nie jest jeszcze odblokowany!", "&cSlot not unlocked yet!"),
@@ -92,41 +105,31 @@ public class Strings {
         ITEM_BOW("ʟᴜᴋ", "ʙᴏᴡ"),
         ITEM_PANTS("ѕᴘᴏᴅɴɪᴇ", "ᴘᴀɴᴛѕ"),
         BOUNTY_ACTION_OF("nadano", "of"),
-        BOUNTY_ACTION_BUMP("zwiekszono", "bump")
-
-        ;
+        BOUNTY_ACTION_BUMP("zwiekszono", "bump"),
+        GOLDEN_HEADS_NAME("&6Złota Głowa", "&6Golden Head");
 
         private final String polish;
         private final String english;
-
-        Simple(String polish, String english) {
-            this.polish = polish;
-            this.english = english;
-        }
 
         Simple(String both) {
             this.polish = both;
             this.english = both;
         }
 
+        private String getRaw(Language lang) {
+            return lang == Language.ENGLISH ? english : polish;
+        }
+
         public String get(Language lang) {
-            String message = switch (lang) {
-                case ENGLISH -> english;
-                case POLISH -> polish;
-            };
-            return message.replaceAll("&([0-9a-fk-or])", "§$1");
+            return colorize(getRaw(lang));
         }
 
         public String get(Player player) {
-            Language lang = PlayerModel.getInstance(player).getLanguage();
-            String message = switch (lang) {
-                case ENGLISH -> english;
-                case POLISH -> polish;
-            };
-            return message.replaceAll("&([0-9a-fk-or])", "§$1");
+            return get(getLanguage(player));
         }
     }
 
+    @RequiredArgsConstructor
     public enum Formatted {
         KILL_MESSAGE("&a§l{0}&7 na {1} &b+{2}XP &6+{3}$", "§a§l{0}&7 on {1} §b+{2}XP §6+{3}$"),
         ASSIST_MESSAGE("§a§lASYSTA!§7 {0}% na {1} §b+{2}XP §6{3}$", "§a§lASSIST!§7 {0}% on {1} §b+{2}XP §6{3}$"),
@@ -156,45 +159,83 @@ public class Strings {
         BOUNTY("&6&lŁUP! &7{0} &6&l{1}g &7na {2} &7za wysoki streak", "&6&lBOUNTY! &7{0} &6&l{1}g &7on {2} &7for high streak"),
         BOUNTY_CLAIMED("&6&lŁUP ODEBRANY!&7 {0}&7 zabil {1}&7 za &6&l{2}$", "&6&lBOUNTY CLAIMED!&7 {0}&7 killed {1}&7 for &6&l{2}$"),
         STREAK("&fStreak: &a{0}"),
-        BOUNTY_SCOREBOARD("&fŁup: &6{0}$", "&fBounty: &6{0}$")
-
-        ;
+        BOUNTY_SCOREBOARD("&fŁup: &6{0}$", "&fBounty: &6{0}$");
 
         private final String polish;
         private final String english;
-
-        Formatted(String polish, String english) {
-            this.polish = polish;
-            this.english = english;
-        }
 
         Formatted(String both) {
             this.polish = both;
             this.english = both;
         }
 
-        public String format(Language language, Object... args) {
-            String message = switch (language) {
-                case ENGLISH -> english;
-                case POLISH -> polish;
-            };
+        private String getRaw(Language lang) {
+            return lang == Language.ENGLISH ? english : polish;
+        }
 
+        private String applyArgs(String message, Object... args) {
             for (int i = 0; i < args.length; i++) {
                 message = message.replace("{" + i + "}", String.valueOf(args[i]));
             }
-            return message.replaceAll("&([0-9a-fk-or])", "§$1");
+            return colorize(message);
+        }
+
+        public String format(Language language, Object... args) {
+            return applyArgs(getRaw(language), args);
         }
 
         public String format(Player player, Object... args) {
-            String message = switch (PlayerModel.getInstance(player).getLanguage()) {
-                case ENGLISH -> english;
-                case POLISH -> polish;
-            };
+            return format(getLanguage(player), args);
+        }
+    }
 
-            for (int i = 0; i < args.length; i++) {
-                message = message.replace("{" + i + "}", String.valueOf(args[i]));
-            }
-            return message.replaceAll("&([0-9a-fk-or])", "§$1");
+    @RequiredArgsConstructor
+    public enum Lore {
+        GOLDEN_HEADS_ITEM(new LoreBuilderWrapper(
+                new LoreBuilder()
+                        .add("§7Przedmiot Perka")
+                        .addNewline("§9Prędkość I (0:08)")
+                        .addNewline("§9Regeneracja II (0:05)")
+                        .addNewline("§62❤ absorpcji!")
+                        .addNewline("§71 sekunda między jedzeniem"),
+                new LoreBuilder()
+                        .add("§7Perk Item")
+                        .addNewline("§9Speed I (0:08)")
+                        .addNewline("§9Regeneration II (0:05)")
+                        .addNewline("§62❤ absorption!")
+                        .addNewline("§71 second between eats")
+        )),
+        CALCULATED_PERK(new LoreBuilderWrapper(
+                new LoreBuilder()
+                        .add("§7Zadawaj §c+28%§7 obrażeń za celny cios. Pudło nakłada §9Weakness II §7(0:01)."),
+                new LoreBuilder()
+                        .add("&7Landing a hit grants &c+28%§7 damage. Missing a hit applies &9Weakness II &7(0:01).")
+        )),
+        GRAVITY_MACE_DESC(new LoreBuilderWrapper(
+                new LoreBuilder().add("§7Zadawaj §c+10%§7 obrażeń podczas spadania."),
+                new LoreBuilder().add("§7Deal §c+10%§7 damage while falling.")
+        )),
+        GOLDEN_HEADS_DESC(new LoreBuilderWrapper(
+                new LoreBuilder().add("§7Złote jabłka, które zdobędziesz, zamieniają się w §6Złote Głowy§7."),
+                new LoreBuilder().add("§7Golden apples you earn turn into §6Golden Heads§7.")
+        ));
+
+        private final LoreBuilderWrapper wrapper;
+
+        public LoreBuilder get(Language lang) {
+            return wrapper.get(lang);
+        }
+
+        public LoreBuilder get(Player player) {
+            return wrapper.get(player);
+        }
+
+        public List<String> compile(Language lang) {
+            return wrapper.compile(lang);
+        }
+
+        public List<String> compile(Player player) {
+            return wrapper.compile(player);
         }
     }
 }

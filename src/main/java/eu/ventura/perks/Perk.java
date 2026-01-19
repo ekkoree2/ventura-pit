@@ -12,6 +12,8 @@ import eu.ventura.util.LoreBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
@@ -34,7 +36,7 @@ public abstract class Perk {
 
     public abstract String getId();
 
-    public abstract String getDisplayName();
+    public abstract String getDisplayName(Strings.Language language);
 
     public abstract int getLevel();
 
@@ -78,4 +80,12 @@ public abstract class Perk {
     public void onDeath(PitDeathEvent event) {}
 
     public void onAssist(PitAssistEvent event) {}
+
+    public void onInteract(PlayerInteractEvent event) {}
+
+    public void onSwing(PlayerAnimationEvent event) {}
+
+    public ItemStack createItem(Strings.Language language) {
+        return null;
+    }
 }

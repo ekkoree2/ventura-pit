@@ -5,7 +5,6 @@ import eu.ventura.enchantment.EnchantType;
 import eu.ventura.java.NewString;
 import eu.ventura.model.AttackModel;
 import eu.ventura.perks.Perk;
-import eu.ventura.util.ItemHelper;
 import eu.ventura.util.LoreBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -21,8 +20,8 @@ public class GravityMace extends Perk {
     }
 
     @Override
-    public String getDisplayName() {
-        return "Gravity Mace";
+    public String getDisplayName(Strings.Language language) {
+        return Strings.Simple.PERK_GRAVITY_MACE.get(language);
     }
 
     @Override
@@ -57,8 +56,7 @@ public class GravityMace extends Perk {
 
     @Override
     public LoreBuilder getDescription(Strings.Language language) {
-        return new LoreBuilder()
-                .add(Strings.Simple.GRAVITY_MACE.get(language));
+        return Strings.Lore.GRAVITY_MACE_DESC.get(language);
     }
 
     @Override

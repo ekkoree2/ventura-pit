@@ -4,8 +4,13 @@ import eu.ventura.java.NewString;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.service.PlayerService;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.RayTraceResult;
+
+import java.util.Objects;
 
 /**
  * author: ekkoree
@@ -35,15 +40,36 @@ public class PlayerUtil {
         player.setHealth(value);
     }
 
-    public static void setAbs(Player player, float amount) {
+    public static void setAbs(Player player, double amount) {
+        Objects.requireNonNull(player.getAttribute(Attribute.MAX_ABSORPTION)).setBaseValue(999999);
         player.setAbsorptionAmount(amount);
     }
 
-    public static void addAbs(Player player, float amount) {
-        player.setAbsorptionAmount((float) player.getAbsorptionAmount() + amount);
+    public static void addAbs(Player player, double amount) {
+        player.setAbsorptionAmount(player.getAbsorptionAmount() + amount);
     }
 
     public static String getRankColor(Player player) {
         return NewString.of("&7");
+    }
+
+    public static boolean isLookingAt(Player player, Entity target, double maxDistance) {
+        return isLookingAt(player, target, maxDistance, 0.0);
+    }
+
+    public static boolean isLookingAt(Player player, Entity target, double maxDistance, double raySize) {
+        Location eyeLocation = player.getEyeLocation();
+        RayTraceResult result = player.getWorld().rayTraceEntities(
+                eyeLocation,
+                eyeLocation.getDirection(),
+                maxDistance,
+                raySize,
+                entity -> entity.equals(target)
+        );
+        return result != null && target.equals(result.getHitEntity());
+    }
+
+    public static boolean isLookingAt(Player player, Entity target) {
+        return isLookingAt(player, target, 180);
     }
 }

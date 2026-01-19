@@ -109,9 +109,9 @@ public class PermanentPanel extends AGUIPanel {
         ItemStack base = ItemHelper.createItem(perk.getBaseItem(), 1);
         return ItemHelper.setItemMeta(
                 base,
-                NewString.of("&a" + perk.getDisplayName()),
+                NewString.of("&a" + perk.getDisplayName(playerModel.getLanguage())),
                 new LoreBuilder()
-                        .addNewline(Strings.Formatted.PERK_SELECTED.format(playerModel.player, perk.getDisplayName()))
+                        .addNewline(Strings.Formatted.PERK_SELECTED.format(playerModel.player, perk.getDisplayName(playerModel.getLanguage())))
                         .addNewline()
                         .addAll(perk.getDescription(player))
                         .addNewline()

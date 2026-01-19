@@ -66,6 +66,7 @@ public class Strings {
         PERK_GOLDEN_HEADS("Złote Głowy", "Golden Heads"),
         PERK_GRAVITY_MACE("Buława Grawitacji", "Gravity Mace"),
         PERK_CALCULATED("Wyrachowany", "Calculated"),
+        PERK_VAMPIRE("Wampir", "Vampire"),
 
         KILL_1("§a§lZABÓJSTWO!", "§a§lKILL!"),
         KILL_2("§a§lPODWÓJNE ZABÓJSTWO!", "§a§lDOUBLE KILL!"),
@@ -218,6 +219,19 @@ public class Strings {
         GOLDEN_HEADS_DESC(new LoreBuilderWrapper(
                 new LoreBuilder().add("§7Złote jabłka, które zdobędziesz, zamieniają się w §6Złote Głowy§7."),
                 new LoreBuilder().add("§7Golden apples you earn turn into §6Golden Heads§7.")
+        )),
+        VAMPIRE_DESC(new LoreBuilderWrapper(
+                new LoreBuilder()
+                        .setMaxLength(30)
+                        .add("§7Nie zdobywasz złotych jabłek.")
+                        .addNewline("§7Ulecz §c1❤§7 trafieniem.")
+                        .addNewline("§7Ulecz §c2❤§7 strzałą.")
+                        .addNewline("§cRegen I§7 (8s) przy zabójstwie."),
+                new LoreBuilder()
+                        .add("§7Don't earn golden apples.")
+                        .addNewline("§7Heal §c1❤§7 on hit.")
+                        .addNewline("§7Heal §c2❤§7 on arrow shot.")
+                        .addNewline("§cRegen I§7 (8s) on kill.")
         ));
 
         private final LoreBuilderWrapper wrapper;

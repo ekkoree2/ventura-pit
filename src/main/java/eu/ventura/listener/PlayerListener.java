@@ -25,6 +25,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -129,6 +130,23 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        UUID playerId = player.getUniqueId();
+
+        for (Map.Npc npc : Pit.getMap().getInstance().getNpcs()) {
+            String npcName = npc.getPitNpc().getSkin();
+            String holoName = npcName + "_" + playerId;
+
+            Hologram hologram = holograms.get(holoName);
+            if (hologram != null) {
+                hologram.despawn(player);
+                holograms.remove(holoName);
+            }
+        }
+    }
+
+    @EventHandler
     public void onRespawn(PitRespawnEvent event) {
         Player player = event.getPlayer();
 
@@ -152,9 +170,11 @@ public class PlayerListener implements Listener {
                 if (!holograms.containsKey(hologramName)) {
                     Location loc = hologram.getLocation().of();
                     String[] lines = hologram.getPitHologram().getLines(player).toArray(new String[0]);
-                    holograms.put(hologramName, hologramApi.createHologram(loc, lines));
+                    Hologram created = hologramApi.createHologram(loc, lines);
+                    created.spawn();
+                    holograms.put(hologramName, created);
                 }
-                holograms.get(hologramName).spawn(player);
+                holograms.get(hologramName).show(player);
             }
 
             for (Map.Npc npc : Pit.getMap().getInstance().getNpcs()) {
@@ -180,9 +200,11 @@ public class PlayerListener implements Listener {
 
                 if (!holograms.containsKey(holoName)) {
                     String[] lines = pitHologram.getLines(player).toArray(new String[0]);
-                    holograms.put(holoName, hologramApi.createHologram(holoLoc, lines));
+                    Hologram created = hologramApi.createHologram(holoLoc, player.getUniqueId(), lines);
+                    created.spawn();
+                    holograms.put(holoName, created);
                 }
-                holograms.get(holoName).spawn(player);
+                holograms.get(holoName).show(player);
             }
         }
 

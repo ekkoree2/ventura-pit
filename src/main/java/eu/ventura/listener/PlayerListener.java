@@ -159,18 +159,20 @@ public class PlayerListener implements Listener {
 
             for (Map.Npc npc : Pit.getMap().getInstance().getNpcs()) {
                 Location npcLocation = npc.getLocation().of();
-                String npcName = npc.getPitNpc().name();
+                String npcName = npc.getPitNpc().getSkin();
                 String skin = npc.getPitNpc().getSkin();
                 UUID npcUuid = UUID.nameUUIDFromBytes(npcName.getBytes());
 
                 if (!npcs.containsKey(npcName)) {
-                    NPC created = npcApi.createNPC(npcName, npcLocation, npcUuid, skin, null);
+                    NPC created = npcApi.createNPC("", npcLocation, npcUuid, skin, null);
                     if (npc.getPitNpc().getTask() != null) {
                         created.setInteractAction(p -> npc.getPitNpc().getTask().accept(p));
                     }
                     npcs.put(npcName, created);
                 }
                 npcs.get(npcName).spawn(player);
+                npcs.get(npcName).setPitch(0);
+                npcs.get(npcName).setYaw(npc.getPitNpc().getYaw());
 
                 PitHologram pitHologram = npc.getPitNpc().getHologram();
                 String holoName = npcName + "_" + player.getUniqueId();

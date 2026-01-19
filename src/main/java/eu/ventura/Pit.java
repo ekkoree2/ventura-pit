@@ -2,17 +2,9 @@ package eu.ventura;
 
 import co.aikar.commands.PaperCommandManager;
 import dev.kyro.arcticapi.ArcticAPI;
-import eu.ventura.commands.EnchantCommand;
-import eu.ventura.commands.FreshCommand;
-import eu.ventura.commands.GUICommand;
-import eu.ventura.commands.SpawnCommand;
+import eu.ventura.commands.*;
 import eu.ventura.constants.PitMap;
-import eu.ventura.listener.AssistListener;
-import eu.ventura.listener.BountyListener;
-import eu.ventura.listener.DamageListener;
-import eu.ventura.listener.PlayerListener;
-import eu.ventura.listener.ScoreboardListener;
-import eu.ventura.listener.ServerListener;
+import eu.ventura.listener.*;
 import eu.ventura.service.CombatService;
 import hvh.ventura.VenturaCore;
 import lombok.Getter;
@@ -43,7 +35,6 @@ public class Pit extends JavaPlugin {
         commandManager.registerCommand(new SpawnCommand());
         commandManager.registerCommand(new EnchantCommand());
         commandManager.registerCommand(new FreshCommand());
-        commandManager.registerCommand(new GUICommand());
 
         getServer().getPluginManager().registerEvents(new PlayerListener(
                 VenturaCore.getNpcManager(),

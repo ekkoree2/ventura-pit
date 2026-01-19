@@ -14,10 +14,11 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 @Getter
 public enum PitNPC {
-    PERKS_NPC(PitHologram.PERKS_NPC, "EKKOREESIGMAMALE", p -> new PermanentGUI(p).open()),
-    SHOP_NPC(PitHologram.SHOP_NPC, "groszus", null);
+    PERKS_NPC(PitHologram.PERKS_NPC, "EKKOREESIGMAMALE", p -> new PermanentGUI(p).open(), 180),
+    SHOP_NPC(PitHologram.SHOP_NPC, "groszus", null, 180);
 
     private final PitHologram hologram;
     private final String skin;
     private final Consumer<Player> task;
+    private final float yaw;
 }

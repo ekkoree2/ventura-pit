@@ -10,15 +10,15 @@ import org.bukkit.entity.Player;
  */
 @RequiredArgsConstructor
 public enum Status {
-    IDLING("§aᴄɪᴄʜʏ", "§aɪᴅʟɪɴɢ"),
-    FIGHTING("§cᴡ ᴡᴀʟᴄᴇ", "§cꜰɪɢʜᴛɪɴɢ"),
-    BOUNTIED("§cᴍɪѕᴛʀᴢ", "§cʙᴏᴜɴᴛɪᴇᴅ");
+    IDLING("§aCichy", "§aIdling"),
+    FIGHTING("§cPodczas walki", "§cFighting"),
+    BOUNTIED("§cMistrz", "§cBountied");
 
     private final String polish;
     private final String english;
 
     public String getTitle(Player player) {
-        Strings.Language language = PlayerModel.getInstance(player).getLanguage();
+        Strings.Language language = PlayerModel.getInstance(player).language;
         return switch (language) {
             case ENGLISH -> english;
             case POLISH -> polish;
@@ -26,7 +26,7 @@ public enum Status {
     }
 
     public String getTitle(PlayerModel playerModel) {
-        Strings.Language language = playerModel.getLanguage();
+        Strings.Language language = playerModel.language;
         return switch (language) {
             case ENGLISH -> english;
             case POLISH -> polish;

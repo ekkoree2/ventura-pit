@@ -92,7 +92,7 @@ public class ChoosePerkPanel extends AGUIPanel {
             Runnable task = perkModel.getTask(triggerSlot);
             String cost = String.format("§6%sg", NumberFormat.getInstance().format(instance.getGold()));
             new ConfirmGUI(
-                    player, "§6" + instance.getDisplayName(playerModel.getLanguage()), cost, new ChoosePerkGUI(player, triggerSlot), task, null
+                    player, "§6" + instance.getDisplayName(playerModel.language), cost, new ChoosePerkGUI(player, triggerSlot), task, null
             ).open();
             return;
         }

@@ -15,7 +15,7 @@ public class MapService {
     private static final Random random = new Random();
 
     public static Map getCurrentMap() {
-        PitMap map = Pit.getMap();
+        PitMap map = Pit.map;
         return switch (map) {
             case KINGS -> new KingsMap();
         };

@@ -244,7 +244,7 @@ public class EnchantmentHelper {
             displayName = "";
         }
 
-        Strings.Language language = PlayerModel.getInstance(player).getLanguage();
+        Strings.Language language = PlayerModel.getInstance(player).language;
 
         if (tier != null && tier > 0) {
             String prefix = displayName;

@@ -51,7 +51,7 @@ public class BountyListener implements Listener {
 
         if (bounty != 0) {
             Strings.Simple action = killerModel.getBounty() == 0 ? Strings.Simple.BOUNTY_ACTION_OF : Strings.Simple.BOUNTY_ACTION_BUMP;
-            String message = Strings.Formatted.BOUNTY.format(killer, action.get(killerModel.getLanguage()), bounty, PlayerUtil.getDisplayName(killer));
+            String message = Strings.Formatted.BOUNTY.format(killer, action.get(killerModel.language), bounty, PlayerUtil.getDisplayName(killer));
             Bukkit.broadcastMessage(message);
             killerModel.setBounty(killerModel.getBounty() + bounty);
             Sounds.BOUNTY.play(killer);

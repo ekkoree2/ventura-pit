@@ -14,7 +14,10 @@ public class DeathModel {
     public final Player victim;
     public final EntityDamageEvent event;
     public Integer xp = 5;
+    public Integer xpBonus = 0;
     public Double gold = 10d;
+    public Double xpMultiplier = 1.0;
+    public Double goldMultiplier = 1.0;
 
     public DeathModel(Player trueAttacker, Entity entity, Player victim, EntityDamageEvent event) {
         this.trueAttacker = trueAttacker;
@@ -29,5 +32,13 @@ public class DeathModel {
 
     public DeathModel(Player victim) {
         this(null, null, victim, null);
+    }
+
+    public int getFinalXp() {
+        return (int) Math.min(400, (xp + xpBonus) * xpMultiplier);
+    }
+
+    public double getFinalGold() {
+        return gold * goldMultiplier;
     }
 }

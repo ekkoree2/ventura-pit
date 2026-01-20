@@ -105,7 +105,7 @@ public class AttackModel {
             String extraContent = extraMessageContent;
             int gold = extraGold;
 
-            Bukkit.getScheduler().runTask(Pit.getInstance(), () -> {
+            Bukkit.getScheduler().runTask(Pit.instance, () -> {
                 double postAbs = victim.getAbsorptionAmount();
                 String indicator = getIndicator(originalHealth, (int) preAbs, (int) postAbs, totalDamageDealt);
                 if (extraContent != null) {

@@ -24,7 +24,7 @@ public class CombatService implements Runnable {
     }
 
     public void start() {
-        task = Bukkit.getScheduler().runTaskTimer(Pit.getInstance(), this, 20L, 20L);
+        task = Bukkit.getScheduler().runTaskTimer(Pit.instance, this, 20L, 20L);
     }
 
     public void stop() {
@@ -39,7 +39,7 @@ public class CombatService implements Runnable {
 
         players.values().forEach(player -> {
             if (player.combatTime > 0) {
-                Bukkit.getScheduler().runTask(Pit.getInstance(), () -> {
+                Bukkit.getScheduler().runTask(Pit.instance, () -> {
                     player.combatTime--;
 
                     if (player.combatTime == 0) {

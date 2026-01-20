@@ -118,7 +118,7 @@ public class Sounds {
                     if(soundTimeList.isEmpty()) cancel();
                     count++;
                 }
-            }.runTaskTimer(Pit.getInstance(), 0L, 1L);
+            }.runTaskTimer(Pit.instance, 0L, 1L);
         }
 
         public void play(Location location) {
@@ -142,7 +142,7 @@ public class Sounds {
                     soundTimeList.removeAll(toRemove);
                     if(soundTimeList.isEmpty()) cancel();
                 }
-            }.runTaskTimer(Pit.getInstance(), 0L, 1L);
+            }.runTaskTimer(Pit.instance, 0L, 1L);
         }
     }
 

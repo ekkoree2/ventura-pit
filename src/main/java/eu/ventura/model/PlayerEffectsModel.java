@@ -59,7 +59,7 @@ public class PlayerEffectsModel {
     }
 
     public static PlayerEffectsModel get(Player player) {
-        return PlayerModel.getInstance(player).getEffectsModel();
+        return PlayerModel.getInstance(player).effectsModel;
     }
 
     public boolean isActive(EffectSource source, String id) {

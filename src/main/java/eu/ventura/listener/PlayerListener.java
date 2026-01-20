@@ -9,8 +9,11 @@ import eu.ventura.maps.Map;
 import eu.ventura.model.DeathModel;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.service.MapService;
+import eu.ventura.service.PlayerService;
 import eu.ventura.util.EnchantmentHelper;
 import eu.ventura.util.EquipmentUtil;
+import eu.ventura.util.LevelUtil;
+import eu.ventura.util.NBTHelper;
 import eu.ventura.util.PlayerUtil;
 import hvh.ventura.hologram.Hologram;
 import hvh.ventura.npc.NPC;
@@ -18,7 +21,9 @@ import hvh.ventura.npc.api.NpcApi;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,8 +31,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -43,6 +52,7 @@ public class PlayerListener implements Listener {
 
     private final HashMap<String, Hologram> holograms = new HashMap<>();
     private final HashMap<String, NPC> npcs = new HashMap<>();
+    private final HashMap<Player, BukkitTask> nametagTasks = new HashMap<>();
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(PitDeathEvent event) {
@@ -69,8 +79,12 @@ public class PlayerListener implements Listener {
 
         PlayerModel playerModel = PlayerModel.getInstance(attacker);
         playerModel.addKill();
-        playerModel.addXp(data.xp);
-        playerModel.addGold(data.gold);
+
+        int xp = data.getFinalXp();
+        double gold = data.getFinalGold();
+
+        playerModel.addXp(xp);
+        playerModel.addGold(gold);
 
         playerModel.streak += 1;
 
@@ -78,13 +92,13 @@ public class PlayerListener implements Listener {
                 attacker,
                 getKillPrefix(attacker),
                 PlayerUtil.getDisplayName(data.victim),
-                NumberFormat.DEF.of(data.xp),
-                NumberFormat.GOLD_KILL.of(data.gold)
+                NumberFormat.DEF.of(xp),
+                NumberFormat.GOLD_KILL.of(gold)
         );
 
         getKillSound(event.data.trueAttacker).play(event.data.trueAttacker);
 
-        Bukkit.getScheduler().runTask(Pit.getInstance(), () -> {
+        Bukkit.getScheduler().runTask(Pit.instance, () -> {
             PlayerUtil.displayIndicator(event.data.trueAttacker, Strings.Formatted.KILL_TITLE.format(
                     event.data.trueAttacker,
                     PlayerUtil.getDisplayName(event.data.victim)
@@ -125,25 +139,41 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        event.setJoinMessage(null);
+        setupNameTag(event.getPlayer());
         PitRespawnEvent pitRespawnEvent = new PitRespawnEvent(event.getPlayer(), RespawnReason.JOIN);
         Bukkit.getPluginManager().callEvent(pitRespawnEvent);
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
+        event.setQuitMessage(null);
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
 
-        for (Map.Npc npc : Pit.getMap().getInstance().getNpcs()) {
+        BukkitTask task = nametagTasks.get(player);
+        if (task != null) {
+            task.cancel();
+            nametagTasks.remove(player);
+        }
+
+        for (Map.Npc npc : Pit.map.getInstance().getNpcs()) {
             String npcName = npc.getPitNpc().getSkin();
             String holoName = npcName + "_" + playerId;
 
+            NPC npcInstance = npcs.get(npcName);
+            if (npcInstance != null) {
+                npcInstance.despawn(player);
+            }
+
             Hologram hologram = holograms.get(holoName);
             if (hologram != null) {
-                hologram.despawn(player);
+                hologramApi.destroy(hologram);
                 holograms.remove(holoName);
             }
         }
+
+        PlayerService.removePlayer(player);
     }
 
     @EventHandler
@@ -164,7 +194,7 @@ public class PlayerListener implements Listener {
         }
 
         if (event.getReason() == RespawnReason.JOIN) {
-            for (Map.Hologram hologram : Pit.getMap().getInstance().getHolograms()) {
+            for (Map.Hologram hologram : Pit.map.getInstance().getHolograms()) {
                 String hologramName = hologram.getPitHologram().name();
 
                 if (!holograms.containsKey(hologramName)) {
@@ -177,7 +207,7 @@ public class PlayerListener implements Listener {
                 holograms.get(hologramName).show(player);
             }
 
-            for (Map.Npc npc : Pit.getMap().getInstance().getNpcs()) {
+            for (Map.Npc npc : Pit.map.getInstance().getNpcs()) {
                 Location npcLocation = npc.getLocation().of();
                 String npcName = npc.getPitNpc().getSkin();
                 String skin = npc.getPitNpc().getSkin();
@@ -210,7 +240,76 @@ public class PlayerListener implements Listener {
 
         player.setHealth(player.getMaxHealth());
 
+        if (event.getReason() == RespawnReason.DEATH || event.getReason() == RespawnReason.MEGASTREAK_DEATH) {
+            clearShopItems(player);
+        }
+
         EquipmentUtil.giveDefaultGear(player);
         EnchantmentHelper.syncInventory(player);
+    }
+
+    private void clearShopItems(Player player) {
+        ItemStack[] contents = player.getInventory().getContents();
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack item = contents[i];
+            if (item == null || item.getType() == Material.AIR) {
+                continue;
+            }
+            if (!NBTHelper.hasKey(item, "pit-perk-item")) {
+                player.getInventory().setItem(i, new ItemStack(Material.AIR));
+            }
+        }
+
+        ItemStack[] armor = player.getInventory().getArmorContents();
+        for (int i = 0; i < armor.length; i++) {
+            ItemStack item = armor[i];
+            if (item == null || item.getType() == Material.AIR) {
+                continue;
+            }
+            if (!NBTHelper.hasKey(item, "pit-perk-item")) {
+                player.getInventory().getArmorContents()[i] = new ItemStack(Material.AIR);
+            }
+        }
+    }
+
+    private void setupNameTag(Player player) {
+        BukkitTask task = Bukkit.getScheduler().runTaskTimer(Pit.instance, () -> {
+            Scoreboard scoreboard = player.getScoreboard();
+            if (scoreboard == null) {
+                scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+                player.setScoreboard(scoreboard);
+            }
+
+            for (Player target : player.getWorld().getPlayers()) {
+                PlayerModel playerModel = PlayerModel.getInstance(target);
+                String prefix = LevelUtil.getFormattedLevelFromValuesChat(playerModel);
+                int level = playerModel.getLevel();
+
+                String paddedLevel = String.format("%03d", 999 - level);
+                String teamName = paddedLevel + target.getUniqueId().toString().substring(0, 8);
+
+                Team team = scoreboard.getTeam(teamName);
+                if (team == null) {
+                    team = scoreboard.registerNewTeam(teamName);
+                }
+
+                String suffix = "";
+                if (playerModel.getBounty() > 0) {
+                    suffix += "§6§l" + playerModel.getBounty() + "g";
+                }
+
+                team.setPrefix(prefix + PlayerUtil.getRankColor(target) + " ");
+                team.setColor(PlayerUtil.getRankColorChat(target));
+                team.setSuffix(" " + suffix);
+
+                if (!team.hasEntry(target.getName())) {
+                    team.addEntry(target.getName());
+                }
+            }
+
+            player.setPlayerListHeader(Strings.Simple.HEADER.get(player));
+            player.setPlayerListFooter(Strings.Simple.FOOTER.get(player));
+        }, 0, 20);
+        nametagTasks.put(player, task);
     }
 }

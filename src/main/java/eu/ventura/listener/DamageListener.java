@@ -154,6 +154,15 @@ public class DamageListener implements Listener {
                     perk.apply(attackModel);
                 }
             }
+
+            ItemStack attackerItem = attacker.getInventory().getItemInMainHand();
+            if (NBTHelper.hasKey(attackerItem, "pit-shop-item")) {
+                String shopItemId = NBTHelper.getString(attackerItem, "pit-shop-item");
+                eu.ventura.shop.Shop shop = eu.ventura.service.ShopService.fromId(shopItemId);
+                if (shop != null) {
+                    shop.onDamage(event);
+                }
+            }
         }
 
         if (victim != null) {
@@ -162,6 +171,15 @@ public class DamageListener implements Listener {
                 Perk perk = PerkService.getPerk(entry.getValue());
                 if (perk != null && !perk.isCancelled() && (perk.getType() == eu.ventura.enchantment.EnchantType.DEFENSIVE || perk.getType() == eu.ventura.enchantment.EnchantType.BOTH)) {
                     perk.apply(attackModel);
+                }
+            }
+
+            ItemStack victimItem = victim.getInventory().getItemInMainHand();
+            if (NBTHelper.hasKey(victimItem, "pit-shop-item")) {
+                String shopItemId = NBTHelper.getString(victimItem, "pit-shop-item");
+                eu.ventura.shop.Shop shop = eu.ventura.service.ShopService.fromId(shopItemId);
+                if (shop != null) {
+                    shop.onDamaged(event);
                 }
             }
         }

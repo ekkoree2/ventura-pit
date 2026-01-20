@@ -26,20 +26,10 @@ public class Crater implements PitEnchant {
     @Override
     public LoreBuilder getDescription(int level, Strings.Language language) {
         int damage = getDamage(level);
-        LoreBuilder builder = new LoreBuilder()
+        return new LoreBuilder()
                 .setMaxLength(26)
                 .add(Strings.Formatted.CRATER.format(language, damage));
-        if (level > 1) {
-            builder.addNewline(Strings.Simple.CRATER_EXTRA.get(language));
-        }
-        return builder;
     }
-
-    @Override
-    public boolean isRare() {
-        return true;
-    }
-
 
     @Override
     public EnchantRarity getRarity() {
@@ -72,7 +62,7 @@ public class Crater implements PitEnchant {
             return;
         }
 
-        if (!PlayerModel.getInstance(model.trueAttacker).getEffectsModel().canCooldown(getId(), 500)) {
+        if (!PlayerModel.getInstance(model.trueAttacker).effectsModel.canCooldown(getId(), 500)) {
             return;
         }
 

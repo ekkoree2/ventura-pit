@@ -53,7 +53,7 @@ public abstract class Perk {
     public abstract ItemStack getIcon();
 
     public List<String> getDescription(Player player) {
-        Strings.Language language = PlayerModel.getInstance(player).getLanguage();
+        Strings.Language language = PlayerModel.getInstance(player).language;
         return getDescription(language).compile();
     }
 

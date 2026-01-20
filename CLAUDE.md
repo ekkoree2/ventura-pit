@@ -55,8 +55,9 @@
 > Never use full package names to import something. Examples:
 - pit.sandbox.Main -> Main
 > Do not repeat same code if not needed, add utils if code repeats. Not in same class though, rather special one for utils. Always re-use it if there is opportunity
-> Fully utilize this project if you want to inspire some The-Pit mechanics or code approach. 
+> Fully utilize these projects if you want to inspire some The-Pit mechanics or code approach. 
 - **C:\Users\Admin\Desktop\Data\projects\the-pit\src\main\java\pit\sandbox**
+- **C:\Users\Admin\Desktop\Data\projects\PitSim**
 > Code is based on **1.21.4** Spigot API
 > Do not change existing strings (colors, messages) unless specified.
 > If adding any string (message, line ....) Always use Strings class. ALWAYS. Same for all Sounds.

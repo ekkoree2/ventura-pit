@@ -10,12 +10,12 @@ import java.util.*;
 
 public class PerkService {
 
-    private static final Map<String, Perk> perks = new HashMap<>();
+    private static final Map<String, Perk> perks = new LinkedHashMap<>();
 
     static {
-        registerPerk(new Calculated());
         registerPerk(new GoldenHeads());
         registerPerk(new GravityMace());
+        registerPerk(new Calculated());
         registerPerk(new Vampire());
     }
 
@@ -41,9 +41,6 @@ public class PerkService {
     }
 
     public static List<Perk> getSortedPerks() {
-        List<Perk> sorted = new ArrayList<>(perks.values());
-        sorted.sort(Comparator.comparingInt(Perk::getPrestigeRequirement)
-                .thenComparing(Perk::getId));
-        return sorted;
+        return new LinkedList<>(perks.values());
     }
 }

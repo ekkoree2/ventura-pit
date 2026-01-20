@@ -29,7 +29,7 @@ public class LoreBuilderWrapper {
     }
 
     public LoreBuilder get(Player player) {
-        return get(PlayerModel.getInstance(player).getLanguage());
+        return get(PlayerModel.getInstance(player).language);
     }
 
     public List<String> compile(Strings.Language lang) {

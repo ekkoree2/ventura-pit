@@ -39,6 +39,6 @@ public enum PitHologram {
     }
 
     private static String of(Player player, String polish, String english) {
-        return PlayerModel.getInstance(player).getLanguage() == Strings.Language.POLISH ? polish : english;
+        return PlayerModel.getInstance(player).language == Strings.Language.POLISH ? polish : english;
     }
 }

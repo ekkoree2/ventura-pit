@@ -22,7 +22,7 @@ public class Strings {
     }
 
     private static Language getLanguage(Player player) {
-        return PlayerModel.getInstance(player).getLanguage();
+        return PlayerModel.getInstance(player).language;
     }
 
     @RequiredArgsConstructor
@@ -57,21 +57,24 @@ public class Strings {
     }
 
     @RequiredArgsConstructor
+    @Getter
     public enum Simple {
         DEATH("&c&lŚMIERC!", "&c&lDEATH!"),
-        MAXED("§fXP: §bᴍᴀᴋѕʏᴍᴀʟɴʏ", "§fXP: §bᴍᴀхᴇᴅ"),
-        CRATER_EXTRA("&aʜɪᴛʏ ᴏᴅʙɪᴊᴀᴊᴀ ᴡ ɢᴏʀᴇ!", "&aʜɪᴛѕ ᴘᴜɴᴄʜ ᴜᴘᴡᴀʀᴅѕ!"),
-        RARE_PREFIX("&dʀᴀʀᴇ "),
+        MAXED("§fXP: §bMAKSYMALNY!", "§fXP: §bMAXED!"),
+        RARE_PREFIX("&dRARE! "),
         CRIT("&9&lKRYT!", "&9&lCRIT!"),
         PERK_GOLDEN_HEADS("Złote Głowy", "Golden Heads"),
         PERK_GRAVITY_MACE("Buława Grawitacji", "Gravity Mace"),
         PERK_CALCULATED("Wyrachowany", "Calculated"),
         PERK_VAMPIRE("Wampir", "Vampire"),
 
+        HEADER("&bGrasz na &e&lHVH.VENTURACLIENT.EU", "&bYou are playing on &e&lHVH.VENTURACLIENT.EU"),
+        FOOTER("&aDolacz na discorda!&9 discord.gg/venturaclient", "&aJoin us at discord!&9 discord.gg/venturaclient"),
+
         KILL_1("§a§lZABÓJSTWO!", "§a§lKILL!"),
         KILL_2("§a§lPODWÓJNE ZABÓJSTWO!", "§a§lDOUBLE KILL!"),
         KILL_3("§a§lPOTRÓJNE ZABÓJSTWO!", "§a§lTRIPLE KILL!"),
-        KILL_4("§a§lZWYKLE ZABÓJSTWO!", "§a§lQUADRA KILL!"),
+        KILL_4("§a§lPOCZWORNE ZABÓJSTWO!", "§a§lQUADRA KILL!"),
         KILL_5("§a§lPIĘCIOKROTNE ZABÓJSTWO!", "§a§lPENTA KILL!"),
         KILL_MULTI("§a§lWIELE ZABÓJSTW! §7({0})", "§a§lMULTI KILL! §7({0})"),
         CANT_RESPAWN_HERE("§cNie mozesz /respawn tutaj!", "§cYou cannot /respawn here!"),
@@ -107,7 +110,21 @@ public class Strings {
         ITEM_PANTS("ѕᴘᴏᴅɴɪᴇ", "ᴘᴀɴᴛѕ"),
         BOUNTY_ACTION_OF("nadano", "of"),
         BOUNTY_ACTION_BUMP("zwiekszono", "bump"),
-        GOLDEN_HEADS_NAME("&6Złota Głowa", "&6Golden Head");
+        GOLDEN_HEADS_NAME("&6Złota Głowa", "&6Golden Head"),
+        SHOP_TITLE("&8Sklep Przedmiotów", "&8Item Shop"),
+        SHOP_NOT_ENOUGH_GOLD("&cNiewystarczająco złota!", "&cNot enough gold!"),
+        SHOP_INVENTORY_FULL("&cTwój ekwipunek jest pełny!", "&cYour inventory is full!"),
+        SHOP_CLICK_TO_PURCHASE("&eKliknij aby zakupić!", "&eClick to purchase!"),
+        SHOP_LOST_ON_DEATH("&7§oTracisz przy śmierci.", "&7§oLost on death."),
+        SHOP_ITEM_DIAMOND_SWORD("Diamentowy Miecz", "Diamond Sword"),
+        SHOP_ITEM_DIAMOND_BOOTS("Diamentowe Buty", "Diamond Boots"),
+        SHOP_ITEM_DIAMOND_CHESTPLATE("Diamentowa Zbroja", "Diamond Chestplate"),
+        SHOP_ITEM_OBSIDIAN("Obsydian", "Obsidian"),
+        SHOP_MSG_AUTO_EQUIP("&7Automatycznie zakłada przy zakupie!", "&7Auto-equips on buy!"),
+        SHOP_MSG_OBSIDIAN_DURATION("&7Pozostaje przez 120 sekund.", "&7Remains for 120 seconds."),
+        SHOP_MSG_DIAMOND_SWORD_BOOST("§9+20% obrażeń przeciw nagrodzonym", "§9+20% damage vs bountied"),
+        STATS_CONFIRM_WIPE("&c&lNAPEWNO WYCZYŚCIĆ STATYSTYKI?", "&c&lSURE YOU WANT TO WIPE STATS?"),
+        STATS_WIPE_OWN("&cWyczyścisz swoje statystyki", "&cWipe your own stats");
 
         private final String polish;
         private final String english;
@@ -137,7 +154,7 @@ public class Strings {
         DEATH_MESSAGE("&c&lŚMIERC!&7 od {0}", "&c&lDEATH!&7 by {0}"),
         CRATER("&7Zadawaj &c+{0}%&7 obrazen za kazdy &fblok&7 roznicy wysokosci", "&7Deal &c+{0}%&7 damage per &fblock&7 you're above"),
         PRESTIGE("§fPrestiż: §e{0}", "§fPrestige: §e{0}"),
-        LEVEL("§fPoziom: {0}", "§fLevel: {0}"),
+        LEVEL("§fPoziom:&7 {0}", "§fLevel:&7 {0}"),
         KILL_TITLE("{0} &a&lZABOJSTWO!", "{0} &a&lKILL!"),
         NEEDED_XP("§fWymagany XP: §b{0}", "§fNeeded XP: §b{0}"),
         GOLD("§fZłoto: §6{0}", "§fGold: §6{0}"),
@@ -160,7 +177,11 @@ public class Strings {
         BOUNTY("&6&lŁUP! &7{0} &6&l{1}g &7na {2} &7za wysoki streak", "&6&lBOUNTY! &7{0} &6&l{1}g &7on {2} &7for high streak"),
         BOUNTY_CLAIMED("&6&lŁUP ODEBRANY!&7 {0}&7 zabil {1}&7 za &6&l{2}$", "&6&lBOUNTY CLAIMED!&7 {0}&7 killed {1}&7 for &6&l{2}$"),
         STREAK("&fStreak: &a{0}"),
-        BOUNTY_SCOREBOARD("&fŁup: &6{0}$", "&fBounty: &6{0}$");
+        SHOP_COST("&7Koszt: &6{0}g", "&7Cost: &6{0}g"),
+        SHOP_PURCHASE("&a&lZAKUP!&6 {0}", "&a&lPURCHASE!&6 {0}"),
+        BOUNTY_SCOREBOARD("&fŁup: &6{0}$", "&fBounty: &6{0}$"),
+        STATS_CONFIRM_WIPE_OTHER("&c&lNAPEWNO WYCZYŚCIĆ STATYSTYKI GRACZA {0}?", "&c&lSURE YOU WANT TO WIPE {0}'S STATS?"),
+        STATS_WIPE_OTHER("&cWyczyścisz statystyki gracza {0}", "&cWipe {0}'s stats");
 
         private final String polish;
         private final String english;

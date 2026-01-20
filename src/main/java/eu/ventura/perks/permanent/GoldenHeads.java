@@ -96,7 +96,7 @@ public class GoldenHeads extends Perk {
         double newAbs = Math.min(abs + 4, 6);
 
         if (newAbs > abs) {
-            Bukkit.getScheduler().runTask(Pit.getInstance(), () -> {
+            Bukkit.getScheduler().runTask(Pit.instance, () -> {
                 PlayerUtil.setAbs(player, newAbs);
             });
         }
@@ -132,7 +132,7 @@ public class GoldenHeads extends Perk {
     public void onKill(PitKillEvent event) {
         Player player = event.data.trueAttacker;
         PlayerModel model = PlayerModel.getInstance(player);
-        Strings.Language language = model.getLanguage();
+        Strings.Language language = model.language;
 
         int maxHeal = 64;
 

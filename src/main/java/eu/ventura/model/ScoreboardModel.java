@@ -31,7 +31,7 @@ public class ScoreboardModel {
 
         this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         this.objective = scoreboard.registerNewObjective("sidebar", "dummy");
-        this.objective.setDisplayName("§e§lᴠᴇɴᴛᴜʀᴀ ᴘɪᴛ");
+        this.objective.setDisplayName("§e§lVENTURA PIT");
         this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         for (int i = 1; i <= 15; i++) {

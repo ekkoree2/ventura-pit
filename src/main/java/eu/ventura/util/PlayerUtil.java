@@ -4,6 +4,7 @@ import eu.ventura.java.NewString;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.service.PlayerService;
 import net.kyori.adventure.text.Component;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
@@ -50,7 +51,11 @@ public class PlayerUtil {
     }
 
     public static String getRankColor(Player player) {
-        return NewString.of("&7");
+        return NewString.of("&f");
+    }
+
+    public static ChatColor getRankColorChat(Player player) {
+        return ChatColor.GRAY;
     }
 
     public static boolean isLookingAt(Player player, Entity target, double maxDistance) {

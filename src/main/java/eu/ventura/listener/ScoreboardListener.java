@@ -38,7 +38,7 @@ public class ScoreboardListener implements Listener {
             public void run() {
                 updateAllScoreboards();
             }
-        }.runTaskTimer(Pit.getInstance(), 0L, 1L);
+        }.runTaskTimer(Pit.instance, 0L, 1L);
     }
 
     private void updateAllScoreboards() {
@@ -68,7 +68,6 @@ public class ScoreboardListener implements Listener {
         if (model.gold > 10000.0) {
             format = NumberFormat.GOLD_DISPLAY_HIGH;
         }
-
         newLines.add(Strings.Formatted.LEVEL.format(player, LevelUtil.getFormattedLevelFromValuesChat(model)));
         newLines.add(model.level == 120
                 ? Strings.Simple.MAXED.get(player)
@@ -88,7 +87,7 @@ public class ScoreboardListener implements Listener {
             newLines.add(Strings.Formatted.STREAK.format(player, NumberFormat.DEF.of(model.streak)));
         }
         newLines.add("");
-        newLines.add(NewString.of("&eʜᴠʜ.ᴠᴇɴᴛᴜʀᴀᴄʟɪᴇɴᴛ.ᴇᴜ"));
+        newLines.add(NewString.of("&ehvh.venturaclient.eu"));
 
         scoreboardModel.updateLines(newLines);
     }

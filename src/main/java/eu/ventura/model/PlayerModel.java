@@ -1,21 +1,31 @@
 package eu.ventura.model;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.ReplaceOptions;
+import eu.ventura.annotations.Save;
 import eu.ventura.constants.Sounds;
 import eu.ventura.constants.Status;
 import eu.ventura.constants.Strings;
 import eu.ventura.service.PerkService;
 import eu.ventura.service.PlayerService;
 import eu.ventura.util.LevelUtil;
+import eu.ventura.util.MongoUtil;
 import eu.ventura.util.PlayerUtil;
-import lombok.Getter;
+import org.bson.Document;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * author: ekkoree
@@ -26,10 +36,10 @@ public class PlayerModel {
 
     public Player lastAttacker;
 
-    public int requiredXP = 15;
-    public int level = 120;
-    public int prestige = 0;
-    public int xp = 0;
+    @Save public int requiredXP = 15;
+    @Save public int level = 1;
+    @Save public int prestige = 0;
+    @Save public int xp = 0;
     public Status status = Status.IDLING;
     public int combatTime = 0;
     public int multiKills = 0;
@@ -37,15 +47,13 @@ public class PlayerModel {
     public int bounty = 0;
     public int streak = 0;
 
-    @Getter
-    private PlayerEffectsModel effectsModel;
+    public final PlayerEffectsModel effectsModel;
 
-    public double gold = 999999;
-    @Getter
-    private Strings.Language language = Strings.Language.POLISH;
+    @Save public double gold = 0;
+    @Save public Strings.Language language = Strings.Language.POLISH;
 
-    public Set<String> purchasedPerks = new HashSet<>();
-    public Map<Integer, String> equippedPerks = new HashMap<>();
+    @Save public Set<String> purchasedPerks = new HashSet<>();
+    @Save public Map<Integer, String> equippedPerks = new HashMap<>();
 
     public PlayerModel(Player player) {
         this.player = player;
@@ -172,5 +180,85 @@ public class PlayerModel {
 
     public int getLevel() {
         return level;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void save() {
+        MongoCollection<Document> collection = MongoUtil.getCollection("players");
+        Document doc = new Document("_id", player.getUniqueId().toString());
+
+        for (Field field : this.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(Save.class)) {
+                field.setAccessible(true);
+                try {
+                    Object value = field.get(this);
+                    if (value != null && field.getType().isEnum()) {
+                        doc.append(field.getName(), ((Enum<?>) value).name());
+                    } else if (value instanceof Set<?> set) {
+                        doc.append(field.getName(), new ArrayList<>(set));
+                    } else if (value instanceof Map<?, ?> map) {
+                        Document mapDoc = new Document();
+                        map.forEach((k, v) -> mapDoc.append(String.valueOf(k), v));
+                        doc.append(field.getName(), mapDoc);
+                    } else {
+                        doc.append(field.getName(), value);
+                    }
+                } catch (IllegalAccessException e) {
+                    Bukkit.getLogger().warning("Failed to access field " + field.getName());
+                }
+            }
+        }
+
+        collection.replaceOne(new Document("_id", player.getUniqueId().toString()), doc,
+                new ReplaceOptions().upsert(true));
+    }
+
+    @SuppressWarnings("unchecked")
+    public void load() {
+        CompletableFuture<Void> loadFuture = CompletableFuture.runAsync(() -> {
+            MongoCollection<Document> collection = MongoUtil.getCollection("players");
+            Document doc = collection.find(new Document("_id", player.getUniqueId().toString())).first();
+
+            if (doc != null) {
+                for (Field field : this.getClass().getDeclaredFields()) {
+                    if (field.isAnnotationPresent(Save.class)) {
+                        field.setAccessible(true);
+                        try {
+                            if (doc.containsKey(field.getName())) {
+                                Object value = doc.get(field.getName());
+
+                                if (value != null && field.getType().isEnum() && value instanceof String) {
+                                    @SuppressWarnings("rawtypes")
+                                    Class<? extends Enum> enumType = (Class<? extends Enum>) field.getType();
+                                    Object enumValue = Enum.valueOf(enumType, (String) value);
+                                    field.set(this, enumValue);
+                                } else if (Set.class.isAssignableFrom(field.getType()) && value instanceof List<?> list) {
+                                    Set<Object> set = new HashSet<>(list);
+                                    field.set(this, set);
+                                } else if (Map.class.isAssignableFrom(field.getType()) && value instanceof Document mapDoc) {
+                                    Map<Integer, String> map = new HashMap<>();
+                                    mapDoc.forEach((k, v) -> map.put(Integer.parseInt(k), (String) v));
+                                    field.set(this, map);
+                                } else if (field.getType() == int.class && value instanceof Number num) {
+                                    field.setInt(this, num.intValue());
+                                } else if (field.getType() == double.class && value instanceof Number num) {
+                                    field.setDouble(this, num.doubleValue());
+                                } else {
+                                    field.set(this, value);
+                                }
+                            }
+                        } catch (IllegalAccessException e) {
+                            Bukkit.getLogger().warning("Failed to set field " + field.getName());
+                        }
+                    }
+                }
+            }
+        });
+
+        try {
+            loadFuture.get(5, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            Bukkit.getLogger().warning("Failed to load player data for " + player.getName() + ": " + e.getMessage());
+        }
     }
 }

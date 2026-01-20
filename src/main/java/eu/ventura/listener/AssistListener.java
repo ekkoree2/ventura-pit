@@ -42,7 +42,7 @@ public class AssistListener implements Listener {
                     updatedAssists.remove(damagerUUID);
                 }
             }
-        }.runTaskLater(Pit.getInstance(), 300);
+        }.runTaskLater(Pit.instance, 300);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

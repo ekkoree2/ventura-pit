@@ -67,7 +67,7 @@ public class PerkModel {
             addPerk(slot);
 
             Sounds.ITEM_PURCHASE.play(playerModel.player);
-            playerModel.player.sendMessage(Strings.Formatted.PERK_PURCHASE_MSG.format(playerModel.player, perk.getDisplayName(playerModel.getLanguage())));
+            playerModel.player.sendMessage(Strings.Formatted.PERK_PURCHASE_MSG.format(playerModel.player, perk.getDisplayName(playerModel.language)));
             new PermanentGUI(playerModel.player).open();
         };
     }
@@ -110,7 +110,7 @@ public class PerkModel {
     }
 
     public String getDisplayName() {
-        return getColor() + perk.getDisplayName(playerModel.getLanguage());
+        return getColor() + perk.getDisplayName(playerModel.language);
     }
 
     public ItemStack getItemStack(ItemStack defaultIcon) {
@@ -126,7 +126,7 @@ public class PerkModel {
         }
         String renownShopText = Strings.Simple.PERK_UNLOCKED_IN_RENOWN.get(playerModel.player);
         if (lore.toString().contains(renownShopText)) {
-            return createLockedIcon(perk.getDisplayName(playerModel.getLanguage()), getLore());
+            return createLockedIcon(perk.getDisplayName(playerModel.language), getLore());
         }
         return createItemStack(defaultIcon);
     }

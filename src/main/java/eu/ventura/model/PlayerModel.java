@@ -37,8 +37,8 @@ public class PlayerModel {
     public Player lastAttacker;
 
     @Save public int requiredXP = 15;
-    @Save public int level = 1;
-    @Save public int prestige = 0;
+    @Save private int level = 1;
+    @Save private int prestige = 0;
     @Save public int xp = 0;
     public Status status = Status.IDLING;
     public int combatTime = 0;
@@ -49,7 +49,7 @@ public class PlayerModel {
 
     public final PlayerEffectsModel effectsModel;
 
-    @Save public double gold = 0;
+    @Save private double gold = 0;
     @Save public Strings.Language language = Strings.Language.POLISH;
 
     @Save public Set<String> purchasedPerks = new HashSet<>();
@@ -64,7 +64,30 @@ public class PlayerModel {
         return PlayerService.getPlayer(player);
     }
 
+    public void setLevel(int val) {
+        this.level = Math.max(1, Math.min(120, val));
+    }
+
+    public int getLevel() {
+        return Math.max(1, Math.min(120, level));
+    }
+
+    public int getPrestige() {
+        return Math.max(0, Math.min(35, prestige));
+    }
+
+    public void setPrestige(int x) {
+        this.prestige = Math.min(35, x);
+    }
+
+    public void setGold(double x) {
+        this.gold = Math.max(0, Math.min(Integer.MAX_VALUE, x));
+    }
+
     public double getGold() {
+        if (Double.isNaN(gold)) {
+            gold = 100;
+        }
         return Math.min(Integer.MAX_VALUE, gold);
     }
 
@@ -118,6 +141,9 @@ public class PlayerModel {
 
     public void addGold(double gold) {
         this.gold += gold;
+        if (Double.isNaN(this.gold) || Double.isInfinite(this.gold)) {
+            this.gold = 100;
+        }
     }
 
     public int getMultiKillsNumber() {
@@ -172,17 +198,22 @@ public class PlayerModel {
 
     public List<PerkSlotModel> getPerkSlots() {
         List<PerkSlotModel> slots = new ArrayList<>();
-        slots.add(new PerkSlotModel(0, 1));
-        slots.add(new PerkSlotModel(1, 1));
-        slots.add(new PerkSlotModel(2, 1));
+        slots.add(new PerkSlotModel(0, 10));
+        slots.add(new PerkSlotModel(1, 35));
+        slots.add(new PerkSlotModel(2, 70));
         return slots;
     }
 
-    public int getLevel() {
-        return level;
+    public boolean hasHealingPerk() {
+        for (int slot : equippedPerks.keySet()) {
+            eu.ventura.perks.Perk perk = getEquippedPerk(slot);
+            if (perk != null && perk.isHealing()) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    @SuppressWarnings("unchecked")
     public void save() {
         MongoCollection<Document> collection = MongoUtil.getCollection("players");
         Document doc = new Document("_id", player.getUniqueId().toString());

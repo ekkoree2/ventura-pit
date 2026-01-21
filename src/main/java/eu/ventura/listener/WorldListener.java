@@ -3,6 +3,7 @@ package eu.ventura.listener;
 import eu.ventura.Pit;
 import eu.ventura.util.NBTHelper;
 import eu.ventura.util.RegionHelper;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -14,6 +15,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -27,16 +30,17 @@ import java.util.Set;
 public class WorldListener implements Listener {
     private final Set<PitBlockModel> placedBlocks = new HashSet<>();
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         ItemStack itemInHand = event.getItemInHand();
 
-        if (itemInHand == null || itemInHand.getType() == Material.AIR) {
+        if (itemInHand.getType() == Material.AIR) {
             return;
         }
 
         if (player.getGameMode() == GameMode.CREATIVE) {
+            event.setCancelled(false);
             return;
         }
 
@@ -64,11 +68,16 @@ public class WorldListener implements Listener {
         }, 120 * 20L);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
         if (player.getGameMode() == GameMode.CREATIVE) {
+            event.setCancelled(false);
+            return;
+        }
+
+        if (event.isCancelled()) {
             return;
         }
 
@@ -91,6 +100,17 @@ public class WorldListener implements Listener {
         event.setCancelled(true);
     }
 
+    @EventHandler
+    public void onBlockBurn(BlockBurnEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockIgnite(BlockIgniteEvent event) {
+        event.setCancelled(true);
+    }
+
+    @Getter
     public static class PitBlockModel {
         private final Block block;
         private final BlockState originalState;
@@ -100,18 +120,6 @@ public class WorldListener implements Listener {
             this.block = block;
             this.originalState = originalState;
             this.expireAfter = expireAfter;
-        }
-
-        public Block getBlock() {
-            return block;
-        }
-
-        public BlockState getOriginalState() {
-            return originalState;
-        }
-
-        public long getExpireAfter() {
-            return expireAfter;
         }
 
         public Location getLocation() {

@@ -12,6 +12,7 @@ import eu.ventura.model.DeathModel;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.perks.Perk;
 import eu.ventura.service.PerkService;
+import eu.ventura.util.RegionHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -23,6 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -37,18 +39,36 @@ import java.util.Map;
  */
 @SuppressWarnings("unused")
 public class DamageListener implements Listener {
-    private final List<EntityDamageEvent.DamageCause> causes = List.of(
+    private final List<EntityDamageEvent.DamageCause> cancelledCauses = List.of(
             EntityDamageEvent.DamageCause.WORLD_BORDER,
             EntityDamageEvent.DamageCause.FALL,
             EntityDamageEvent.DamageCause.WITHER,
-            EntityDamageEvent.DamageCause.SUICIDE,
             EntityDamageEvent.DamageCause.CAMPFIRE
     );
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageEvent event) {
-        if (causes.contains(event.getCause())) {
+        if (cancelledCauses.contains(event.getCause())) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onAnyDeath(EntityDamageEvent event) {
+        if (event instanceof EntityDamageByEntityEvent) {
+            return;
+        }
+        if (!(event.getEntity() instanceof Player victim)) {
+            return;
+        }
+        if (event.isCancelled()) {
+            return;
+        }
+        if (victim.getHealth() - event.getFinalDamage() <= 0.0  && !event.isCancelled()) {
+            event.setCancelled(true);
+            PlayerModel victimModel = PlayerModel.getInstance(victim);
+            DeathModel deathModel = new DeathModel(victimModel.lastAttacker, null, victim, null);
+            Bukkit.getPluginManager().callEvent(new PitDeathEvent(deathModel));
         }
     }
 
@@ -62,6 +82,10 @@ public class DamageListener implements Listener {
             return;
         }
         if (attacker.equals(victim)) {
+            return;
+        }
+        if (RegionHelper.isInSpawn(attacker) || RegionHelper.isInSpawn(victim)) {
+            event.setCancelled(true);
             return;
         }
         if (!event.isCancelled()) {
@@ -79,7 +103,7 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDamageHigh(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player victim)) {
+        if (!(event.getEntity() instanceof Player victim) || event.isCancelled()) {
             return;
         }
 
@@ -105,7 +129,7 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player victim)) {
+        if (!(event.getEntity() instanceof Player victim) || event.isCancelled()) {
             return;
         }
 
@@ -125,7 +149,7 @@ public class DamageListener implements Listener {
             attackModel.finalApply();
         }
 
-        if (victim.getHealth() - event.getFinalDamage() <= 0.0) {
+        if (victim.getHealth() - event.getFinalDamage() <= 0.0 && !event.isCancelled()) {
             DeathModel deathModel = new DeathModel(
                     trueAttacker,
                     source,

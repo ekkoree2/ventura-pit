@@ -60,16 +60,16 @@ public class ScoreboardListener implements Listener {
         newLines.add("§7" + currentDate);
         newLines.add("");
 
-        if (model.prestige > 0) {
-            newLines.add(Strings.Formatted.PRESTIGE.format(player, model.prestige));
+        if (model.getPrestige() > 0) {
+            newLines.add(Strings.Formatted.PRESTIGE.format(player, model.getPrestige()));
         }
 
         NumberFormat.Formatter format = NumberFormat.GOLD_DISPLAY_LOW;
-        if (model.gold > 10000.0) {
+        if (model.getGold() > 10000.0) {
             format = NumberFormat.GOLD_DISPLAY_HIGH;
         }
         newLines.add(Strings.Formatted.LEVEL.format(player, LevelUtil.getFormattedLevelFromValuesChat(model)));
-        newLines.add(model.level == 120
+        newLines.add(model.getLevel() == 120
                 ? Strings.Simple.MAXED.get(player)
                 : Strings.Formatted.NEEDED_XP.format(player, model.requiredXP));
         newLines.add("");

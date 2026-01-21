@@ -2,6 +2,7 @@ package eu.ventura.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import eu.ventura.enchantment.PitEnchant;
 import eu.ventura.java.NewString;
@@ -16,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
  * author: ekkoree
  * created at: 1/15/2025
  */
+@CommandPermission("rank.owner")
 @CommandAlias("enchant|pitenchant")
 public class EnchantCommand extends BaseCommand {
     @Default

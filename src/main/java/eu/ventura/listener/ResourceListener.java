@@ -23,7 +23,7 @@ public class ResourceListener implements Listener {
             event.data.xp += 4;
         }
 
-        int lvl = victimModel.level - attackerModel.level;
+        int lvl = victimModel.getLevel() - attackerModel.getLevel();
         if (lvl > 0) {
             event.data.xp += lvl / 5;
         }
@@ -46,7 +46,7 @@ public class ResourceListener implements Listener {
             event.data.xp += Math.min(bonus, 300);
         }
 
-        if (victimModel.level <= 20) {
+        if (victimModel.getLevel() <= 20) {
             event.data.xpMultiplier -= 0.1;
         }
 
@@ -56,7 +56,7 @@ public class ResourceListener implements Listener {
 
         event.data.gold += getArmorGoldBonus(event.data.trueAttacker, event.data.victim);
 
-        if (victimModel.level <= 20) {
+        if (victimModel.getLevel() <= 20) {
             event.data.goldMultiplier -= 0.1;
         }
     }

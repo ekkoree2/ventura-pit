@@ -65,7 +65,7 @@ public class PermanentPanel extends AGUIPanel {
 
     @Override
     public void onOpen(InventoryOpenEvent event) {
-        if (playerModel.getLevel() < 10 && playerModel.prestige == 0) {
+        if (playerModel.getLevel() < 10 && playerModel.getPrestige() == 0) {
             player.sendMessage(Strings.Simple.PERK_LEVEL_10_REQUIRED.get(player));
             Sounds.NO.play(player);
             event.setCancelled(true);
@@ -98,7 +98,7 @@ public class PermanentPanel extends AGUIPanel {
                 Strings.Formatted.PERK_SLOT_LOCKED_TITLE.format(playerModel.player, model.getSlot()),
                 new LoreBuilder()
                         .addNewline(Strings.Formatted.PERK_SLOT_LEVEL.format(playerModel.player,
-                                LevelUtil.getFormattedLevelFromValues(playerModel.prestige, model.getRequiredLevel())
+                                LevelUtil.getFormattedLevelFromValues(playerModel.getPrestige(), model.getRequiredLevel())
                         ))
                         .compile(),
                 true

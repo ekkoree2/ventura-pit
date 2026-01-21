@@ -134,13 +134,20 @@ public class GoldenHeads extends Perk {
         PlayerModel model = PlayerModel.getInstance(player);
         Strings.Language language = model.language;
 
-        int maxHeal = 64;
+        int count = 0;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (getId().equals(NBTHelper.getString(item, "pit-perk-item"))) {
+                count += item.getAmount();
+            }
+        }
+
+        if (count >= 2) {
+            return;
+        }
 
         for (ItemStack item : player.getInventory().getContents()) {
             if (getId().equals(NBTHelper.getString(item, "pit-perk-item"))) {
-                if (item.getAmount() < maxHeal) {
-                    item.setAmount(Math.min(item.getAmount() + 1, maxHeal));
-                }
+                item.setAmount(item.getAmount() + 1);
                 return;
             }
         }

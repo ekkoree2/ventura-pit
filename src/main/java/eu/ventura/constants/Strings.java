@@ -68,6 +68,11 @@ public class Strings {
         PERK_CALCULATED("Wyrachowany", "Calculated"),
         PERK_VAMPIRE("Wampir", "Vampire"),
 
+        CANT_DROP("&c&lNIE!&7 Nie mozesz wyrzucic tego przedmiotu!", "§c§lNOPE!§7 You cannot drop this item!"),
+
+        OOF_CD("§c§lKURWA!§7 Mozesz uzywac /oof co 10 sekund!", "§c§lCHILL OUT!§7 You may only /oof every 10 seconds!"),
+        OOF_NO("&c&lNIE KURWA!&7 Nie mozesz uzywac /oof na spawnie!", "§c§lNOPE!§7 Can't /oof in spawn!"),
+
         HEADER("&bGrasz na &e&lHVH.VENTURACLIENT.EU", "&bYou are playing on &e&lHVH.VENTURACLIENT.EU"),
         FOOTER("&aDolacz na discorda!&9 discord.gg/venturaclient", "&aJoin us at discord!&9 discord.gg/venturaclient"),
 
@@ -80,7 +85,8 @@ public class Strings {
         CANT_RESPAWN_HERE("§cNie mozesz /respawn tutaj!", "§cYou cannot /respawn here!"),
         RESPAWN_COOLDOWN("§cMozesz uzyc /respawn co 10 sekund!", "§cYou may only /respawn every 10 seconds!"),
         PERK_BACK("&7&lWRÓĆ", "&7&lBACK"),
-        PERK_NO_PERK("&7Brak zainstalowanego perka", "&7No perk equipped"),
+        STREAKER("Streaker"),
+        PERK_NO_PERK("&cBez perka", "&cNo perk"),
         PERK_SLOT_LOCKED_MSG("&cSlot nie jest jeszcze odblokowany!", "&cSlot not unlocked yet!"),
         PERK_TOO_LOW_LEVEL("&cJesteś zbyt niskiego poziomu aby zakupić ten perk!", "&cYou are too low level to acquire this perk!"),
         PERK_NOT_ENOUGH_GOLD("&cNie masz wystarczająco dużo złota aby zakupić ten perk!", "&cYou don't have enough gold to afford this!"),
@@ -104,6 +110,7 @@ public class Strings {
         CONFIRM_CANCEL_TITLE("&c&lANULUJ", "&c&lCANCEL"),
         CONFIRM_CANCEL_TITLE_DESC("&7Kliknij aby anulować zakup", "&7Click to cancel purchase"),
         PERK_SELECT_TITLE("Wybierz perk", "Choose a perk"),
+        PERK_UNKNOWN("Nieznany perk", "Unknown perk"),
         CHOOSE_A_PERK_TITLE("Wybierz perk", "Choose a perk"),
         ITEM_SWORD("ᴍɪᴇᴄᴢ", "ѕᴡᴏʀᴅ"),
         ITEM_BOW("ʟᴜᴋ", "ʙᴏᴡ"),
@@ -240,6 +247,10 @@ public class Strings {
         GOLDEN_HEADS_DESC(new LoreBuilderWrapper(
                 new LoreBuilder().add("§7Złote jabłka, które zdobędziesz, zamieniają się w §6Złote Głowy§7."),
                 new LoreBuilder().add("§7Golden apples you earn turn into §6Golden Heads§7.")
+        )),
+        STREAKER_DESC(new LoreBuilderWrapper(
+                new LoreBuilder().add("§7Potrój &bXP&7 zdobyte ze streaka."),
+                new LoreBuilder().add("§7Triple streak kill §bXP§7 bonus.")
         )),
         VAMPIRE_DESC(new LoreBuilderWrapper(
                 new LoreBuilder()

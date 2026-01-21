@@ -92,7 +92,7 @@ public class ShopPanel extends AGUIPanel {
             return;
         }
 
-        playerModel.gold -= shop.getPrice();
+        playerModel.setGold(playerModel.getGold() - shop.getPrice());
 
         if (shop.isArmor()) {
             EquipmentSlot slot = ItemHelper.getArmorSlot(stack.getType());
@@ -106,9 +106,13 @@ public class ShopPanel extends AGUIPanel {
                 player.getInventory().addItem(stack);
             }
         } else {
-            int defaultSlot = findDefaultWeaponSlot();
-            if (defaultSlot != -1) {
-                player.getInventory().setItem(defaultSlot, stack);
+            if (isWeapon(stack.getType())) {
+                int defaultSlot = findDefaultWeaponSlot();
+                if (defaultSlot != -1) {
+                    player.getInventory().setItem(defaultSlot, stack);
+                } else {
+                    player.getInventory().addItem(stack);
+                }
             } else {
                 player.getInventory().addItem(stack);
             }

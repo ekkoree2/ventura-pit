@@ -24,8 +24,8 @@ public class ChatListener implements Listener {
 
         PlayerModel playerModel = PlayerService.getPlayer(player);
 
-        int prestige = playerModel.prestige;
-        int level = playerModel.level;
+        int prestige = playerModel.getPrestige();
+        int level = playerModel.getLevel();
 
         String bracketsColor = LevelUtil.getBracketsColorChat(prestige).toString();
 

@@ -201,7 +201,7 @@ public class LevelUtil {
     }
 
     public static String getFormattedLevelFromValues(PlayerModel data) {
-        return getFormattedLevelFromValues(data.prestige, data.level);
+        return getFormattedLevelFromValues(data.getPrestige(), data.getLevel());
     }
 
     public static String getFormattedLevelFromValues(int prestige, int level) {
@@ -254,7 +254,7 @@ public class LevelUtil {
     }
 
     public static String getFormattedLevelFromValuesChat(PlayerModel data) {
-        return getFormattedLevelFromValuesChat(data.prestige, data.level);
+        return getFormattedLevelFromValuesChat(data.getPrestige(), data.getLevel());
     }
 
     public static String getFormattedLevelFromValuesChat(int prestige, int level) {

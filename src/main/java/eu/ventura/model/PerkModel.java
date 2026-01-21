@@ -53,17 +53,17 @@ public class PerkModel {
             playerModel.equippedPerks.put(slot - 12, perk.getId());
         }
 
-//        if (playerModel.str > 0) {
-//            playerModel.player.sendMessage("§a§lGONE!§7 Your streak has been reset!");
-//            playerModel.setStreak(0);
-//        }
+        if (playerModel.streak > 0) {
+            playerModel.player.sendMessage("§a§lGONE!§7 Your streak has been reset!");
+            playerModel.streak = 0;
+        }
         perk.onEquip(playerModel.player);
     }
 
     public Runnable getTask(Integer slot) {
         return () -> {
             playerModel.purchasedPerks.add(perk.getId());
-            playerModel.gold -= perk.getGold();
+            playerModel.setGold(playerModel.getGold() - perk.getGold());
             addPerk(slot);
 
             Sounds.ITEM_PURCHASE.play(playerModel.player);
@@ -86,7 +86,7 @@ public class PerkModel {
                     TriggerModel.Mode.PASS
             );
         }
-        if (playerModel.gold < perk.getGold()) {
+        if (playerModel.getGold() < perk.getGold()) {
             return new TriggerModel(
                     Sounds.NO,
                     Strings.Simple.PERK_NOT_ENOUGH_GOLD.get(playerModel.player),
@@ -103,7 +103,7 @@ public class PerkModel {
         if (playerModel.getLevel() < perk.getFinalLevel(playerModel)) {
             return "§c";
         }
-        if (playerModel.gold >= perk.getGold() || playerModel.purchasedPerks.contains(perk.getId())) {
+        if (playerModel.getGold() >= perk.getGold() || playerModel.purchasedPerks.contains(perk.getId())) {
             return "§e";
         }
         return "§c";
@@ -116,13 +116,13 @@ public class PerkModel {
     public ItemStack getItemStack(ItemStack defaultIcon) {
         List<String> lore = getLore();
 
-        if (perk.getPrestigeRequirement() > playerModel.prestige) {
+        if (perk.getPrestigeRequirement() > playerModel.getPrestige()) {
             return null;
         }
 
         String requiredLevelText = Strings.Formatted.PERK_SLOT_LEVEL.format(playerModel.player, "");
-        if (lore.toString().contains(requiredLevelText) && playerModel.prestige == 0) {
-            return createLockedIcon(Strings.Simple.PERK_SELECT_TITLE.get(playerModel.player), getLore());
+        if (lore.toString().contains(requiredLevelText) && playerModel.getPrestige() == 0) {
+            return createLockedIcon(Strings.Simple.PERK_UNKNOWN.get(playerModel.player), getLore());
         }
         String renownShopText = Strings.Simple.PERK_UNLOCKED_IN_RENOWN.get(playerModel.player);
         if (lore.toString().contains(renownShopText)) {
@@ -148,8 +148,8 @@ public class PerkModel {
         String color = getColor();
 
         if (playerModel.getLevel() < perk.getFinalLevel(playerModel)) {
-            String formatted = LevelUtil.getFormattedLevelFromValues(playerModel.prestige, perk.getFinalLevel(playerModel));
-            if (playerModel.prestige == 0) {
+            String formatted = LevelUtil.getFormattedLevelFromValues(playerModel.getPrestige(), perk.getFinalLevel(playerModel));
+            if (playerModel.getPrestige() == 0) {
                 return Collections.singletonList(Strings.Formatted.PERK_SLOT_LEVEL.format(playerModel.player, formatted));
             }
             return Collections.unmodifiableList(
@@ -172,7 +172,7 @@ public class PerkModel {
                 lore.add(color + Strings.Simple.PERK_CLICK_TO_SELECT.get(playerModel.player));
             } else {
                 lore.add(Strings.Formatted.PERK_COST_FORMAT.format(playerModel.player, NumberFormat.getInstance().format(perk.getGold())));
-                if (playerModel.gold >= perk.getGold()) {
+                if (playerModel.getGold() >= perk.getGold()) {
                     lore.add(color + Strings.Simple.PERK_CLICK_TO_PURCHASE.get(playerModel.player));
                 } else {
                     lore.add(color + Strings.Simple.PERK_NOT_ENOUGH_GOLD_DISPLAY.get(playerModel.player));

@@ -90,6 +90,11 @@ public class AssistListener implements Listener {
             }
         }
 
+        if (damage <= 0) {
+            assistMap.remove(deadUUID);
+            return;
+        }
+
         for (Map.Entry<UUID, Double> entry : sortedAssists.entrySet()) {
             UUID playerUUID = entry.getKey();
             double contribution = entry.getValue();
@@ -99,7 +104,11 @@ public class AssistListener implements Listener {
                 continue;
             }
 
-            double percentage = contribution / damage;
+            double percentage = Math.min(contribution / damage, 0.99);
+            if (percentage <= 0) {
+                continue;
+            }
+
             PitAssistEvent assistEvent = new PitAssistEvent(data, player, percentage);
             Bukkit.getPluginManager().callEvent(assistEvent);
         }

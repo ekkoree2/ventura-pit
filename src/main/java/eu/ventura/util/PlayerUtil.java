@@ -1,6 +1,7 @@
 package eu.ventura.util;
 
 import eu.ventura.java.NewString;
+import eu.ventura.model.AttackModel;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.service.PlayerService;
 import net.kyori.adventure.text.Component;
@@ -9,6 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.RayTraceResult;
 
 import java.util.Objects;
@@ -26,6 +29,10 @@ public class PlayerUtil {
                 getRankColor(player),
                 player.getName()
         );
+    }
+
+    public static void die(Player victim) {
+        victim.damage(Double.MAX_VALUE);
     }
 
     public static void sendTitle(Player player, String title, String subtitle) {
@@ -51,7 +58,7 @@ public class PlayerUtil {
     }
 
     public static String getRankColor(Player player) {
-        return NewString.of("&f");
+        return NewString.of("&7");
     }
 
     public static ChatColor getRankColorChat(Player player) {

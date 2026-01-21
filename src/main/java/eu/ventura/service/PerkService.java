@@ -1,10 +1,7 @@
 package eu.ventura.service;
 
 import eu.ventura.perks.Perk;
-import eu.ventura.perks.permanent.Calculated;
-import eu.ventura.perks.permanent.GoldenHeads;
-import eu.ventura.perks.permanent.GravityMace;
-import eu.ventura.perks.permanent.Vampire;
+import eu.ventura.perks.permanent.*;
 
 import java.util.*;
 
@@ -16,6 +13,7 @@ public class PerkService {
         registerPerk(new GoldenHeads());
         registerPerk(new GravityMace());
         registerPerk(new Calculated());
+        registerPerk(new Streaker());
         registerPerk(new Vampire());
     }
 

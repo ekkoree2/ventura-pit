@@ -15,7 +15,9 @@ public enum NBTTag {
     MYSTIC_LIVES("pit-mystic-lives"),
     MYSTIC_MAX_LIVES("pit-mystic-max-lives"),
     PANTS_COLOR("pit-pants-color"),
-    ENCHANT_PREFIX("pit-enchant-", true);
+    ENCHANT_PREFIX("pit-enchant-", true),
+    DEFAULT_ITEM("pit-default-item"),
+    PERK_ITEM("pit-perk-item");
 
     private final String value;
     private final boolean isPrefix;

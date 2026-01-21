@@ -3,6 +3,7 @@ package eu.ventura.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import eu.ventura.constants.RespawnReason;
+import eu.ventura.constants.Sounds;
 import eu.ventura.constants.Status;
 import eu.ventura.constants.Strings;
 import eu.ventura.event.PitRespawnEvent;
@@ -45,5 +46,22 @@ public class SpawnCommand extends BaseCommand {
 
         PitRespawnEvent event = new PitRespawnEvent(player, RespawnReason.RESPAWN);
         Bukkit.getPluginManager().callEvent(event);
+    }
+
+
+    @CommandAlias("oof")
+    private void onDeath(Player player) {
+        if (commandCooldownModel.isOnCooldown("spawn", player)) {
+            player.sendMessage(Strings.Simple.OOF_CD.get(player));
+            Sounds.ENDERMAN_NO.play(player);
+            return;
+        }
+        if (RegionHelper.isInSpawn(player)) {
+            player.sendMessage(Strings.Simple.OOF_NO.get(player));
+            Sounds.ENDERMAN_NO.play(player);
+            return;
+        }
+        player.damage(Double.MAX_VALUE);
+        commandCooldownModel.setCooldown("spawn", player, 10);
     }
 }

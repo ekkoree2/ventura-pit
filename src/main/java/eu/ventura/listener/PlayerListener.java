@@ -14,6 +14,7 @@ import eu.ventura.util.EnchantmentHelper;
 import eu.ventura.util.EquipmentUtil;
 import eu.ventura.util.LevelUtil;
 import eu.ventura.util.NBTHelper;
+import eu.ventura.util.NBTTag;
 import eu.ventura.util.PlayerUtil;
 import hvh.ventura.hologram.Hologram;
 import hvh.ventura.npc.NPC;
@@ -21,7 +22,6 @@ import hvh.ventura.npc.api.NpcApi;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -29,6 +29,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -38,13 +39,16 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 /**
 * author: ekkoree
 * created at: 1/15/2025
   */
+@SuppressWarnings({"unused", "deprecation", "BooleanMethodIsAlwaysInverted"})
 @RequiredArgsConstructor
 public class PlayerListener implements Listener {
     private final NpcApi npcApi;
@@ -65,11 +69,31 @@ public class PlayerListener implements Listener {
         }
         LegacyComponentSerializer serializer = LegacyComponentSerializer.legacySection();
         victim.sendMessage(serializer.deserialize(message));
+
+        Bukkit.getPluginManager().callEvent(new PitRespawnEvent(victim, RespawnReason.DEATH));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         event.setFoodLevel(19);
+    }
+
+    @EventHandler
+    public void onConsume(PlayerItemConsumeEvent event) {
+        if (event.getItem().getType() != Material.GOLDEN_APPLE) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        Bukkit.getScheduler().runTask(Pit.instance, () -> {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 80, 1));
+
+            double abs = player.getAbsorptionAmount();
+            double newAbs = Math.min(abs + 6, 10);
+            if (newAbs > abs) {
+                PlayerUtil.setAbs(player, newAbs);
+            }
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -98,15 +122,20 @@ public class PlayerListener implements Listener {
 
         getKillSound(event.data.trueAttacker).play(event.data.trueAttacker);
 
-        Bukkit.getScheduler().runTask(Pit.instance, () -> {
-            PlayerUtil.displayIndicator(event.data.trueAttacker, Strings.Formatted.KILL_TITLE.format(
-                    event.data.trueAttacker,
-                    PlayerUtil.getDisplayName(event.data.victim)
-            ));
-        });
+        Bukkit.getScheduler().runTask(Pit.instance, () -> PlayerUtil.displayIndicator(event.data.trueAttacker, Strings.Formatted.KILL_TITLE.format(
+                event.data.trueAttacker,
+                PlayerUtil.getDisplayName(event.data.victim)
+        )));
 
         LegacyComponentSerializer serializer = LegacyComponentSerializer.legacySection();
         attacker.sendMessage(serializer.deserialize(message));
+
+        if (!playerModel.hasHealingPerk()) {
+            int currentApples = EquipmentUtil.countGoldenApples(attacker.getInventory());
+            if (currentApples < 2) {
+                attacker.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE, 1));
+            }
+        }
 
         PitRespawnEvent pitRespawnEvent = new PitRespawnEvent(event.data.victim, RespawnReason.DEATH);
         Bukkit.getPluginManager().callEvent(pitRespawnEvent);
@@ -157,6 +186,9 @@ public class PlayerListener implements Listener {
             nametagTasks.remove(player);
         }
 
+        List<Hologram> toDestroy = new ArrayList<>();
+        List<String> toRemove = new ArrayList<>();
+
         for (Map.Npc npc : Pit.map.getInstance().getNpcs()) {
             String npcName = npc.getPitNpc().getSkin();
             String holoName = npcName + "_" + playerId;
@@ -168,10 +200,17 @@ public class PlayerListener implements Listener {
 
             Hologram hologram = holograms.get(holoName);
             if (hologram != null) {
-                hologramApi.destroy(hologram);
-                holograms.remove(holoName);
+                toDestroy.add(hologram);
+                toRemove.add(holoName);
             }
         }
+
+        Bukkit.getScheduler().runTask(Pit.instance, () -> {
+            for (Hologram hologram : toDestroy) {
+                hologramApi.destroy(hologram);
+            }
+            toRemove.forEach(holograms::remove);
+        });
 
         PlayerService.removePlayer(player);
     }
@@ -185,8 +224,17 @@ public class PlayerListener implements Listener {
 
         PlayerModel model = PlayerModel.getInstance(player);
         model.streak = 0;
+        model.lastAttacker = null;
+        model.status = Status.IDLING;
 
         player.setFoodLevel(19);
+
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            player.removePotionEffect(effect.getType());
+        }
+
+        player.setAbsorptionAmount(0);
+
         player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0));
 
         if (event.getReason() == RespawnReason.DEATH || event.getReason() == RespawnReason.MEGASTREAK_DEATH) {
@@ -255,7 +303,7 @@ public class PlayerListener implements Listener {
             if (item == null || item.getType() == Material.AIR) {
                 continue;
             }
-            if (!NBTHelper.hasKey(item, "pit-perk-item")) {
+            if (!shouldKeepItem(item)) {
                 player.getInventory().setItem(i, new ItemStack(Material.AIR));
             }
         }
@@ -266,19 +314,21 @@ public class PlayerListener implements Listener {
             if (item == null || item.getType() == Material.AIR) {
                 continue;
             }
-            if (!NBTHelper.hasKey(item, "pit-perk-item")) {
-                player.getInventory().getArmorContents()[i] = new ItemStack(Material.AIR);
+            if (!shouldKeepItem(item)) {
+                armor[i] = new ItemStack(Material.AIR);
             }
         }
+        player.getInventory().setArmorContents(armor);
+    }
+
+    private boolean shouldKeepItem(ItemStack item) {
+        return NBTHelper.getBoolean(item, NBTTag.DEFAULT_ITEM.getValue())
+                || NBTHelper.hasKey(item, NBTTag.MYSTIC_ITEM.getValue());
     }
 
     private void setupNameTag(Player player) {
         BukkitTask task = Bukkit.getScheduler().runTaskTimer(Pit.instance, () -> {
             Scoreboard scoreboard = player.getScoreboard();
-            if (scoreboard == null) {
-                scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-                player.setScoreboard(scoreboard);
-            }
 
             for (Player target : player.getWorld().getPlayers()) {
                 PlayerModel playerModel = PlayerModel.getInstance(target);

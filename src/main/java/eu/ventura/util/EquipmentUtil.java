@@ -22,13 +22,13 @@ public class EquipmentUtil {
 
         for (int i = 0; i < contents.length; i++) {
             ItemStack item = contents[i];
-            if (NBTHelper.getBoolean(item, "pit-default-item")) {
+            if (NBTHelper.getBoolean(item, NBTTag.DEFAULT_ITEM.getValue())) {
                 contents[i] = new ItemStack(Material.AIR);
             }
         }
         for (int i = 0; i < armor.length; i++) {
             ItemStack item = armor[i];
-            if (NBTHelper.getBoolean(item, "pit-default-item")) {
+            if (NBTHelper.getBoolean(item, NBTTag.DEFAULT_ITEM.getValue())) {
                 armor[i] = new ItemStack(Material.AIR);
             }
         }
@@ -60,6 +60,16 @@ public class EquipmentUtil {
         if (Arrays.stream(inventory.getContents()).noneMatch(item -> item != null && item.getType() == Material.ARROW)) {
             placeItem(inventory, EquipmentService.ARROW.create(), 8);
         }
+    }
+
+    public static int countGoldenApples(PlayerInventory inventory) {
+        int count = 0;
+        for (ItemStack item : inventory.getContents()) {
+            if (item != null && item.getType() == Material.GOLDEN_APPLE) {
+                count += item.getAmount();
+            }
+        }
+        return count;
     }
 
     private static void placeItem(Inventory inventory, ItemStack item, int slot) {

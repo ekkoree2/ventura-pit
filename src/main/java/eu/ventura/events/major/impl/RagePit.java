@@ -8,16 +8,26 @@ import eu.ventura.event.PitKillEvent;
 import eu.ventura.events.major.MajorEvent;
 import eu.ventura.java.NewString;
 import eu.ventura.maps.Map;
+import eu.ventura.model.PlayerModel;
 import eu.ventura.service.PitBlockService;
+import eu.ventura.util.ConsumableUtil;
+import eu.ventura.util.ItemHelper;
+import eu.ventura.util.NBTHelper;
+import eu.ventura.util.NBTTag;
 import eu.ventura.util.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 /**
  * author: ekkoree
@@ -25,7 +35,25 @@ import java.util.Map.Entry;
  */
 public class RagePit extends MajorEvent {
     private final java.util.Map<UUID, Double> dmg = new HashMap<>();
+    private final java.util.Map<UUID, Double> gold = new HashMap<>();
+    private final java.util.Map<UUID, Integer> xp = new HashMap<>();
+
     private int kills = 0;
+
+    @Override
+    public String getEventId() {
+        return "rage-pit";
+    }
+
+    private ItemStack getEventItem(Player player) {
+        ItemStack base = ItemHelper.createItem(
+                Material.BAKED_POTATO,
+                "§cRage Potato",
+                Strings.Lore.RAGE_PIT_POTATO.compile(player),
+                true
+        );
+        return NBTHelper.setString(base, NBTTag.EVENT_ITEM.getValue(), getEventId());
+    }
 
     private List<Entry<UUID, Double>> sorted() {
         List<Entry<UUID, Double>> list = new ArrayList<>(dmg.entrySet());
@@ -54,19 +82,66 @@ public class RagePit extends MajorEvent {
         return top;
     }
 
+    private int[] calculateRewards(Player p) {
+        int place = getPlace(p);
+        int rewardGold = 0;
+        int rewardRenown = 0;
+        int rewardXp = xp.getOrDefault(p.getUniqueId(), 0);
+
+        if (place <= 3) {
+            rewardGold = 2000;
+            rewardRenown = 2;
+        } else if (place <= 20) {
+            rewardGold = 500;
+            rewardRenown = 1;
+        } else {
+            rewardGold = 100;
+        }
+
+        if (kills >= 600) {
+            rewardGold += 500;
+        }
+
+        return new int[]{rewardXp, rewardGold, rewardRenown};
+    }
+
+    private void applyRewards(Player p, int[] rewards) {
+        PlayerModel model = PlayerModel.getInstance(p);
+        model.addXp(rewards[0]);
+        model.addGold(rewards[1]);
+
+        if (rewards[2] > 0 && model.getPrestige() > 0) {
+            model.setRenown(model.getRenown() + rewards[2]);
+        }
+    }
+
     @Override
     protected List<String> getEndingMessage(Player p) {
         List<Player> top = getTop();
         double dealt = dmg.getOrDefault(p.getUniqueId(), 0d);
+        int place = getPlace(p);
+
+        int[] rewards = calculateRewards(p);
+        int rewardXp = rewards[0];
+        int rewardGold = rewards[1];
+        int rewardRenown = rewards[2];
+
+        PlayerModel model = PlayerModel.getInstance(p);
+        boolean canGetRenown = rewardRenown > 0 && model.getPrestige() > 0;
+        String renownStr = canGetRenown ? " +&e" + rewardRenown + " Renown" : "";
+
+        applyRewards(p, rewards);
 
         List<String> msg = new ArrayList<>(Strings.Lore.EVENT_END.get(p).compile(
                 getDisplayName(),
-                0, 0, "",
+                rewardXp,
+                rewardGold,
+                renownStr,
                 kills >= 600 ?
                         Strings.Formatted.RAGE_PIT_SUCCESS.format(p, NumberFormat.DEF.of(kills)) :
                         Strings.Formatted.RAGE_PIT_FAIL.format(p, NumberFormat.DEF.of(kills)),
                 dealt > 0 ?
-                        Strings.Formatted.RAGE_PIT_PLACE.format(p, NumberFormat.DEF.of(dealt), getPlace(p)) :
+                        Strings.Formatted.RAGE_PIT_PLACE.format(p, NumberFormat.DEF.of(dealt), place) :
                         Strings.Simple.RAGE_PIT_DIDNT_PARTICIPATE.get(p)
         ));
 
@@ -122,6 +197,24 @@ public class RagePit extends MajorEvent {
     @Override
     public void onKill(PitKillEvent e) {
         kills++;
+        e.data.goldMultiplier += 1;
+        e.data.xpMultiplier += 1;
+
+        Player player = e.data.trueAttacker;
+
+        xp.merge(player.getUniqueId(), e.data.getFinalXp(), Integer::sum);
+        gold.merge(player.getUniqueId(), e.data.getFinalGold(), Double::sum);
+
+        ConsumableUtil.giveConsumableOnKill(player, NBTTag.EVENT_ITEM.getValue(), getEventId(), getEventItem(player), 2);
+    }
+
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        event.setCancelled(true);
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+        ConsumableUtil.tryConsume(player, item, getEventId(), 1000, ConsumableUtil::applyRagePotatoEffects);
     }
 
     @Override
@@ -138,6 +231,8 @@ public class RagePit extends MajorEvent {
     @Override
     public void start() {
         dmg.clear();
+        gold.clear();
+        xp.clear();
         kills = 0;
 
         eu.ventura.maps.Map map = Pit.map.getInstance();
@@ -173,6 +268,8 @@ public class RagePit extends MajorEvent {
     protected void onDisable() {
         PitBlockService.removeAllBlocks(Material.GLASS);
         dmg.clear();
+        gold.clear();
+        xp.clear();
         kills = 0;
     }
 }

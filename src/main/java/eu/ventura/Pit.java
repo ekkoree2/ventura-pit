@@ -9,6 +9,7 @@ import eu.ventura.listener.*;
 import eu.ventura.service.BossBarService;
 import eu.ventura.service.BugService;
 import eu.ventura.service.CombatService;
+import eu.ventura.service.LeaderboardService;
 import eu.ventura.service.PitBlockService;
 import eu.ventura.service.PlayerService;
 import eu.ventura.util.MongoUtil;
@@ -73,6 +74,7 @@ public class Pit extends JavaPlugin {
 
         CombatService.getInstance().start();
         BossBarService.getInstance().start();
+        LeaderboardService.getInstance(VenturaCore.getHologramApi(), map.getInstance().getLeaderboardLocation().of()).start();
         ArcticAPI.init(this, "", "");
 
         PaperCommandManager commandManager = new PaperCommandManager(this);
@@ -115,6 +117,7 @@ public class Pit extends JavaPlugin {
 
         CombatService.getInstance().stop();
         BossBarService.getInstance().stop();
+        LeaderboardService.getInstance(VenturaCore.getHologramApi(), map.getInstance().getLeaderboardLocation().of()).stop();
 
         HandlerList.unregisterAll(this);
     }

@@ -25,6 +25,7 @@ public class Sounds {
     public static final SoundEffect GOLD_PICKUP = KILL;
 
     public static final SoundEffect MAJOR_START = new SoundEffect(Sound.ENTITY_ENDER_DRAGON_GROWL, 1.3, 1.1);
+    public static final SoundEffect PRESTIGE = new SoundEffect(Sound.ENTITY_ENDER_DRAGON_GROWL, 1.2, 1.1);
 
     // gui
     public static final SoundEffect NO = new SoundEffect(Sound.ENTITY_VILLAGER_NO, 1.1, 1.0);

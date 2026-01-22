@@ -20,8 +20,12 @@ public enum PitHologram {
             of(player, "&7ᴅᴏᴢʏᴡᴏᴛɴɪᴇ", "&7ᴘᴇʀᴍᴀɴᴇɴᴛ")
     )),
     SHOP_NPC(player -> List.of(
-            of(player, "&6&lɪᴛᴇᴍʏ", "&a&lɪᴛᴇᴍѕ"),
+            of(player, "&6&lɪᴛᴇᴍʏ", "&6&lɪᴛᴇᴍѕ"),
             of(player, "&7ᴛʏᴍᴄᴢᴀѕᴏᴡᴇ", "&7ɴᴏɴ ᴘᴇʀᴍᴀɴᴇɴᴛ")
+    )),
+    PRESTIGE_NPC(player -> List.of(
+            of(player, "&e&lᴘʀᴇѕᴛɪɢᴇ", "&6&lᴘʀᴇѕᴛɪɢᴇ"),
+            of(player, "&7ʀᴇѕᴇᴛʏ & ʀᴇɴᴏᴡɴ", "&7ʀᴇѕᴇᴛѕ & ʀᴇɴᴏᴡɴ")
     )),
 
     ;

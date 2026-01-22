@@ -4,6 +4,7 @@ import eu.ventura.model.PlayerModel;
 import eu.ventura.service.PlayerService;
 import eu.ventura.util.LevelUtil;
 import eu.ventura.util.MathUtil;
+import eu.ventura.util.PlayerUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +15,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
  * created at: 1/20/2026
  */
 public class ChatListener implements Listener {
+
     @EventHandler
     @SuppressWarnings("deprecation")
     public void onChat(AsyncPlayerChatEvent event) {
@@ -31,15 +33,17 @@ public class ChatListener implements Listener {
 
         String prestigePrefix = prestige > 0 ? "§e" + MathUtil.roman(prestige) + bracketsColor + "-" : "";
 
+        String rank = PlayerUtil.getRank(player).replace("%", "%%");
+
         String formatted = String.format(
-                "%s[%s%s%d%s] %s%s: §f%s",
+                "%s[%s%s%d%s] %s %s: §f%s",
                 bracketsColor,
                 prestigePrefix,
                 LevelUtil.getLevelColorChat(level),
                 level,
                 bracketsColor,
+                rank,
                 player.getName(),
-                "§7",
                 message
         );
         event.setFormat(formatted);

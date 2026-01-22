@@ -10,6 +10,7 @@ import eu.ventura.maps.Map;
 import eu.ventura.model.DeathModel;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.service.BossBarService;
+import eu.ventura.service.LeaderboardService;
 import eu.ventura.service.MapService;
 import eu.ventura.service.PlayerService;
 import eu.ventura.util.EnchantmentHelper;
@@ -24,6 +25,7 @@ import hvh.ventura.npc.api.NpcApi;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -175,8 +177,9 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
-        setupNameTag(event.getPlayer());
-        PitRespawnEvent pitRespawnEvent = new PitRespawnEvent(event.getPlayer(), RespawnReason.JOIN);
+        Player player = event.getPlayer();
+        setupNameTag(player);
+        PitRespawnEvent pitRespawnEvent = new PitRespawnEvent(player, RespawnReason.JOIN);
         Bukkit.getPluginManager().callEvent(pitRespawnEvent);
     }
 
@@ -219,6 +222,7 @@ public class PlayerListener implements Listener {
         });
 
         BossBarService.getInstance().cleanup(player);
+        LeaderboardService.getInstance(hologramApi, Pit.map.getInstance().getLeaderboardLocation().of()).removeHologram(player);
         PlayerService.removePlayer(player);
     }
 
@@ -236,6 +240,7 @@ public class PlayerListener implements Listener {
         model.lastAttacker = null;
         model.status = Status.IDLING;
 
+        PlayerUtil.updateMaxHealth(player, true);
         player.setFoodLevel(19);
 
         for (PotionEffect effect : player.getActivePotionEffects()) {
@@ -243,14 +248,19 @@ public class PlayerListener implements Listener {
         }
 
         player.setAbsorptionAmount(0);
-
         player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0));
 
         if (event.getReason() == RespawnReason.DEATH || event.getReason() == RespawnReason.MEGASTREAK_DEATH) {
             Sounds.DEATH.play(player);
         }
 
+        model.clearItemsByTag(NBTTag.PERK_ITEM);
+        model.clearItemsByTag(NBTTag.EVENT_ITEM);
+        model.clearItemsByTag(NBTTag.RESTRICTED_ITEM);
+
         if (event.getReason() == RespawnReason.JOIN) {
+            LeaderboardService.getInstance(hologramApi, Pit.map.getInstance().getLeaderboardLocation().of()).showHologram(player);
+
             for (Map.Hologram hologram : Pit.map.getInstance().getHolograms()) {
                 String hologramName = hologram.getPitHologram().name();
 
@@ -294,8 +304,6 @@ public class PlayerListener implements Listener {
                 holograms.get(holoName).show(player);
             }
         }
-
-        player.setHealth(player.getMaxHealth());
 
         if (event.getReason() == RespawnReason.DEATH || event.getReason() == RespawnReason.MEGASTREAK_DEATH) {
             clearShopItems(player);
@@ -357,7 +365,7 @@ public class PlayerListener implements Listener {
                     suffix += "§6§l" + playerModel.getBounty() + "g";
                 }
 
-                team.setPrefix(prefix + PlayerUtil.getRankColor(target) + " ");
+                team.setPrefix(ChatColor.translateAlternateColorCodes('&', prefix + PlayerUtil.getRankColor(target) + " "));
                 team.setColor(PlayerUtil.getRankColorChat(target));
                 team.setSuffix(" " + suffix);
 

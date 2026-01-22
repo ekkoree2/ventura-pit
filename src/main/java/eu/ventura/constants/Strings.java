@@ -135,6 +135,39 @@ public class Strings {
         EVENT_END_TOP_HEADER("&6&lNajlepsi gracze:", "&6&lTop players:"),
         EVENT_END_FOOTER("&6&m" + ("-".repeat(22))),
 
+        PRESTIGE_TITLE("§e§lPRESTIGE!"),
+        PRESTIGE_MAX("§aOsiągnąłeś maksymalny prestiż!", "§aYou reached the max prestige!"),
+        PRESTIGE_TOO_LOW_LEVEL("§cJesteś zbyt niskiego poziomu żeby awansować!", "§cYou are too low level to prestige yet!"),
+        PRESTIGE_TOO_LOW_LEVEL_DREAM("§cMarz duży i może kiedyś!", "§cDream big and maybe someday!"),
+        PRESTIGE_GRIND_MORE("§cGrinduj więcej i może kiedyś!", "§cGrind some more and maybe someday!"),
+        PRESTIGE_MENU_TITLE("§8Prestiż & Renown", "§8Prestige & Renown"),
+        PRESTIGE_MENU_BUTTON("§bPrestiż", "§bPrestige"),
+        PRESTIGE_CONFIRM_TITLE("§8Prestiż?", "§8Prestige?"),
+        PRESTIGE_ARE_YOU_SURE_YELLOW("§eNA PEWNO?", "§eARE YOU SURE?"),
+        PRESTIGE_ARE_YOU_SURE_GREEN("§aNA PEWNO?", "§aARE YOU SURE?"),
+        PRESTIGE_WAIT_AND_READ("Czekaj i czytaj!", "Wait and read!"),
+        PRESTIGE_CLICK_TO_PRESTIGE("Kliknij aby awansować!", "Click to prestige!"),
+        PRESTIGE_LEVEL_120_REQUIRED("§cMusisz być poziom 120 żeby uzyskać dostęp!", "§cYou must be level 120 to access this!"),
+        PRESTIGE_RENOWN_SHOP("§eRenown shop"),
+        PRESTIGE_RESET_LEVEL("§c§l■ §7Resetuje §bpoziom§7 do 1", "§c§l■ §7Resets §blevel§c to 1"),
+        PRESTIGE_RESET_GOLD("§c§l■ §7Resetuje §6złoto§7 do 0", "§c§l■ §7Resets §6gold§c to 0"),
+        PRESTIGE_RESET_PERKS("§c§l■ §7Resetuje §cWSZYSTKIE§a perki i ulepszenia", "§c§l■ §7Resets §cALL§a perks and upgrades"),
+        PRESTIGE_RESET_INVENTORY("§c§l■ §7Resetuje §ctwój ekwipunek", "§c§l■ §7Resets §cyour inventory"),
+        PRESTIGE_RENOWN_KEPT("§7§oUlepszenia Renown są zachowane", "§7§oRenown upgrades are kept"),
+        PRESTIGE_ENDERCHEST_KEPT("§7§oEnder chest jest zachowany", "§7§oEnder chest is kept"),
+        PRESTIGE_CLICK_TO_PURCHASE("§eKliknij aby kupić!", "§eClick to purchase!"),
+        PRESTIGE_MAX_REACHED("§7Jakimś cudem osiągnąłeś maksymalny prestiż. Gratulacje!", "§7You somehow reached the max prestige. Congrats!"),
+        PRESTIGE_LEVEL_REQ("§7Wymagany poziom: ", "§7Required Level: "),
+        PRESTIGE_LEVEL_UP_TO_PRESTIGE("§7Zdobądź poziomy żeby awansować!", "§7Level up to prestige!"),
+        PRESTIGE_COST("§7Koszt:", "§7Cost:"),
+        PRESTIGE_RESETTING_LEVEL("§c§lRESETOWANIE POZIOMU!", "§c§lRESETTING LEVEL!"),
+        PRESTIGE_RESETTING_PERKS("§c§lRESETOWANIE PERKÓW!", "§c§lRESETTING PERKS!"),
+        PRESTIGE_RESETTING_UPGRADES("§c§lRESETOWANIE ULEPSZEŃ!", "§c§lRESETTING UPGRADES!"),
+        PRESTIGE_RESETTING_INVENTORY("§c§lRESETOWANIE EKWIPUNKU!", "§c§lRESETTING INVENTORY!"),
+
+        LEADERBOARD_HEADER("&b&lɴᴀᴊᴡɪᴇᴋѕᴢᴇ ɴᴇʀᴅʏ", "&b&lᴛᴏᴘ ᴀᴄᴛɪᴠᴇ ᴘʟᴀʏᴇʀѕ"),
+        LEADERBOARD_SUBTITLE("&7ᴘᴏᴢɪᴏᴍ ᴘɪᴛ", "&7ᴘɪᴛ ʟᴇᴠᴇʟ"),
+
         ;
 
         private final String polish;
@@ -202,6 +235,23 @@ public class Strings {
         ),
         RAGE_PIT_PLACE("&c{0}❤ zadane &7(ranga #{1})", "&c{0}❤ dealt &7(ranked #{1})"),
         RAGE_PIT_TOP_ENTRY("  &e&l#{0} {1}&e z &c{2}❤ zadanym", "  &e&l#{0} {1}&e with &c{2}❤ dealt"),
+        PRESTIGE_SUBTITLE("§7Odblokowałeś prestiż §e{0}", "§7You unlocked prestige §e{0}"),
+        PRESTIGE_BROADCAST("§e§lPRESTIGE! {0}{1}§7 odblokował prestiż §e{2}§7, gg!", "§e§lPRESTIGE! {0}{1}§7 unlocked prestige §e{2}§7, gg!"),
+        PRESTIGE_CURRENT("§7Aktualny: §e{0}", "§7Current: §e{0}"),
+        PRESTIGE_GOLD_GRINDED("§c§l■ §7Zgrindowane §6{0}§7/§6{1}g", "§c§l■ §7Grinded §6{0}§c/§6{1}g"),
+        PRESTIGE_RENOWN_REWARD("§7Nagroda: §e{0} Renown", "§7Reward: §e{0} Renown"),
+        PRESTIGE_NEW_PRESTIGE("§7Nowy prestiż: §e{0}", "§7New prestige: §e{0}"),
+        PRESTIGE_XP_PENALTY("§b+{0}%§7 wymagany xp niż normalnie!", "§b+{0}%§7 needed xp than normal!"),
+        PRESTIGE_NOT_ENOUGH_GOLD("§cNie zgrindowałeś wystarczająco! Zgrindowałeś §6{0}g§c z §6{1}g", "§cYou did not grind enough! You grinded §6{0}g§c out of §6{1}g"),
+        PRESTIGE_RENOWN_DISPLAY("§7Renown: §e{0} Renown"),
+        PRESTIGE_RENOWN_SHOP_LORE_1("§7Użyj §eRenown§7 zdobyte z", "§7Use §eRenown§7 earned from"),
+        PRESTIGE_RENOWN_SHOP_LORE_2("§bPrestige§7 aby odblokować unikalne", "§bPrestige§7 to unlock unique"),
+        PRESTIGE_RENOWN_SHOP_LORE_3("§7ulepszenia!", "§7upgrades!"),
+        PRESTIGE_RENOWN_SHOP_LORE_4("§7§oTe ulepszenia są bezpieczne od", "§7§oThese upgrades are safe from"),
+        PRESTIGE_RENOWN_SHOP_LORE_5("§7§oresetu prestige.", "§7§oprestige reset."),
+        PRESTIGE_CLICK_TO_BROWSE("§eKliknij żeby przeglądać!", "§eClick to browse!"),
+        LEADERBOARD_ENTRY("§e{0}. §f{1} §e{2}§7 - §b{3} XP"),
+        LEADERBOARD_SUFFIX("&7Posiadasz: &b{0} XP", "&7You have: &b{0} XP")
         ;
 
         private final String polish;
@@ -309,8 +359,21 @@ public class Strings {
                         .addNewline("&6&lBonus for all: {4}")
                         .addNewline("&6&lYou: {5}")
         )),
-
-
+        RAGE_PIT_POTATO(new LoreBuilderWrapper(
+                new LoreBuilder()
+                        .add("§7Eventowy przedmiot")
+                        .addNewline("§9Speed I (0:08)")
+                        .addNewline("§9Resistance II (0:08)")
+                        .addNewline("§7ODRADZA 1 ZYCIE!!")
+                        .addNewline("§72 SERCA ABSORPCJI!!")
+                ,
+                new LoreBuilder()
+                        .add("§7Event item")
+                        .addNewline("§9Speed I (0:08)")
+                        .addNewline("§9Resistance II (0:08)")
+                        .addNewline("§7HEALS 1 HEART!!")
+                        .addNewline("§72 ABSORPTION HEARTS!!")
+        ))
         ;
 
         private final LoreBuilderWrapper wrapper;

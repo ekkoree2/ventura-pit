@@ -20,12 +20,12 @@ public class ResourceListener implements Listener {
     public void onKill(PitKillEvent event) {
         PlayerModel attackerModel = PlayerModel.getInstance(event.data.trueAttacker);
         int aStreak = attackerModel.streak;
-        if (Pit.event == null) {
+        if (Pit.event != null) {
             aStreak = 0;
         }
         PlayerModel victimModel = PlayerModel.getInstance(event.data.victim);
         int vStreak = victimModel.streak;
-        if (Pit.event == null) {
+        if (Pit.event != null) {
             vStreak = 0;
         }
 

@@ -8,6 +8,7 @@ import eu.ventura.model.PlayerModel;
 import eu.ventura.model.ScoreboardModel;
 import eu.ventura.service.PlayerService;
 import eu.ventura.util.LevelUtil;
+import eu.ventura.util.MathUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -66,7 +67,7 @@ public class ScoreboardListener implements Listener {
         }
 
         if (model.getPrestige() > 0) {
-            newLines.add(Strings.Formatted.PRESTIGE.format(player, model.getPrestige()));
+            newLines.add(Strings.Formatted.PRESTIGE.format(player, MathUtil.roman(model.getPrestige())));
         }
 
         NumberFormat.Formatter format = NumberFormat.GOLD_DISPLAY_LOW;

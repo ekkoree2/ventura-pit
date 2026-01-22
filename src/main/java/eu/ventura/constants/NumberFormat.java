@@ -19,6 +19,20 @@ public class NumberFormat {
         return GOLD_DISPLAY_HIGH.of(gold);
     }
 
+    public static String formatLarge(long large) {
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0.#");
+        if (large < 1000.0) {
+            return decimalFormat.format(large);
+        }
+        if (large < 1000000.0) {
+            return decimalFormat.format(large / 1000.0) + "K";
+        }
+        if (large < 1.0E9) {
+            return decimalFormat.format(large / 1000000.0) + "M";
+        }
+        return decimalFormat.format(large / 1.0E9) + "B";
+    }
+
     public static class Formatter {
         private final DecimalFormat decimalFormat;
 

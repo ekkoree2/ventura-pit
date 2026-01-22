@@ -96,8 +96,8 @@ public class PermanentPanel extends AGUIPanel {
     private ItemStack getUnknownSlot(PerkSlotModel model) {
         return ItemHelper.createItem(
                 Material.BEDROCK,
-                model.getSlot(),
-                Strings.Formatted.PERK_SLOT_LOCKED_TITLE.format(playerModel.player, model.getSlot()),
+                1,
+                Strings.Formatted.PERK_SLOT_LOCKED_TITLE.format(playerModel.player, model.getSlot() + 1),
                 new LoreBuilder()
                         .setMaxLength(35)
                         .addNewline(Strings.Formatted.PERK_SLOT_LEVEL.format(playerModel.player,

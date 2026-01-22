@@ -1,28 +1,20 @@
 package eu.ventura.perks.permanent;
 
 import eu.ventura.Pit;
-import eu.ventura.constants.Sounds;
 import eu.ventura.constants.Strings;
 import eu.ventura.enchantment.EnchantType;
 import eu.ventura.event.PitKillEvent;
 import eu.ventura.events.major.impl.RagePit;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.perks.Perk;
+import eu.ventura.util.ConsumableUtil;
 import eu.ventura.util.ItemHelper;
 import eu.ventura.util.LoreBuilder;
 import eu.ventura.util.NBTHelper;
-import eu.ventura.util.PlayerUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.attribute.Attribute;
+import eu.ventura.util.NBTTag;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * author: ekkoree
@@ -30,7 +22,6 @@ import java.util.Map;
  */
 public class GoldenHeads extends Perk {
     private static final String TEXTURE = "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzRlNWIzMDhhMWViNWNhYTk3ZTVmYjI1N2IyZDllMTg2MWZkZWYxNTE2MWQ1MGExZjQ2ZjIyMzE1ZjQ5MjkiCiAgICB9CiAgfQp9";
-    private final Map<Player, Long> cooldown = new HashMap<>();
 
     @Override
     public String getId() {
@@ -87,23 +78,9 @@ public class GoldenHeads extends Perk {
         ItemStack head = ItemHelper.createSkull(TEXTURE);
         head = ItemHelper.setItemMeta(head, Strings.Simple.GOLDEN_HEADS_NAME.get(language),
                 Strings.Lore.GOLDEN_HEADS_ITEM.compile(language), true, true);
-        head = NBTHelper.setString(head, "pit-perk-item", getId());
-        head = NBTHelper.setBoolean(head, "pit-restricted-item", true);
+        head = NBTHelper.setString(head, NBTTag.PERK_ITEM.getValue(), getId());
+        head = NBTHelper.setBoolean(head, NBTTag.RESTRICTED_ITEM.getValue(), true);
         return head;
-    }
-
-    private void applyEffects(Player player) {
-        double abs = player.getAbsorptionAmount();
-        double newAbs = Math.min(abs + 4, 6);
-
-        if (newAbs > abs) {
-            Bukkit.getScheduler().runTask(Pit.instance, () -> {
-                PlayerUtil.setAbs(player, newAbs);
-            });
-        }
-
-        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 1));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 160, 0));
     }
 
     @Override
@@ -112,21 +89,7 @@ public class GoldenHeads extends Perk {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
 
-        long lastUse = cooldown.getOrDefault(player, 0L);
-        long currentTime = System.currentTimeMillis();
-
-        if (currentTime - lastUse < 1000) {
-            Sounds.GOLDEN_HEADS_COOLDOWN.play(player);
-            return;
-        }
-
-        Sounds.GOLDEN_HEADS.play(player);
-        item = ItemHelper.decreaseItemAmount(item);
-
-        cooldown.put(player, currentTime);
-        player.getInventory().setItemInMainHand(item);
-
-        applyEffects(player);
+        ConsumableUtil.tryConsume(player, item, getId(), 1000, ConsumableUtil::applyGoldenHeadsEffects);
     }
 
     @Override
@@ -139,26 +102,6 @@ public class GoldenHeads extends Perk {
         PlayerModel model = PlayerModel.getInstance(player);
         Strings.Language language = model.language;
 
-        int count = 0;
-        for (ItemStack item : player.getInventory().getContents()) {
-            if (getId().equals(NBTHelper.getString(item, "pit-perk-item"))) {
-                count += item.getAmount();
-            }
-        }
-
-        if (count >= 2) {
-            return;
-        }
-
-        for (ItemStack item : player.getInventory().getContents()) {
-            if (getId().equals(NBTHelper.getString(item, "pit-perk-item"))) {
-                item.setAmount(item.getAmount() + 1);
-                return;
-            }
-        }
-
-        ItemStack ghead = createItem(language);
-        ghead.setAmount(1);
-        player.getInventory().addItem(ghead);
+        ConsumableUtil.giveConsumableOnKill(player, NBTTag.PERK_ITEM.getValue(), getId(), createItem(language), 2);
     }
 }

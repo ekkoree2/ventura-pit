@@ -6,15 +6,20 @@ import eu.ventura.annotations.Save;
 import eu.ventura.constants.Sounds;
 import eu.ventura.constants.Status;
 import eu.ventura.constants.Strings;
+import eu.ventura.perks.Perk;
 import eu.ventura.service.PerkService;
 import eu.ventura.service.PlayerService;
 import eu.ventura.util.LevelUtil;
+import eu.ventura.util.MathUtil;
 import eu.ventura.util.MongoUtil;
+import eu.ventura.util.NBTHelper;
+import eu.ventura.util.NBTTag;
 import eu.ventura.util.PlayerUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
@@ -39,6 +44,7 @@ import java.util.concurrent.TimeoutException;
  * author: ekkoree
  * created at: 12/26/2025
  */
+@SuppressWarnings("deprecation")
 public class PlayerModel {
     public final Player player;
 
@@ -52,6 +58,10 @@ public class PlayerModel {
     public int combatTime = 0;
     public int multiKills = 0;
     public long lastKillTime = 0;
+    @Save
+    public String username;
+    @Save
+    public String rankColor;
     @Setter
     @Getter
     public int bounty = 0;
@@ -60,6 +70,9 @@ public class PlayerModel {
     public final PlayerEffectsModel effectsModel;
 
     @Save private double gold = 0;
+    @Save private double goldReq = 0;
+    @Setter
+    @Save private int renown = 0;
     @Save public Strings.Language language = Strings.Language.POLISH;
 
     @Save public Set<String> purchasedPerks = new HashSet<>();
@@ -67,12 +80,15 @@ public class PlayerModel {
 
     @Save private ItemStack[] inventory = new ItemStack[36];
     @Save private ItemStack[] armor = new ItemStack[4];
+    @Setter
     @Save private ItemStack[] enderChest;
 
     public PlayerModel(Player player) {
         this.player = player;
         this.effectsModel = new PlayerEffectsModel(this);
         this.enderChest = new ItemStack[getEnderChestRows() * 9];
+        this.username = player.getName();
+        this.rankColor = PlayerUtil.getRankColor(player);
     }
 
     public int getEnderChestRows() {
@@ -91,10 +107,6 @@ public class PlayerModel {
             enderChest = newChest;
         }
         return enderChest;
-    }
-
-    public void setEnderChest(ItemStack[] items) {
-        this.enderChest = items;
     }
 
     public static PlayerModel getInstance(Player player) {
@@ -126,6 +138,39 @@ public class PlayerModel {
             gold = 100;
         }
         return Math.min(Integer.MAX_VALUE, gold);
+    }
+
+    public double getGoldReq() {
+        return Math.max(0, goldReq);
+    }
+
+    public void addGoldReq(double amount) {
+        this.goldReq += amount;
+    }
+
+    public int getRenown() {
+        return Math.max(0, renown);
+    }
+
+    public void prestige() {
+        level = 1;
+        goldReq = 0;
+        prestige = Math.min(35, prestige + 1);
+
+        requiredXP = LevelUtil.xpToNextLevel(prestige, level);
+        purchasedPerks.clear();
+        equippedPerks.clear();
+        gold = 0;
+        renown += LevelUtil.getRenownFromPrestige(prestige);
+
+        Sounds.PRESTIGE.play(player);
+
+        String roman = MathUtil.roman(prestige);
+        PlayerUtil.sendTitle(player, Strings.Simple.PRESTIGE_TITLE.get(language), Strings.Formatted.PRESTIGE_SUBTITLE.format(language, roman));
+        String msg = Strings.Formatted.PRESTIGE_BROADCAST.format(language, PlayerUtil.getRankColor(player), player.getName(), roman);
+        for (Player random : Bukkit.getOnlinePlayers()) {
+            random.sendMessage(msg);
+        }
     }
 
     public void addXp(int xp) {
@@ -170,6 +215,7 @@ public class PlayerModel {
 
     public void addGold(double gold) {
         this.gold += gold;
+        this.goldReq += gold;
         if (Double.isNaN(this.gold) || Double.isInfinite(this.gold)) {
             this.gold = 100;
         }
@@ -235,12 +281,40 @@ public class PlayerModel {
 
     public boolean hasHealingPerk() {
         for (int slot : equippedPerks.keySet()) {
-            eu.ventura.perks.Perk perk = getEquippedPerk(slot);
+            Perk perk = getEquippedPerk(slot);
             if (perk != null && perk.isHealing()) {
                 return true;
             }
         }
         return false;
+    }
+
+    public void clearItemsByTag(NBTTag tag) {
+        ItemStack[] contents = player.getInventory().getContents();
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack item = contents[i];
+            if (NBTHelper.hasKey(item, tag.getValue())) {
+                player.getInventory().setItem(i, new ItemStack(Material.AIR));
+            }
+        }
+
+        ItemStack[] armorContents = player.getInventory().getArmorContents();
+        for (int i = 0; i < armorContents.length; i++) {
+            ItemStack item = armorContents[i];
+            if (NBTHelper.hasKey(item, tag.getValue())) {
+                armorContents[i] = new ItemStack(Material.AIR);
+            }
+        }
+        player.getInventory().setArmorContents(armorContents);
+
+        ItemStack[] ec = getEnderChest();
+        for (int i = 0; i < ec.length; i++) {
+            ItemStack item = ec[i];
+            if (NBTHelper.hasKey(item, tag.getValue())) {
+                ec[i] = new ItemStack(Material.AIR);
+            }
+        }
+        setEnderChest(ec);
     }
 
     public void setItems() {
@@ -318,7 +392,7 @@ public class PlayerModel {
                         doc.append(field.getName(), value);
                     }
                 } catch (IllegalAccessException e) {
-                    Bukkit.getLogger().warning("Failed to access field " + field.getName());
+                    System.out.println("Failed to access field " + field.getName());
                 }
             }
         }
@@ -341,32 +415,34 @@ public class PlayerModel {
                             if (doc.containsKey(field.getName())) {
                                 Object value = doc.get(field.getName());
 
-                                if (value == null) {
-                                    field.set(this, null);
-                                } else if (field.getType() == ItemStack[].class && value instanceof String encoded) {
-                                    field.set(this, deserializeItemStackArray(encoded));
-                                } else if (field.getType().isEnum() && value instanceof String) {
-                                    @SuppressWarnings("rawtypes")
-                                    Class<? extends Enum> enumType = (Class<? extends Enum>) field.getType();
-                                    Object enumValue = Enum.valueOf(enumType, (String) value);
-                                    field.set(this, enumValue);
-                                } else if (Set.class.isAssignableFrom(field.getType()) && value instanceof List<?> list) {
-                                    Set<Object> set = new HashSet<>(list);
-                                    field.set(this, set);
-                                } else if (Map.class.isAssignableFrom(field.getType()) && value instanceof Document mapDoc) {
-                                    Map<Integer, String> map = new HashMap<>();
-                                    mapDoc.forEach((k, v) -> map.put(Integer.parseInt(k), (String) v));
-                                    field.set(this, map);
-                                } else if (field.getType() == int.class && value instanceof Number num) {
-                                    field.setInt(this, num.intValue());
-                                } else if (field.getType() == double.class && value instanceof Number num) {
-                                    field.setDouble(this, num.doubleValue());
-                                } else {
-                                    field.set(this, value);
+                                switch (value) {
+                                    case null -> field.set(this, null);
+                                    case String encoded when field.getType() == ItemStack[].class ->
+                                            field.set(this, deserializeItemStackArray(encoded));
+                                    case String s when field.getType().isEnum() -> {
+                                        @SuppressWarnings("rawtypes")
+                                        Class<? extends Enum> enumType = (Class<? extends Enum>) field.getType();
+                                        Object enumValue = Enum.valueOf(enumType, s);
+                                        field.set(this, enumValue);
+                                    }
+                                    case List<?> list when Set.class.isAssignableFrom(field.getType()) -> {
+                                        Set<Object> set = new HashSet<>(list);
+                                        field.set(this, set);
+                                    }
+                                    case Document mapDoc when Map.class.isAssignableFrom(field.getType()) -> {
+                                        Map<Integer, String> map = new HashMap<>();
+                                        mapDoc.forEach((k, v) -> map.put(Integer.parseInt(k), (String) v));
+                                        field.set(this, map);
+                                    }
+                                    case Number num when field.getType() == int.class ->
+                                            field.setInt(this, num.intValue());
+                                    case Number num when field.getType() == double.class ->
+                                            field.setDouble(this, num.doubleValue());
+                                    default -> field.set(this, value);
                                 }
                             }
                         } catch (IllegalAccessException e) {
-                            Bukkit.getLogger().warning("Failed to set field " + field.getName());
+                            System.out.println("Failed to set field " + field.getName());
                         }
                     }
                 }
@@ -377,7 +453,7 @@ public class PlayerModel {
             loadFuture.get(5, TimeUnit.SECONDS);
             getItems();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            Bukkit.getLogger().warning("Failed to load player data for " + player.getName() + ": " + e.getMessage());
+            System.out.println("Failed to load player data for " + player.getName() + ": " + e.getMessage());
         }
     }
 }

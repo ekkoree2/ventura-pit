@@ -4,10 +4,17 @@ import eu.ventura.Pit;
 import eu.ventura.constants.Sounds;
 import eu.ventura.event.PitDamageEvent;
 import eu.ventura.event.PitKillEvent;
+import eu.ventura.model.PlayerModel;
 import eu.ventura.service.BossBarService;
+import eu.ventura.service.MapService;
+import eu.ventura.util.NBTTag;
+import eu.ventura.util.PlayerUtil;
+import eu.ventura.util.RegionHelper;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
@@ -28,6 +35,8 @@ public abstract class MajorEvent {
     private int time;
     private int phase;
     private int ticks;
+
+    public abstract String getEventId();
 
     public abstract String getDisplayName();
 
@@ -72,6 +81,8 @@ public abstract class MajorEvent {
 
     protected void onDisable() {}
 
+    public void onInteract(PlayerInteractEvent event) {}
+
     private void showBar(Player p) {
         String text = getBossBar(p, phase);
         if (text != null) BossBarService.getInstance().create(p, text, time);
@@ -88,11 +99,22 @@ public abstract class MajorEvent {
         phase = 0;
         ticks = 0;
 
+
+
         for (Player p : Bukkit.getOnlinePlayers()) {
             players.add(p.getUniqueId());
-            showBar(p);
-            Sounds.MAJOR_START.play(p);
-            p.sendTitle("§6§lPIT EVENT!", getDisplayName(), 10, 100, 10);
+
+            if (!RegionHelper.isInSpawn(p)) {
+                Location location = MapService.getRandomSpawnLocation().of();
+                p.teleport(location);
+            }
+
+            Bukkit.getScheduler().runTask(Pit.instance, () -> {
+                showBar(p);
+                Sounds.MAJOR_START.play(p);
+                p.sendTitle("§6§lPIT EVENT!", getDisplayName(), 10, 100, 10);
+                PlayerUtil.updateMaxHealth(p, true);
+            });
         }
 
         task = Bukkit.getScheduler().runTaskTimer(Pit.instance, () -> {
@@ -120,6 +142,8 @@ public abstract class MajorEvent {
             task = null;
         }
 
+        Pit.event = null;
+
         for (UUID uuid : players) {
             Player p = Bukkit.getPlayer(uuid);
             if (p == null) continue;
@@ -127,12 +151,14 @@ public abstract class MajorEvent {
             BossBarService.getInstance().remove(p);
             Sounds.MAJOR_END.play(p);
 
+            PlayerUtil.updateMaxHealth(p, false);
+            PlayerModel.getInstance(p).clearItemsByTag(NBTTag.EVENT_ITEM);
+
             List<String> msg = getEndingMessage(p);
             if (msg != null) msg.forEach(p::sendMessage);
         }
 
         onDisable();
         players.clear();
-        Pit.event = null;
     }
 }

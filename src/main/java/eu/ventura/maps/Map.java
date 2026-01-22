@@ -30,6 +30,8 @@ public interface Map {
 
     List<PitLocation> getRagePitGlass();
 
+    PitLocation getLeaderboardLocation();
+
     @RequiredArgsConstructor
     @Getter
     public static class Hologram {

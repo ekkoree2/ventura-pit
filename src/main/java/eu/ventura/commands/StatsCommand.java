@@ -35,6 +35,7 @@ public class StatsCommand extends BaseCommand {
         Player victim = target.getPlayer();
         PlayerModel victimModel = PlayerService.getPlayer(victim);
         victimModel.setGold(amount);
+        victimModel.addGoldReq(amount);
         player.sendMessage("§aUpdated gold for " + victim.getDisplayName());
     }
 

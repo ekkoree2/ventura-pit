@@ -5,16 +5,19 @@ import eu.ventura.constants.PitEvent;
 import eu.ventura.constants.Strings;
 import eu.ventura.event.PitDamageEvent;
 import eu.ventura.event.PitKillEvent;
+import eu.ventura.perks.Perk;
+import eu.ventura.service.PerkService;
 import eu.ventura.util.NBTHelper;
+import eu.ventura.util.NBTTag;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.advancement.Advancement;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerAdvancementDoneEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
@@ -57,6 +60,24 @@ public class ServerListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         if (Pit.event != null) {
             Pit.event.onQuit(event);
+        }
+    }
+
+    @EventHandler
+    public void onEventItemInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+        String eventId = NBTHelper.getString(item, NBTTag.EVENT_ITEM.getValue());
+        if (eventId == null) {
+            return;
+        }
+        if (Pit.event != null && Pit.event.getEventId().equals(eventId)) {
+            Pit.event.onInteract(event);
         }
     }
 

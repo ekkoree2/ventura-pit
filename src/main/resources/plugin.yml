@@ -3,4 +3,4 @@ version: 0.1
 authors: [ ekkoree ]
 main: eu.ventura.Pit
 api-version: "1.21"
-depend: [ProtocolLib]
+depend: [ProtocolLib, LuckPerms]

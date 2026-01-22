@@ -17,7 +17,9 @@ public enum NBTTag {
     PANTS_COLOR("pit-pants-color"),
     ENCHANT_PREFIX("pit-enchant-", true),
     DEFAULT_ITEM("pit-default-item"),
-    PERK_ITEM("pit-perk-item");
+    PERK_ITEM("pit-perk-item"),
+    EVENT_ITEM("pit-event-item"),
+    RESTRICTED_ITEM("pit-restricted-item");
 
     private final String value;
     private final boolean isPrefix;

@@ -1,6 +1,7 @@
 package eu.ventura.listener;
 
 import eu.ventura.Pit;
+import eu.ventura.service.PitBlockService;
 import eu.ventura.util.NBTHelper;
 import eu.ventura.util.RegionHelper;
 import lombok.Getter;
@@ -57,13 +58,15 @@ public class WorldListener implements Listener {
         Block placedBlock = event.getBlock();
         BlockState originalState = placedBlock.getState();
 
-        PitBlockModel model = new PitBlockModel(placedBlock, originalState, 120);
-        placedBlocks.add(model);
+        PitBlockModel entry = new PitBlockModel(placedBlock, originalState);
+        placedBlocks.add(entry);
+        PitBlockService.saveBlock(placedBlock.getLocation(), 120);
 
         Bukkit.getScheduler().runTaskLater(Pit.instance, () -> {
-            if (placedBlocks.contains(model)) {
+            if (placedBlocks.contains(entry)) {
                 placedBlock.setType(Material.AIR);
-                placedBlocks.remove(model);
+                PitBlockService.removeBlock(placedBlock.getLocation());
+                placedBlocks.remove(entry);
             }
         }, 120 * 20L);
     }
@@ -83,19 +86,20 @@ public class WorldListener implements Listener {
 
         Block block = event.getBlock();
         PitBlockModel matched = null;
-        for (PitBlockModel pitBlockModel : placedBlocks) {
-            if (pitBlockModel.getBlock().getLocation().equals(block.getLocation())) {
-                matched = pitBlockModel;
+        for (PitBlockModel entry : placedBlocks) {
+            if (entry.getBlock().getLocation().equals(block.getLocation())) {
+                matched = entry;
                 break;
             }
         }
 
-        if (matched == null) {
+        if (matched == null && !PitBlockService.isPitBlock(block.getLocation())) {
             event.setCancelled(true);
             return;
         }
 
         block.setType(Material.AIR);
+        PitBlockService.removeBlock(block.getLocation());
         placedBlocks.remove(matched);
         event.setCancelled(true);
     }
@@ -110,16 +114,14 @@ public class WorldListener implements Listener {
         event.setCancelled(true);
     }
 
-    @Getter
-    public static class PitBlockModel {
+    private static class PitBlockModel {
+        @Getter
         private final Block block;
         private final BlockState originalState;
-        private final long expireAfter;
 
-        public PitBlockModel(Block block, BlockState originalState, long expireAfter) {
+        public PitBlockModel(Block block, BlockState originalState) {
             this.block = block;
             this.originalState = originalState;
-            this.expireAfter = expireAfter;
         }
 
         public Location getLocation() {

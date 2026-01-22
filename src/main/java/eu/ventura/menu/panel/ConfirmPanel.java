@@ -4,34 +4,38 @@ import dev.kyro.arcticapi.gui.AGUI;
 import dev.kyro.arcticapi.gui.AGUIPanel;
 import eu.ventura.constants.Strings;
 import eu.ventura.util.ItemHelper;
+import eu.ventura.util.LoreBuilder;
+import lombok.Getter;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-
+/**
+ * author: ekkoree
+ * created at: 1/18/2026
+ */
+@Getter
 public class ConfirmPanel extends AGUIPanel {
-    private final String title;
+    private final String buyingItem;
     private final String cost;
-    private final AGUI returnGui;
-    private final Runnable onConfirm;
-    private final Runnable onCancel;
+    private final AGUI lastGui;
+    private final Runnable task;
+    private final ItemStack icon;
 
-    public ConfirmPanel(AGUI gui, String title, String cost, AGUI returnGui, Runnable onConfirm, Runnable onCancel) {
+    public ConfirmPanel(AGUI gui, String buyingItem, String cost, AGUI lastGui, Runnable task, ItemStack icon) {
         super(gui);
-        this.title = title;
+        this.buyingItem = buyingItem;
         this.cost = cost;
-        this.returnGui = returnGui;
-        this.onConfirm = onConfirm;
-        this.onCancel = onCancel;
+        this.lastGui = lastGui;
+        this.task = task;
+        this.icon = icon;
     }
 
     @Override
     public String getName() {
-        return title != null ? title : "";
+        return Strings.Simple.CONFIRM_PANEL_TITLE.get(player);
     }
 
     @Override
@@ -46,71 +50,60 @@ public class ConfirmPanel extends AGUIPanel {
             return;
         }
 
-        ItemStack clicked = event.getCurrentItem();
-        if (clicked == null) {
-            return;
-        }
-
-        if (clicked.getType() == Material.LIME_STAINED_GLASS_PANE) {
-            if (onConfirm != null) {
-                onConfirm.run();
-            }
-            return;
-        }
-
-        if (clicked.getType() == Material.RED_STAINED_GLASS_PANE) {
-            if (onCancel != null) {
-                onCancel.run();
+        if (event.getSlot() == 11) {
+            task.run();
+        } else if (event.getSlot() == 15) {
+            if (lastGui != null) {
+                lastGui.open();
             } else {
-                returnGui.open();
+                player.closeInventory();
             }
-            return;
-        }
-
-        if (clicked.getType() == Material.ARROW) {
-            returnGui.open();
         }
     }
 
     @Override
     public void onOpen(InventoryOpenEvent event) {
-        String displayTitle = title != null ? title : "";
-        String displayCost = cost != null ? cost : "";
-
-        getInventory().setItem(11, ItemHelper.createItem(
-                Material.LIME_STAINED_GLASS_PANE,
-                Strings.Simple.CONFIRM_CONFIRM.get(player),
-                Arrays.asList(
-                        Strings.Simple.CONFIRM_CONFIRM_DESC.get(player),
-                        "",
-                        "§7" + displayTitle,
-                        "§7" + displayCost
-                ),
-                true
-        ));
-
-        getInventory().setItem(13, ItemHelper.createItem(
-                Material.ARROW,
-                Strings.Simple.CONFIRM_CANCEL.get(player),
-                Arrays.asList(Strings.Simple.CONFIRM_CANCEL_DESC.get(player)),
-                true
-        ));
-
-        getInventory().setItem(15, ItemHelper.createItem(
-                Material.RED_STAINED_GLASS_PANE,
-                Strings.Simple.CONFIRM_CANCEL_TITLE.get(player),
-                Arrays.asList(
-                        Strings.Simple.CONFIRM_CANCEL_TITLE_DESC.get(player),
-                        "",
-                        "§7" + displayTitle,
-                        "§7" + displayCost
-                ),
-                true
-        ));
+        getInventory().setItem(11, confirmButton());
+        getInventory().setItem(15, returnButton());
     }
 
     @Override
     public void onClose(InventoryCloseEvent event) {
 
+    }
+
+    private ItemStack confirmButton() {
+        if (icon == null) {
+            return ItemHelper.createItem(
+                    Material.GREEN_TERRACOTTA,
+                    Strings.Simple.CONFIRM_PANEL_CONFIRM.get(player),
+                    new LoreBuilder()
+                            .add(Strings.Simple.CONFIRM_PANEL_PURCHASING.get(player) + getBuyingItem())
+                            .addNewline(Strings.Simple.CONFIRM_PANEL_COST.get(player) + getCost())
+                            .compile(),
+                    true
+            );
+        }
+        return ItemHelper.setItemMeta(
+                icon,
+                Strings.Simple.CONFIRM_PANEL_CONFIRM.get(player),
+                new LoreBuilder()
+                        .add(Strings.Simple.CONFIRM_PANEL_PURCHASING.get(player) + getBuyingItem())
+                        .addNewline(Strings.Simple.CONFIRM_PANEL_COST.get(player) + getCost())
+                        .compile(),
+                true,
+                true
+        );
+    }
+
+    private ItemStack returnButton() {
+        return ItemHelper.createItem(
+                Material.RED_TERRACOTTA,
+                Strings.Simple.CONFIRM_PANEL_CANCEL.get(player),
+                new LoreBuilder()
+                        .add(Strings.Simple.CONFIRM_PANEL_RETURN.get(player))
+                        .compile(),
+                true
+        );
     }
 }

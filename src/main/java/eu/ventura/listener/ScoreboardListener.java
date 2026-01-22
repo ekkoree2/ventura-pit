@@ -60,6 +60,11 @@ public class ScoreboardListener implements Listener {
         newLines.add("§7" + currentDate);
         newLines.add("");
 
+        if (Pit.event != null) {
+            newLines.addAll(Pit.event.getScoreboard(player));
+            newLines.add("");
+        }
+
         if (model.getPrestige() > 0) {
             newLines.add(Strings.Formatted.PRESTIGE.format(player, model.getPrestige()));
         }
@@ -79,11 +84,14 @@ public class ScoreboardListener implements Listener {
         if (model.combatTime <= 5 && model.status == eu.ventura.constants.Status.FIGHTING) {
             status += String.format("§7 (%d)", model.combatTime);
         }
+        if (Pit.event != null) {
+            status = "§6Event";
+        }
         newLines.add(Strings.Formatted.STATUS.format(player, status));
-        if (model.bounty > 0) {
+        if (model.bounty > 0 && Pit.event == null) {
             newLines.add(Strings.Formatted.BOUNTY_SCOREBOARD.format(player, NumberFormat.DEF.of(model.bounty)));
         }
-        if (model.streak > 0) {
+        if (model.streak > 0 && Pit.event == null) {
             newLines.add(Strings.Formatted.STREAK.format(player, NumberFormat.DEF.of(model.streak)));
         }
         newLines.add("");

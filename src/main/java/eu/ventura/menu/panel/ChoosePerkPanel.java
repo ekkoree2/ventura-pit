@@ -13,6 +13,7 @@ import eu.ventura.model.TriggerModel;
 import eu.ventura.perks.Perk;
 import eu.ventura.service.PerkService;
 import eu.ventura.util.ItemHelper;
+import eu.ventura.util.LoreBuilder;
 import eu.ventura.util.NBTHelper;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -127,12 +128,13 @@ public class ChoosePerkPanel extends AGUIPanel {
             getInventory().setItem(getRows() * 9 - 4, ItemHelper.createItem(
                     Material.DIAMOND_BLOCK,
                     Strings.Simple.PERK_NO_PERK.get(player),
-                    Arrays.asList(
-                            Strings.Simple.PERK_HARDCORE.get(player),
-                            Strings.Simple.PERK_DONT_NEED.get(player),
-                            "",
-                            Strings.Simple.PERK_CLICK_TO_REMOVE.get(player)
-                    ),
+                    new LoreBuilder()
+                            .setMaxLength(30)
+                            .add(Strings.Simple.PERK_HARDCORE.get(player))
+                            .addNewline()
+                            .addNewline()
+                            .add(Strings.Simple.PERK_CLICK_TO_REMOVE.get(player))
+                            .compile(),
                     true
             ));
         }

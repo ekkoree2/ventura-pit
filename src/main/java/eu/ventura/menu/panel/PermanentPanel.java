@@ -12,6 +12,7 @@ import eu.ventura.perks.Perk;
 import eu.ventura.util.ItemHelper;
 import eu.ventura.util.LevelUtil;
 import eu.ventura.util.LoreBuilder;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -55,6 +56,7 @@ public class PermanentPanel extends AGUIPanel {
             if (perkSlot.getSlot() + 12 == slot) {
                 if (clicked.getType() == Material.BEDROCK) {
                     player.sendMessage(Strings.Simple.PERK_SLOT_LOCKED_MSG.get(player));
+                    Sounds.ENDERMAN_NO.play(player);
                 } else {
                     new ChoosePerkGUI(player, slot).open();
                 }
@@ -97,6 +99,7 @@ public class PermanentPanel extends AGUIPanel {
                 model.getSlot(),
                 Strings.Formatted.PERK_SLOT_LOCKED_TITLE.format(playerModel.player, model.getSlot()),
                 new LoreBuilder()
+                        .setMaxLength(35)
                         .addNewline(Strings.Formatted.PERK_SLOT_LEVEL.format(playerModel.player,
                                 LevelUtil.getFormattedLevelFromValues(playerModel.getPrestige(), model.getRequiredLevel())
                         ))
@@ -107,10 +110,13 @@ public class PermanentPanel extends AGUIPanel {
 
     private ItemStack getPerkSlot(int slotNum, Perk perk) {
         ItemStack base = ItemHelper.createItem(perk.getBaseItem(), 1);
+        base.setData(DataComponentTypes.MAX_STACK_SIZE, 64);
+        base.setAmount(slotNum + 1);
         return ItemHelper.setItemMeta(
                 base,
-                NewString.of("&a" + perk.getDisplayName(playerModel.language)),
+                NewString.of("&ePerk Slot #" + (slotNum + 1)),
                 new LoreBuilder()
+                        .setMaxLength(35)
                         .addNewline(Strings.Formatted.PERK_SELECTED.format(playerModel.player, perk.getDisplayName(playerModel.language)))
                         .addNewline()
                         .addAll(perk.getDescription(player))

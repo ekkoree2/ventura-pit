@@ -1,8 +1,10 @@
 package eu.ventura.perks.permanent;
 
+import eu.ventura.Pit;
 import eu.ventura.constants.Strings;
 import eu.ventura.enchantment.EnchantType;
 import eu.ventura.event.PitKillEvent;
+import eu.ventura.events.major.impl.RagePit;
 import eu.ventura.model.AttackModel;
 import eu.ventura.perks.Perk;
 import eu.ventura.util.LoreBuilder;
@@ -70,6 +72,10 @@ public class Vampire extends Perk {
 
     @Override
     public void apply(AttackModel model) {
+        if (Pit.event instanceof RagePit) {
+            return;
+        }
+
         if (model.trueAttacker == null) {
             return;
         }
@@ -87,6 +93,10 @@ public class Vampire extends Perk {
 
     @Override
     public void onKill(PitKillEvent event) {
+        if (Pit.event instanceof RagePit) {
+            return;
+        }
+
         Player player = event.data.trueAttacker;
         if (player == null) {
             return;

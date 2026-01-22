@@ -11,12 +11,20 @@ import eu.ventura.service.PlayerService;
 import eu.ventura.util.LevelUtil;
 import eu.ventura.util.MongoUtil;
 import eu.ventura.util.PlayerUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +52,8 @@ public class PlayerModel {
     public int combatTime = 0;
     public int multiKills = 0;
     public long lastKillTime = 0;
+    @Setter
+    @Getter
     public int bounty = 0;
     public int streak = 0;
 
@@ -55,9 +65,36 @@ public class PlayerModel {
     @Save public Set<String> purchasedPerks = new HashSet<>();
     @Save public Map<Integer, String> equippedPerks = new HashMap<>();
 
+    @Save private ItemStack[] inventory = new ItemStack[36];
+    @Save private ItemStack[] armor = new ItemStack[4];
+    @Save private ItemStack[] enderChest;
+
     public PlayerModel(Player player) {
         this.player = player;
         this.effectsModel = new PlayerEffectsModel(this);
+        this.enderChest = new ItemStack[getEnderChestRows() * 9];
+    }
+
+    public int getEnderChestRows() {
+        return 3;
+    }
+
+    public ItemStack[] getEnderChest() {
+        int rows = getEnderChestRows();
+        int size = rows * 9;
+
+        if (enderChest == null) {
+            enderChest = new ItemStack[size];
+        } else if (enderChest.length < size) {
+            ItemStack[] newChest = new ItemStack[size];
+            System.arraycopy(enderChest, 0, newChest, 0, enderChest.length);
+            enderChest = newChest;
+        }
+        return enderChest;
+    }
+
+    public void setEnderChest(ItemStack[] items) {
+        this.enderChest = items;
     }
 
     public static PlayerModel getInstance(Player player) {
@@ -125,14 +162,6 @@ public class PlayerModel {
     public void runCombatTime() {
         int extraTime = (bounty / 1000) * 5;
         combatTime = 15 + extraTime;
-    }
-
-    public int getBounty() {
-        return bounty;
-    }
-
-    public void setBounty(int bounty) {
-        this.bounty = bounty;
     }
 
     public int getMaxBounty() {
@@ -214,7 +243,57 @@ public class PlayerModel {
         return false;
     }
 
+    public void setItems() {
+        this.inventory = player.getInventory().getContents().clone();
+        this.armor = player.getInventory().getArmorContents().clone();
+    }
+
+    public void getItems() {
+        player.getInventory().clear();
+        player.getInventory().setContents(inventory);
+        player.getInventory().setArmorContents(new ItemStack[4]);
+        player.getInventory().setArmorContents(armor);
+
+        int rows = getEnderChestRows();
+        int size = rows * 9;
+
+        if (enderChest == null) {
+            enderChest = new ItemStack[size];
+        } else if (enderChest.length < size) {
+            ItemStack[] newChest = new ItemStack[size];
+            System.arraycopy(enderChest, 0, newChest, 0, enderChest.length);
+            enderChest = newChest;
+        }
+    }
+
+    private String serializeItemStackArray(ItemStack[] items) {
+        if (items == null) return null;
+        try {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            BukkitObjectOutputStream out = new BukkitObjectOutputStream(stream);
+            out.writeObject(items);
+            out.close();
+            return Base64.getEncoder().encodeToString(stream.toByteArray());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private ItemStack[] deserializeItemStackArray(String encoded) {
+        if (encoded == null) return null;
+        try {
+            ByteArrayInputStream stream = new ByteArrayInputStream(Base64.getDecoder().decode(encoded));
+            BukkitObjectInputStream in = new BukkitObjectInputStream(stream);
+            ItemStack[] items = (ItemStack[]) in.readObject();
+            in.close();
+            return items;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public void save() {
+        setItems();
         MongoCollection<Document> collection = MongoUtil.getCollection("players");
         Document doc = new Document("_id", player.getUniqueId().toString());
 
@@ -223,7 +302,11 @@ public class PlayerModel {
                 field.setAccessible(true);
                 try {
                     Object value = field.get(this);
-                    if (value != null && field.getType().isEnum()) {
+                    if (value == null) {
+                        doc.append(field.getName(), null);
+                    } else if (value instanceof ItemStack[] itemStacks) {
+                        doc.append(field.getName(), serializeItemStackArray(itemStacks));
+                    } else if (field.getType().isEnum()) {
                         doc.append(field.getName(), ((Enum<?>) value).name());
                     } else if (value instanceof Set<?> set) {
                         doc.append(field.getName(), new ArrayList<>(set));
@@ -258,7 +341,11 @@ public class PlayerModel {
                             if (doc.containsKey(field.getName())) {
                                 Object value = doc.get(field.getName());
 
-                                if (value != null && field.getType().isEnum() && value instanceof String) {
+                                if (value == null) {
+                                    field.set(this, null);
+                                } else if (field.getType() == ItemStack[].class && value instanceof String encoded) {
+                                    field.set(this, deserializeItemStackArray(encoded));
+                                } else if (field.getType().isEnum() && value instanceof String) {
                                     @SuppressWarnings("rawtypes")
                                     Class<? extends Enum> enumType = (Class<? extends Enum>) field.getType();
                                     Object enumValue = Enum.valueOf(enumType, (String) value);
@@ -288,6 +375,7 @@ public class PlayerModel {
 
         try {
             loadFuture.get(5, TimeUnit.SECONDS);
+            getItems();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             Bukkit.getLogger().warning("Failed to load player data for " + player.getName() + ": " + e.getMessage());
         }

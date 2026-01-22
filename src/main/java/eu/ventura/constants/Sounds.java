@@ -24,6 +24,8 @@ public class Sounds {
     public static final SoundEffect ASSIST = new SoundEffect(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.55, 1.72f);
     public static final SoundEffect GOLD_PICKUP = KILL;
 
+    public static final SoundEffect MAJOR_START = new SoundEffect(Sound.ENTITY_ENDER_DRAGON_GROWL, 1.3, 1.1);
+
     // gui
     public static final SoundEffect NO = new SoundEffect(Sound.ENTITY_VILLAGER_NO, 1.1, 1.0);
     public static final SoundEffect SUCCESS = new SoundEffect(Sound.BLOCK_NOTE_BLOCK_PLING, 1.1, 4.0555f);
@@ -34,6 +36,11 @@ public class Sounds {
     public static final SoundEffect GOLDEN_HEADS_COOLDOWN = new SoundEffect(Sound.ENTITY_VILLAGER_NO, 1.0, 1.0);
     public static final SoundEffect GOLDEN_APPLE = new SoundEffect(Sound.ENTITY_GENERIC_EAT, 1.0, 1.0);
     public static final SoundEffect GOLDEN_APPLE_COOLDOWN = new SoundEffect(Sound.ENTITY_VILLAGER_NO, 1.0, 1.0);
+
+    public static final SoundEffect MAJOR_END = new SoundEffect()
+            .add(new SoundMoment(0).add(Sound.ENTITY_PLAYER_BURP, 1.0, 0.6984127))
+            .add(new SoundMoment(5).add(Sound.ENTITY_PLAYER_BURP, 1.0, 0.5873016))
+            .add(new SoundMoment(10).add(Sound.ENTITY_PLAYER_BURP, 1.0, 0.4920635));
 
     public static final SoundEffect DOUBLE_KILL = new SoundEffect()
             .add(new SoundMoment(0).add(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5, 1.8))

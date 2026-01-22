@@ -254,4 +254,16 @@ public class ItemHelper {
 
         return skull;
     }
+
+    public static ItemStack getPlayerHead(UUID uuid) {
+        ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) skull.getItemMeta();
+
+        if (meta != null) {
+            meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
+            skull.setItemMeta(meta);
+        }
+
+        return skull;
+    }
 }

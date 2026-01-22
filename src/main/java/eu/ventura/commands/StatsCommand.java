@@ -1,29 +1,81 @@
 package eu.ventura.commands;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.CommandHelp;
+import co.aikar.commands.annotation.*;
+import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import eu.ventura.model.PlayerModel;
+import eu.ventura.service.PlayerService;
 import org.bukkit.entity.Player;
 
-/**
-* author: ekkoree
-* created at: 1/20/2026
- */
-@CommandAlias("pit")
+@CommandPermission("rank.owner")
+@CommandAlias("stats")
 public class StatsCommand extends BaseCommand {
-    @Subcommand("gold")
-    public void gold(Player target, double value) {
-        PlayerModel.getInstance(target).setGold(value);
+    @Default
+    @HelpCommand
+    @Syntax("page")
+    private void onHelp(CommandHelp help) {
+        help.showHelp();
     }
 
-    @Subcommand("level")
-    public void level(Player target, int level) {
-        PlayerModel.getInstance(target).setLevel(level);
+    @CommandPermission("rank.admin")
+    @Subcommand("prestige set")
+    @Syntax("player")
+    private void prestigeSet(Player player, OnlinePlayer target, int amount) {
+        Player victim = target.getPlayer();
+        amount = Math.min(50, amount);
+        PlayerModel victimModel = PlayerService.getPlayer(victim);
+        victimModel.setPrestige(amount);
     }
 
-    @Subcommand("prestige")
-    public void prestige(Player target, int prestige) {
-        PlayerModel.getInstance(target).setPrestige(prestige);
+    @CommandPermission("rank.admin")
+    @Subcommand("gold set")
+    @Syntax("player amount")
+    private void setGold(Player player, OnlinePlayer target, double amount) {
+        Player victim = target.getPlayer();
+        PlayerModel victimModel = PlayerService.getPlayer(victim);
+        victimModel.setGold(amount);
+        player.sendMessage("§aUpdated gold for " + victim.getDisplayName());
+    }
+
+    @CommandPermission("rank.admin")
+    @Subcommand("xp add")
+    @Syntax("player amount")
+    private void addXP(Player player, OnlinePlayer target, int amount) {
+        Player victim = target.getPlayer();
+        PlayerModel victimModel = PlayerService.getPlayer(victim);
+        victimModel.addXp(amount);
+        player.sendMessage("§aUpdated XP for " + victim.getDisplayName());
+    }
+
+    @CommandPermission("rank.gm")
+    @Subcommand("level set")
+    @Syntax("player level")
+    private void setLevel(Player player, OnlinePlayer target, int level) {
+        level = Math.min(120, level);
+        Player victim = target.getPlayer();
+        PlayerModel victimModel = PlayerService.getPlayer(victim);
+        victimModel.setLevel(level);
+        player.sendMessage("§aUpdated level for " + victim.getDisplayName());
+    }
+
+    @CommandPermission("rank.gm")
+    @Subcommand("bounty set")
+    @Syntax("player amount")
+    private void setBounty(Player player, OnlinePlayer target, int amount) {
+        Player victim = target.getPlayer();
+        PlayerModel victimModel = PlayerService.getPlayer(victim);
+        victimModel.setBounty(amount);
+        player.sendMessage("§aUpdated bounty for " + victim.getDisplayName());
+    }
+
+    @CommandPermission("rank.admin")
+    @Subcommand("streak set")
+    @Syntax("player amount")
+    private void setStreak(Player player, OnlinePlayer target, int amount) {
+        Player victim = target.getPlayer();
+        PlayerModel victimModel = PlayerService.getPlayer(victim);
+        victimModel.streak = amount;
+        player.sendMessage("§aUpdated streak for " + victim.getDisplayName());
     }
 }

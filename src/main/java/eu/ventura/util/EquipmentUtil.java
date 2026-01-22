@@ -62,7 +62,7 @@ public class EquipmentUtil {
         }
     }
 
-    public static int countGoldenApples(PlayerInventory inventory) {
+    public static int getAppleCount(PlayerInventory inventory) {
         int count = 0;
         for (ItemStack item : inventory.getContents()) {
             if (item != null && item.getType() == Material.GOLDEN_APPLE) {

@@ -1,13 +1,20 @@
 package eu.ventura.listener;
 
+import eu.ventura.Pit;
+import eu.ventura.constants.PitEvent;
 import eu.ventura.constants.Strings;
+import eu.ventura.event.PitDamageEvent;
+import eu.ventura.event.PitKillEvent;
 import eu.ventura.util.NBTHelper;
 import org.bukkit.Material;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
@@ -23,6 +30,34 @@ public class ServerListener implements Listener {
         world.setStorm(false);
         world.setThundering(false);
         event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onKill(PitKillEvent event) {
+        if (Pit.event != null) {
+            Pit.event.onKill(event);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onDamage(PitDamageEvent event) {
+        if (Pit.event != null) {
+            Pit.event.onDamage(event);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onJoin(PlayerJoinEvent event) {
+        if (Pit.event != null) {
+            Pit.event.onJoin(event);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onQuit(PlayerQuitEvent event) {
+        if (Pit.event != null) {
+            Pit.event.onQuit(event);
+        }
     }
 
     @EventHandler

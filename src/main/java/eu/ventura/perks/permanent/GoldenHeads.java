@@ -5,6 +5,7 @@ import eu.ventura.constants.Sounds;
 import eu.ventura.constants.Strings;
 import eu.ventura.enchantment.EnchantType;
 import eu.ventura.event.PitKillEvent;
+import eu.ventura.events.major.impl.RagePit;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.perks.Perk;
 import eu.ventura.util.ItemHelper;
@@ -130,6 +131,10 @@ public class GoldenHeads extends Perk {
 
     @Override
     public void onKill(PitKillEvent event) {
+        if (Pit.event instanceof RagePit) {
+            return;
+        }
+
         Player player = event.data.trueAttacker;
         PlayerModel model = PlayerModel.getInstance(player);
         Strings.Language language = model.language;

@@ -1,5 +1,6 @@
 package eu.ventura.listener;
 
+import eu.ventura.Pit;
 import eu.ventura.constants.Sounds;
 import eu.ventura.constants.Strings;
 import eu.ventura.event.PitKillEvent;
@@ -33,7 +34,7 @@ public class BountyListener implements Listener {
         Player killer = deathModel.trueAttacker;
         Player victim = deathModel.victim;
 
-        if (killer == null || victim == null) {
+        if (killer == null || victim == null || Pit.event != null) {
             return;
         }
 

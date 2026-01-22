@@ -80,6 +80,20 @@ public class LoreBuilder {
         return compiled;
     }
 
+    public List<String> compile(Object... args) {
+        List<String> compiled = new ArrayList<>();
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
+            for (int j = 0; j < args.length; j++) {
+                line = line.replace("{" + j + "}", String.valueOf(args[j]));
+            }
+            line = line.replaceAll("&([0-9a-fk-or])", "§$1");
+            int maxLength = getMaxLength(i);
+            compiled.addAll(wrapLine(line, maxLength, i));
+        }
+        return compiled;
+    }
+
     private List<String> wrapLine(String input, int maxLength, int lineIndex) {
         String color = "§7";
         boolean bold = false, underline = false, italic = false, strikethrough = false, magic = false;

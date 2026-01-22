@@ -4,18 +4,20 @@ import co.aikar.commands.PaperCommandManager;
 import dev.kyro.arcticapi.ArcticAPI;
 import eu.ventura.commands.*;
 import eu.ventura.constants.PitMap;
+import eu.ventura.events.major.MajorEvent;
 import eu.ventura.listener.*;
+import eu.ventura.service.BossBarService;
+import eu.ventura.service.BugService;
 import eu.ventura.service.CombatService;
+import eu.ventura.service.PitBlockService;
 import eu.ventura.service.PlayerService;
 import eu.ventura.util.MongoUtil;
 import hvh.ventura.VenturaCore;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.Properties;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
+import java.util.*;
+
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,6 +30,7 @@ import org.bukkit.scheduler.BukkitTask;
 public class Pit extends JavaPlugin {
     public static Pit instance;
     public static final PitMap map = PitMap.KINGS;
+    public static MajorEvent event = null;
     private BukkitTask autoSaveTask;
 
     private void purgeDirectory(Path path) {
@@ -62,10 +65,14 @@ public class Pit extends JavaPlugin {
         String mongoUri = env.getProperty("MONGO_URI", "mongodb://localhost:27017");
         String mongoDatabase = env.getProperty("MONGO_DATABASE", "ventura_pit");
         MongoUtil.initialize(mongoUri, mongoDatabase);
+        PitBlockService.init();
+        PitBlockService.removeAllBlocks(null);
+        BugService.loadAll();
 
         VenturaCore.init(this);
 
         CombatService.getInstance().start();
+        BossBarService.getInstance().start();
         ArcticAPI.init(this, "", "");
 
         PaperCommandManager commandManager = new PaperCommandManager(this);
@@ -73,6 +80,10 @@ public class Pit extends JavaPlugin {
         commandManager.registerCommand(new EnchantCommand());
         commandManager.registerCommand(new FreshCommand());
         commandManager.registerCommand(new StatsCommand());
+        commandManager.registerCommand(new LangCommand());
+        commandManager.registerCommand(new BugCommand());
+        commandManager.registerCommand(new PitEventCommand());
+        commandManager.registerCommand(new RemoveBlockCommand());
 
         getServer().getPluginManager().registerEvents(new PlayerListener(
                 VenturaCore.getNpcManager(),
@@ -103,6 +114,7 @@ public class Pit extends JavaPlugin {
         instance = null;
 
         CombatService.getInstance().stop();
+        BossBarService.getInstance().stop();
 
         HandlerList.unregisterAll(this);
     }

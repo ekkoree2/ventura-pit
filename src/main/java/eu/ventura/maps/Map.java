@@ -28,6 +28,8 @@ public interface Map {
 
     Npc[] getNpcs();
 
+    List<PitLocation> getRagePitGlass();
+
     @RequiredArgsConstructor
     @Getter
     public static class Hologram {
@@ -42,13 +44,28 @@ public interface Map {
         private final PitLocation location;
     }
 
-    @RequiredArgsConstructor
     public static class PitLocation {
         private final double x;
         private final double y;
         private final double z;
         private final float yaw;
         private final float pitch;
+
+        public PitLocation(double x, double y, double z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.yaw = 0;
+            this.pitch = 0;
+        }
+
+        public PitLocation(double x, double y, double z, float yaw, float pitch) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.yaw = yaw;
+            this.pitch = pitch;
+        }
 
         public Location of() {
             World world = Bukkit.getWorlds().getFirst();

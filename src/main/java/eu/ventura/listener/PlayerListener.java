@@ -5,9 +5,11 @@ import eu.ventura.constants.*;
 import eu.ventura.event.PitDeathEvent;
 import eu.ventura.event.PitKillEvent;
 import eu.ventura.event.PitRespawnEvent;
+import eu.ventura.events.major.impl.RagePit;
 import eu.ventura.maps.Map;
 import eu.ventura.model.DeathModel;
 import eu.ventura.model.PlayerModel;
+import eu.ventura.service.BossBarService;
 import eu.ventura.service.MapService;
 import eu.ventura.service.PlayerService;
 import eu.ventura.util.EnchantmentHelper;
@@ -110,7 +112,9 @@ public class PlayerListener implements Listener {
         playerModel.addXp(xp);
         playerModel.addGold(gold);
 
-        playerModel.streak += 1;
+        if (Pit.event == null) {
+            playerModel.streak += 1;
+        }
 
         String message = Strings.Formatted.KILL_MESSAGE.format(
                 attacker,
@@ -131,9 +135,11 @@ public class PlayerListener implements Listener {
         attacker.sendMessage(serializer.deserialize(message));
 
         if (!playerModel.hasHealingPerk()) {
-            int currentApples = EquipmentUtil.countGoldenApples(attacker.getInventory());
-            if (currentApples < 2) {
-                attacker.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE, 1));
+            if (!(Pit.event instanceof RagePit)) {
+                int apples = EquipmentUtil.getAppleCount(attacker.getInventory());
+                if (apples < 2) {
+                    attacker.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE, 1));
+                }
             }
         }
 
@@ -212,6 +218,7 @@ public class PlayerListener implements Listener {
             toRemove.forEach(holograms::remove);
         });
 
+        BossBarService.getInstance().cleanup(player);
         PlayerService.removePlayer(player);
     }
 
@@ -223,7 +230,9 @@ public class PlayerListener implements Listener {
         player.teleport(location);
 
         PlayerModel model = PlayerModel.getInstance(player);
-        model.streak = 0;
+        if (Pit.event == null) {
+            model.streak = 0;
+        }
         model.lastAttacker = null;
         model.status = Status.IDLING;
 
@@ -344,7 +353,7 @@ public class PlayerListener implements Listener {
                 }
 
                 String suffix = "";
-                if (playerModel.getBounty() > 0) {
+                if (playerModel.getBounty() > 0 && Pit.event == null) {
                     suffix += "§6§l" + playerModel.getBounty() + "g";
                 }
 

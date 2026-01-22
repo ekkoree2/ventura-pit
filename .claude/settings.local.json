@@ -10,7 +10,8 @@
       "Bash(mvn clean install:*)",
       "Bash(mvn:*)",
       "Bash(cmd /c \"cd /d C:\\\\Users\\\\Admin\\\\Desktop\\\\Data\\\\projects\\\\ventura-npcs && mvn clean install -DskipTests\")",
-      "Bash(cmd:*)"
+      "Bash(cmd:*)",
+      "mcp__ide__getDiagnostics"
     ]
   }
 }

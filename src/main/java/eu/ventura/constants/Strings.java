@@ -1,6 +1,6 @@
 package eu.ventura.constants;
 
-import eu.ventura.model.PlayerModel;
+import  eu.ventura.model.PlayerModel;
 import eu.ventura.util.LoreBuilder;
 import eu.ventura.util.LoreBuilderWrapper;
 import lombok.Getter;
@@ -67,6 +67,7 @@ public class Strings {
         PERK_GRAVITY_MACE("Buława Grawitacji", "Gravity Mace"),
         PERK_CALCULATED("Wyrachowany", "Calculated"),
         PERK_VAMPIRE("Wampir", "Vampire"),
+        RAGE_PIT_DIDNT_PARTICIPATE("&7Nie uczestniczyles!", "&7Didn't participate!"),
 
         CANT_DROP("&c&lNIE!&7 Nie mozesz wyrzucic tego przedmiotu!", "§c§lNOPE!§7 You cannot drop this item!"),
 
@@ -84,7 +85,8 @@ public class Strings {
         KILL_MULTI("§a§lWIELE ZABÓJSTW! §7({0})", "§a§lMULTI KILL! §7({0})"),
         CANT_RESPAWN_HERE("§cNie mozesz /respawn tutaj!", "§cYou cannot /respawn here!"),
         RESPAWN_COOLDOWN("§cMozesz uzyc /respawn co 10 sekund!", "§cYou may only /respawn every 10 seconds!"),
-        PERK_BACK("&7&lWRÓĆ", "&7&lBACK"),
+        LANG_CD("&cSpowolnij!", "&cWoah there, slow down!"),
+        PERK_BACK("&aWróć", "&aCome back"),
         STREAKER("Streaker"),
         PERK_NO_PERK("&cBez perka", "&cNo perk"),
         PERK_SLOT_LOCKED_MSG("&cSlot nie jest jeszcze odblokowany!", "&cSlot not unlocked yet!"),
@@ -98,18 +100,10 @@ public class Strings {
         PERK_CLICK_TO_PURCHASE("&eKliknij aby kupić!", "&eClick to purchase!"),
         PERK_CLICK_TO_SELECT("&eKliknij aby wybrać!", "&eClick to select!"),
         PERK_NOT_ENOUGH_GOLD_DISPLAY("&cNiewystarczająco złota!", "&cNot enough gold!"),
-        PERK_HARDCORE("&7Jesteś wystarczająco hardcore że nie", "&7Are you hardcore enough that you"),
-        PERK_DONT_NEED("&7nie potrzebujesz żadnego perka do tego slotu?", "&7don't need any perk for this slot?"),
+        PERK_HARDCORE("&7Jesteś wystarczająco dobry że nie potrzebujesz żadnego perka do tego slotu?", "&7Are you hardcore enough that you don't need any perk for this slot?"),
         PERK_CLICK_TO_REMOVE("&eKliknij tutaj aby usunąć perk!", "&eClick here to remove perk!"),
         PERM_UPGRADES_BACK("&7Do Permanentne ulepszenia", "&7To Permanent upgrades"),
-        PERK_UNLOCKED_IN_RENOWN("&cOdblokuj w sklepie renomy!", "&cUnlocked in renown shop!"),
-        CONFIRM_CANCEL("&cAnuluj", "&cCancel"),
-        CONFIRM_CANCEL_DESC("&7Wróć do menu", "&7Return to menu"),
-        CONFIRM_CONFIRM("&a&lPOTWIERDŹ", "&a&lCONFIRM"),
-        CONFIRM_CONFIRM_DESC("&7Kliknij aby potwierdzić zakup", "&7Click to confirm purchase"),
-        CONFIRM_CANCEL_TITLE("&c&lANULUJ", "&c&lCANCEL"),
-        CONFIRM_CANCEL_TITLE_DESC("&7Kliknij aby anulować zakup", "&7Click to cancel purchase"),
-        PERK_SELECT_TITLE("Wybierz perk", "Choose a perk"),
+        PERK_UNLOCKED_IN_RENOWN("&cOdblokuj w sklepie renown!", "&cUnlocked in renown shop!"),
         PERK_UNKNOWN("Nieznany perk", "Unknown perk"),
         CHOOSE_A_PERK_TITLE("Wybierz perk", "Choose a perk"),
         ITEM_SWORD("ᴍɪᴇᴄᴢ", "ѕᴡᴏʀᴅ"),
@@ -118,7 +112,7 @@ public class Strings {
         BOUNTY_ACTION_OF("nadano", "of"),
         BOUNTY_ACTION_BUMP("zwiekszono", "bump"),
         GOLDEN_HEADS_NAME("&6Złota Głowa", "&6Golden Head"),
-        SHOP_TITLE("&8Sklep Przedmiotów", "&8Item Shop"),
+        SHOP_TITLE("Tymczasowe itemy", "Non-permanent items"),
         SHOP_NOT_ENOUGH_GOLD("&cNiewystarczająco złota!", "&cNot enough gold!"),
         SHOP_INVENTORY_FULL("&cTwój ekwipunek jest pełny!", "&cYour inventory is full!"),
         SHOP_CLICK_TO_PURCHASE("&eKliknij aby zakupić!", "&eClick to purchase!"),
@@ -130,8 +124,18 @@ public class Strings {
         SHOP_MSG_AUTO_EQUIP("&7Automatycznie zakłada przy zakupie!", "&7Auto-equips on buy!"),
         SHOP_MSG_OBSIDIAN_DURATION("&7Pozostaje przez 120 sekund.", "&7Remains for 120 seconds."),
         SHOP_MSG_DIAMOND_SWORD_BOOST("§9+20% obrażeń przeciw nagrodzonym", "§9+20% damage vs bountied"),
-        STATS_CONFIRM_WIPE("&c&lNAPEWNO WYCZYŚCIĆ STATYSTYKI?", "&c&lSURE YOU WANT TO WIPE STATS?"),
-        STATS_WIPE_OWN("&cWyczyścisz swoje statystyki", "&cWipe your own stats");
+        CONFIRM_PANEL_TITLE("&8Jesteś pewien?", "&8Are you sure?"),
+        CONFIRM_PANEL_CONFIRM("&aPotwierdź", "&aConfirm"),
+        CONFIRM_PANEL_PURCHASING("&7Kupujesz: ", "&7Purchasing: "),
+        CONFIRM_PANEL_COST("&7Koszt: ", "&7Cost: "),
+        CONFIRM_PANEL_CANCEL("&cAnuluj", "&cCancel"),
+        CONFIRM_PANEL_RETURN("&7Wróć do poprzedniego menu.", "&7Return to previous menu."),
+
+        LANG_ERROR("&cTen jezyk jest juz wybrany!", "&cThis language is already selected!"),
+        EVENT_END_TOP_HEADER("&6&lNajlepsi gracze:", "&6&lTop players:"),
+        EVENT_END_FOOTER("&6&m" + ("-".repeat(22))),
+
+        ;
 
         private final String polish;
         private final String english;
@@ -187,8 +191,18 @@ public class Strings {
         SHOP_COST("&7Koszt: &6{0}g", "&7Cost: &6{0}g"),
         SHOP_PURCHASE("&a&lZAKUP!&6 {0}", "&a&lPURCHASE!&6 {0}"),
         BOUNTY_SCOREBOARD("&fŁup: &6{0}$", "&fBounty: &6{0}$"),
-        STATS_CONFIRM_WIPE_OTHER("&c&lNAPEWNO WYCZYŚCIĆ STATYSTYKI GRACZA {0}?", "&c&lSURE YOU WANT TO WIPE {0}'S STATS?"),
-        STATS_WIPE_OTHER("&cWyczyścisz statystyki gracza {0}", "&cWipe {0}'s stats");
+        RAGE_PIT_BOSSY("&5&lDUZY EVENT!&c&l RAGE PIT!&7 Koniec za &a{0}", "&5&lMAJOR EVENT!&c&l RAGE PIT!&7 Ending in &a{0}"),
+        RAGE_PIT_SUCCESS(
+                "&a&lSUKCES!&7 zdobyto &c{0} Wszystkich Killi&7 z &a600&&7 wymaganych",
+                "&a&lSUCCESS!&7 with &c{0} Total Kills out of &a600&7 needed"
+        ),
+        RAGE_PIT_FAIL(
+                "&c&lPIZDA!&7 {0} wszystkich zabojstw z 600 wymaganych",
+                "&c&lFAILED!&7 {0} total kills out of 600 needed"
+        ),
+        RAGE_PIT_PLACE("&c{0}❤ zadane &7(ranga #{1})", "&c{0}❤ dealt &7(ranked #{1})"),
+        RAGE_PIT_TOP_ENTRY("  &e&l#{0} {1}&e z &c{2}❤ zadanym", "  &e&l#{0} {1}&e with &c{2}❤ dealt"),
+        ;
 
         private final String polish;
         private final String english;
@@ -264,7 +278,40 @@ public class Strings {
                         .addNewline("§7Heal §c1❤§7 on hit.")
                         .addNewline("§7Heal §c2❤§7 on arrow shot.")
                         .addNewline("§cRegen I§7 (8s) on kill.")
-        ));
+        )),
+        RAGE_PIT_SCOREBOARD(new LoreBuilderWrapper(
+                new LoreBuilder()
+                        .setMaxLength(30)
+                        .add("§fEvent: &c&lRAGE PIT")
+                        .addNewline("§fPozostalo: &a{0}")
+                        .addNewline("§fObrazenia: &c{1}❤&7 {2}")
+                        .addNewline("§fWszystkie kille: {3}{4}&7/600"),
+                new LoreBuilder()
+                        .setMaxLength(30)
+                        .add("§fEvent: &c&lRAGE PIT")
+                        .addNewline("§fRemaining: &a{0}")
+                        .addNewline("§fDamage dealt: &c{1}❤&7{2}")
+                        .addNewline("§fAll kills: {3}{4}&7/600")
+        )),
+        EVENT_END(new LoreBuilderWrapper(
+                new LoreBuilder()
+                        .setMaxLength(Integer.MAX_VALUE)
+                        .add("&6&m" + ("-".repeat(22)))
+                        .addNewline("&6&lEVENT ZAKONCZONY: {0}")
+                        .addNewline("&6&lTwoje nagrody: &b+{1}XP &6+{2}$&e{3}")
+                        .addNewline("&6&lBonus dla wszystkich: {4}")
+                        .addNewline("&6&lTy: {5}"),
+                new LoreBuilder()
+                        .setMaxLength(Integer.MAX_VALUE)
+                        .add("&6&m" + ("-".repeat(22)))
+                        .addNewline("&6&lPIT EVENT ENDED: {0}")
+                        .addNewline("&6&lYour rewards: &b+{1}XP &6+{2}$&e{3}")
+                        .addNewline("&6&lBonus for all: {4}")
+                        .addNewline("&6&lYou: {5}")
+        )),
+
+
+        ;
 
         private final LoreBuilderWrapper wrapper;
 

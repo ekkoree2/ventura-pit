@@ -51,15 +51,80 @@ public class KingsMap implements Map {
     @Override
     public List<PitLocation> getSpawnLocations() {
         return List.of(
-            new PitLocation(0.0, 95.0, 9.0, 180.0f, -0.0f),
-            new PitLocation(9.0, 95.0, -9.0, 45.0f, -0.0f),
-            new PitLocation(9.0, 95.0, 9.0, 0.0f, 0.0f),
-            new PitLocation(-9.0, 95.0, 9.0, 0.0f, 0.0f),
-            new PitLocation(-9.0, 95.0, -9.0, 0.0f, 0.0f),
-            new PitLocation(9.0, 95.0, 0.0, 0.0f, 0.0f),
-            new PitLocation(0.0, 95.0, 9.0, 0.0f, 0.0f),
-            new PitLocation(0.0, 95.0, -9.0, 0.0f, 0.0f),
-            new PitLocation(-9.0, 95.0, 0.0, 270.0f, -0.0f)
+                new PitLocation(0.0, 95.0, 9.0, 180.0f, -0.0f),
+                new PitLocation(9.0, 95.0, -9.0, 45.0f, -0.0f),
+                new PitLocation(9.0, 95.0, 9.0, 0.0f, 0.0f),
+                new PitLocation(-9.0, 95.0, 9.0, 0.0f, 0.0f),
+                new PitLocation(-9.0, 95.0, -9.0, 0.0f, 0.0f),
+                new PitLocation(9.0, 95.0, 0.0, 0.0f, 0.0f),
+                new PitLocation(0.0, 95.0, 9.0, 0.0f, 0.0f),
+                new PitLocation(0.0, 95.0, -9.0, 0.0f, 0.0f),
+                new PitLocation(-9.0, 95.0, 0.0, 270.0f, -0.0f)
+        );
+    }
+
+    @Override
+    public List<PitLocation> getRagePitGlass() {
+        return List.of(
+                new PitLocation(-13.5, 71, 20.5),
+                new PitLocation(-12.5, 71, 20.5),
+                new PitLocation(-11.5, 71, 20.5),
+
+                new PitLocation(3.5, 71, 21.5),
+                new PitLocation(2.5, 71, 21.5),
+                new PitLocation(1.5, 71, 21.5),
+                new PitLocation(0.5, 71, 21.5),
+                new PitLocation(-1.5, 71, 21.5),
+                new PitLocation(-2.5, 71, 21.5),
+
+                new PitLocation(14.5, 71, 20.5),
+                new PitLocation(13.5, 71, 20.5),
+                new PitLocation(12.5, 71, 20.5),
+
+                new PitLocation(20.5, 71, 12.5),
+                new PitLocation(20.5, 71, 13.5),
+                new PitLocation(20.5, 71, 14.5),
+
+                new PitLocation(21.5, 71, 3.5),
+                new PitLocation(21.5, 71, 2.5),
+                new PitLocation(21.5, 71, 1.5),
+                new PitLocation(21.5, 71, 0.5),
+                new PitLocation(21.5, 71, -1.5),
+                new PitLocation(21.5, 71, -2.5),
+
+                new PitLocation(20.5, 71, -11.5),
+                new PitLocation(20.5, 71, -12.5),
+                new PitLocation(20.5, 71, -13.5),
+
+                new PitLocation(12.5, 71, -19.5),
+                new PitLocation(13.5, 71, -19.5),
+                new PitLocation(14.5, 71, -19.5),
+
+                new PitLocation(3.5, 71, -20.5),
+                new PitLocation(2.5, 71, -20.5),
+                new PitLocation(1.5, 71, -20.5),
+                new PitLocation(0.5, 71, -20.5),
+                new PitLocation(-1.5, 71, -20.5),
+                new PitLocation(-2.5, 71, -20.5),
+
+                new PitLocation(-13.5, 71, -20.5),
+                new PitLocation(-12.5, 71, -20.5),
+                new PitLocation(-11.5, 71, -20.5),
+
+                new PitLocation(-19.5, 71, -11.5),
+                new PitLocation(-19.5, 71, -12.5),
+                new PitLocation(-19.5, 71, -13.5),
+
+                new PitLocation(-20.5, 71, 3.5),
+                new PitLocation(-20.5, 71, 2.5),
+                new PitLocation(-20.5, 71, 1.5),
+                new PitLocation(-20.5, 71, 0.5),
+                new PitLocation(-20.5, 71, -1.5),
+                new PitLocation(-20.5, 71, -2.5),
+
+                new PitLocation(-19.5, 71, 14.5),
+                new PitLocation(-19.5, 71, 13.5),
+                new PitLocation(-19.5, 71, 12.5)
         );
     }
 }

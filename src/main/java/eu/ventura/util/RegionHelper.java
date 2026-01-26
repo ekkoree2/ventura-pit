@@ -50,4 +50,37 @@ public class RegionHelper {
     public static boolean isInSpawn(Player player) {
         return isInSpawn(player.getLocation());
     }
+
+    public static boolean isInRadiusOfBlock(Player player, org.bukkit.Material block, int radius) {
+        org.bukkit.block.Block center = player.getLocation().add(0.0, -1.0, 0.0).getBlock();
+        for (int x = -radius; x <= radius; x++) {
+            for (int y = -radius; y <= radius; y++) {
+                for (int z = -radius; z <= radius; z++) {
+                    org.bukkit.block.Block b = center.getRelative(x, y, z);
+                    if (center.getLocation().distance(b.getLocation()) <= radius && b.getType() == block) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static int getPlayerQuadrant(Player player) {
+        double x = player.getLocation().getX();
+        double z = player.getLocation().getZ();
+        if (x >= 0.0 && z >= 0.0) {
+            return 1;
+        }
+        if (x <= 0.0 && z >= 0.0) {
+            return 2;
+        }
+        if (x >= 0.0 && z <= 0.0) {
+            return 3;
+        }
+        if (x <= 0.0 && z <= 0.0) {
+            return 4;
+        }
+        return 0;
+    }
 }

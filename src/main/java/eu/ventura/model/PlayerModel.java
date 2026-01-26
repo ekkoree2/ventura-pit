@@ -7,8 +7,11 @@ import eu.ventura.constants.Sounds;
 import eu.ventura.constants.Status;
 import eu.ventura.constants.Strings;
 import eu.ventura.perks.Perk;
+import eu.ventura.renown.RenownShop;
 import eu.ventura.service.PerkService;
 import eu.ventura.service.PlayerService;
+import eu.ventura.service.RenownService;
+import eu.ventura.shop.Shop;
 import eu.ventura.util.LevelUtil;
 import eu.ventura.util.MathUtil;
 import eu.ventura.util.MongoUtil;
@@ -75,6 +78,11 @@ public class PlayerModel {
     @Save private int renown = 0;
     @Save public Strings.Language language = Strings.Language.POLISH;
 
+    @Save public Map<String, Integer> renownPerks = new HashMap<>();
+    @Save public String hatColor = "#FF0000";
+    @Save public boolean hatActive = false;
+    @Save public Set<String> autobuyItems = new HashSet<>();
+
     @Save public Set<String> purchasedPerks = new HashSet<>();
     @Save public Map<Integer, String> equippedPerks = new HashMap<>();
 
@@ -92,7 +100,8 @@ public class PlayerModel {
     }
 
     public int getEnderChestRows() {
-        return 3;
+        int baseTier = 0;
+        return 3 + baseTier;
     }
 
     public ItemStack[] getEnderChest() {
@@ -150,6 +159,53 @@ public class PlayerModel {
 
     public int getRenown() {
         return Math.max(0, renown);
+    }
+
+    public boolean hasRenownPerk(Class<? extends RenownShop> clazz) {
+        RenownShop shop = RenownService.getInstance(clazz);
+        if (shop == null) return false;
+        return renownPerks.containsKey(shop.getId()) && renownPerks.get(shop.getId()) > 0;
+    }
+
+    public int getRenownPerkTier(Class<? extends RenownShop> clazz) {
+        RenownShop shop = RenownService.getInstance(clazz);
+        if (shop == null) return 0;
+        return renownPerks.getOrDefault(shop.getId(), 0);
+    }
+
+    public int getRenownPerkTier(RenownShop shop) {
+        return renownPerks.getOrDefault(shop.getId(), 0);
+    }
+
+    public void setRenownPerkTier(RenownShop shop, int tier) {
+        renownPerks.put(shop.getId(), tier);
+    }
+
+    public void setHatActive(boolean active) {
+        this.hatActive = active;
+    }
+
+    public void setHatColor(String color) {
+        this.hatColor = color;
+    }
+
+    public Set<Shop> getAutobuyItems() {
+        Set<Shop> items = new HashSet<>();
+        for (String id : autobuyItems) {
+            Shop shop = eu.ventura.service.ShopService.getShop(id);
+            if (shop != null) {
+                items.add(shop);
+            }
+        }
+        return items;
+    }
+
+    public void addAutobuyItem(Shop shop) {
+        autobuyItems.add(shop.getId());
+    }
+
+    public void removeAutobuyItem(Shop shop) {
+        autobuyItems.remove(shop.getId());
     }
 
     public void prestige() {
@@ -276,6 +332,9 @@ public class PlayerModel {
         slots.add(new PerkSlotModel(0, 10));
         slots.add(new PerkSlotModel(1, 35));
         slots.add(new PerkSlotModel(2, 70));
+//        if (hasRenownPerk(eu.ventura.renown.impl.upgrades.ExtraPerkSlot.class)) {
+//            slots.add(new PerkSlotModel(3, 100));
+//        }
         return slots;
     }
 

@@ -21,6 +21,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -63,13 +64,13 @@ public class RagePit extends MajorEvent {
 
     public int getPlace(Player p) {
         UUID uuid = p.getUniqueId();
-        if (!dmg.containsKey(uuid)) return dmg.size() + 1;
+        if (!dmg.containsKey(uuid)) return 0;
 
         List<Entry<UUID, Double>> list = sorted();
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getKey().equals(uuid)) return i + 1;
         }
-        return list.size() + 1;
+        return 0;
     }
 
     protected List<Player> getTop() {
@@ -88,19 +89,24 @@ public class RagePit extends MajorEvent {
         int rewardRenown = 0;
         int rewardXp = xp.getOrDefault(p.getUniqueId(), 0);
 
-        if (place <= 3) {
-            rewardGold = 2000;
-            rewardRenown = 2;
-        } else if (place <= 20) {
-            rewardGold = 500;
-            rewardRenown = 1;
-        } else {
-            rewardGold = 100;
+        if (place > 0) {
+            if (place <= 3) {
+                rewardGold = 2000;
+                rewardRenown = 2;
+            } else if (place <= 20) {
+                rewardGold = 500;
+                rewardRenown = 1;
+            } else {
+                rewardGold = 100;
+            }
         }
 
         if (kills >= 600) {
             rewardGold += 500;
         }
+
+        rewardGold += gold.getOrDefault(p.getUniqueId(), 0d);
+        rewardXp += xp.getOrDefault(p.getUniqueId(), 0);
 
         return new int[]{rewardXp, rewardGold, rewardRenown};
     }
@@ -128,14 +134,14 @@ public class RagePit extends MajorEvent {
 
         PlayerModel model = PlayerModel.getInstance(p);
         boolean canGetRenown = rewardRenown > 0 && model.getPrestige() > 0;
-        String renownStr = canGetRenown ? " +&e" + rewardRenown + " Renown" : "";
+        String renownStr = canGetRenown ? " +&e" + NumberFormat.DEF.of(rewardRenown) + " Renown" : "";
 
         applyRewards(p, rewards);
 
         List<String> msg = new ArrayList<>(Strings.Lore.EVENT_END.get(p).compile(
                 getDisplayName(),
-                rewardXp,
-                rewardGold,
+                NumberFormat.DEF.of(rewardXp),
+                NumberFormat.DEF.of(rewardGold),
                 renownStr,
                 kills >= 600 ?
                         Strings.Formatted.RAGE_PIT_SUCCESS.format(p, NumberFormat.DEF.of(kills)) :
@@ -218,6 +224,14 @@ public class RagePit extends MajorEvent {
     }
 
     @Override
+    public void onQuit(PlayerQuitEvent e) {
+        UUID uuid = e.getPlayer().getUniqueId();
+        dmg.remove(uuid);
+        gold.remove(uuid);
+        xp.remove(uuid);
+    }
+
+    @Override
     public void onDamage(PitDamageEvent e) {
         UUID uuid = e.data.trueAttacker.getUniqueId();
         dmg.merge(uuid, e.getFinalDamage() / 2, Double::sum);
@@ -230,6 +244,10 @@ public class RagePit extends MajorEvent {
 
     @Override
     public void start() {
+        if (Bukkit.getOnlinePlayers().size() < 2) {
+            return;
+        }
+
         dmg.clear();
         gold.clear();
         xp.clear();

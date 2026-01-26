@@ -24,6 +24,7 @@ public class BugCommand extends BaseCommand {
     }
 
     @Subcommand("report")
+    @CommandAlias("report")
     public void report(Player player, String bug) {
         if (commandCooldownModel.isOnCooldown("bug", player)) {
             player.sendMessage("§cYou can only report bugs every 30 seconds!");
@@ -40,7 +41,7 @@ public class BugCommand extends BaseCommand {
         );
 
         BugService.addBug(bugModel);
-        commandCooldownModel.setCooldown("bug", player, 30000);
+        commandCooldownModel.setCooldown("bug", player, 30);
         player.sendMessage("§aBug report #" + id + " submitted successfully!");
     }
 

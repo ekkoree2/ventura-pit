@@ -81,4 +81,37 @@ public class EquipmentUtil {
         }
         inventory.setItem(slot, item);
     }
+
+    public static void equipArmor(Player player, ItemStack item) {
+        PlayerInventory inventory = player.getInventory();
+        String typeName = item.getType().name();
+
+        if (typeName.contains("BOOTS")) {
+            if (inventory.getBoots() == null || inventory.getBoots().getType() == Material.AIR) {
+                inventory.setBoots(item);
+            } else {
+                inventory.addItem(item);
+            }
+        } else if (typeName.contains("LEGGINGS")) {
+            if (inventory.getLeggings() == null || inventory.getLeggings().getType() == Material.AIR) {
+                inventory.setLeggings(item);
+            } else {
+                inventory.addItem(item);
+            }
+        } else if (typeName.contains("CHESTPLATE")) {
+            if (inventory.getChestplate() == null || inventory.getChestplate().getType() == Material.AIR) {
+                inventory.setChestplate(item);
+            } else {
+                inventory.addItem(item);
+            }
+        } else if (typeName.contains("HELMET")) {
+            if (inventory.getHelmet() == null || inventory.getHelmet().getType() == Material.AIR) {
+                inventory.setHelmet(item);
+            } else {
+                inventory.addItem(item);
+            }
+        } else {
+            inventory.addItem(item);
+        }
+    }
 }

@@ -31,8 +31,12 @@ import java.util.Set;
 public class WorldListener implements Listener {
     private final Set<PitBlockModel> placedBlocks = new HashSet<>();
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
         Player player = event.getPlayer();
         ItemStack itemInHand = event.getItemInHand();
 
@@ -41,7 +45,6 @@ public class WorldListener implements Listener {
         }
 
         if (player.getGameMode() == GameMode.CREATIVE) {
-            event.setCancelled(false);
             return;
         }
 

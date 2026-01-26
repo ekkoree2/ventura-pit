@@ -70,6 +70,37 @@ public class KingsMap implements Map {
     }
 
     @Override
+    public PitLocation[] getLauncherTargets(int quadrant) {
+        return switch (quadrant) {
+            case 1 -> new PitLocation[]{
+                    new PitLocation(42.0, 66.0, 79.0),
+                    new PitLocation(67.0, 66.0, 68.0),
+                    new PitLocation(90.0, 69.0, 32.0)
+            };
+            case 2 -> new PitLocation[]{
+                    new PitLocation(-78.0, 71.0, 74.0),
+                    new PitLocation(-35.0, 66.0, 70.0),
+                    new PitLocation(-82.0, 67.0, 44.0)
+            };
+            case 3 -> new PitLocation[]{
+                    new PitLocation(53.0, 75.0, -42.0),
+                    new PitLocation(20.0, 72.0, -60.0),
+                    new PitLocation(67.0, 74.0, -12.0)
+            };
+            case 4 -> new PitLocation[]{
+                    new PitLocation(-48.0, 79.0, -45.0),
+                    new PitLocation(-10.0, 85.0, -60.0),
+                    new PitLocation(-96.0, 80.0, -27.0)
+            };
+            default -> new PitLocation[]{
+                    new PitLocation(0, 100, 0),
+                    new PitLocation(0, 100, 0),
+                    new PitLocation(0, 100, 0)
+            };
+        };
+    }
+
+    @Override
     public List<PitLocation> getRagePitGlass() {
         return List.of(
                 new PitLocation(-13.5, 71, 20.5),
@@ -80,6 +111,7 @@ public class KingsMap implements Map {
                 new PitLocation(2.5, 71, 21.5),
                 new PitLocation(1.5, 71, 21.5),
                 new PitLocation(0.5, 71, 21.5),
+                new PitLocation(-0.5, 71, 21.5),
                 new PitLocation(-1.5, 71, 21.5),
                 new PitLocation(-2.5, 71, 21.5),
 
@@ -95,6 +127,7 @@ public class KingsMap implements Map {
                 new PitLocation(21.5, 71, 2.5),
                 new PitLocation(21.5, 71, 1.5),
                 new PitLocation(21.5, 71, 0.5),
+                new PitLocation(21.5, 71, -0.5),
                 new PitLocation(21.5, 71, -1.5),
                 new PitLocation(21.5, 71, -2.5),
 
@@ -110,6 +143,7 @@ public class KingsMap implements Map {
                 new PitLocation(2.5, 71, -20.5),
                 new PitLocation(1.5, 71, -20.5),
                 new PitLocation(0.5, 71, -20.5),
+                new PitLocation(-0.5, 71, -20.5),
                 new PitLocation(-1.5, 71, -20.5),
                 new PitLocation(-2.5, 71, -20.5),
 
@@ -125,12 +159,38 @@ public class KingsMap implements Map {
                 new PitLocation(-20.5, 71, 2.5),
                 new PitLocation(-20.5, 71, 1.5),
                 new PitLocation(-20.5, 71, 0.5),
+                new PitLocation(-20.5, 71, -0.5),
                 new PitLocation(-20.5, 71, -1.5),
                 new PitLocation(-20.5, 71, -2.5),
 
                 new PitLocation(-19.5, 71, 14.5),
                 new PitLocation(-19.5, 71, 13.5),
-                new PitLocation(-19.5, 71, 12.5)
+                new PitLocation(-19.5, 71, 12.5),
+
+                new PitLocation(12.5, 95, 15.5),
+                new PitLocation(13.5, 95, 14.5),
+                new PitLocation(14.5, 95, 13.5),
+                new PitLocation(15.5, 95, 12.5),
+
+                new PitLocation(15.5, 95, -11.5),
+                new PitLocation(14.5, 95, -12.5),
+                new PitLocation(13.5, 95, -13.5),
+                new PitLocation(12.5, 95, -14.5),
+
+                new PitLocation(-11.5, 95, -14.5),
+                new PitLocation(-12.5, 95, -13.5),
+                new PitLocation(-13.5, 95, -12.5),
+                new PitLocation(-14.5, 95, -11.5),
+
+                new PitLocation(-11.5, 95, -14.5),
+                new PitLocation(-12.5, 95, -13.5),
+                new PitLocation(-13.5, 95, -12.5),
+                new PitLocation(-14.5, 95, -11.5),
+
+                new PitLocation(-14.5, 95, 12.5),
+                new PitLocation(-13.5, 95, 13.5),
+                new PitLocation(-12.5, 95, 14.5),
+                new PitLocation(-11.5, 95, 15.5)
         );
     }
 }

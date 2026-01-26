@@ -47,4 +47,8 @@ public class ShopService {
     private static void addItem(Shop item) {
         items.put(item.getId(), item);
     }
+
+    public static Shop getShop(String id) {
+        return items.get(id);
+    }
 }

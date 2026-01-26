@@ -58,4 +58,15 @@ public abstract class Shop {
     public void onDrink(PlayerItemConsumeEvent event) {
 
     }
+
+    public void giveItem(Player player) {
+        ItemStack item = getItem();
+        if (item != null) {
+            if (isArmor()) {
+                eu.ventura.util.EquipmentUtil.equipArmor(player, item.clone());
+            } else {
+                player.getInventory().addItem(item.clone());
+            }
+        }
+    }
 }

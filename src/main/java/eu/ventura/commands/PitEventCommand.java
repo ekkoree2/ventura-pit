@@ -20,8 +20,8 @@ public class PitEventCommand extends BaseCommand {
         Pit.event.stop();
     }
 
-    @Subcommand("rage")
-    public void ragePit() {
-        PitEvent.RAGE_PIT.instance.start();
+    @Subcommand("rage start")
+    public void ragePitStart() {
+        PitEvent.RAGE_PIT.instance.schedule();
     }
 }

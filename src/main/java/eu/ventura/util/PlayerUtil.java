@@ -1,10 +1,15 @@
 package eu.ventura.util;
 
 import eu.ventura.Pit;
+import eu.ventura.event.PitDeathEvent;
+import eu.ventura.event.PitKillEvent;
 import eu.ventura.events.major.impl.RagePit;
+import eu.ventura.model.DeathModel;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.service.PlayerService;
+import org.bukkit.Bukkit;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
@@ -53,12 +58,25 @@ public class PlayerUtil {
         victim.damage(Double.MAX_VALUE);
     }
 
+    public static void killPlayer(Player victim) {
+        PlayerModel victimModel = PlayerService.getPlayer(victim);
+        Player attacker = victimModel.lastAttacker;
+
+        DeathModel deathModel = new DeathModel(attacker, attacker, victim, null);
+        if (attacker != null) {
+            Bukkit.getPluginManager().callEvent(new PitKillEvent(deathModel));
+        }
+        Bukkit.getPluginManager().callEvent(new PitDeathEvent(deathModel));
+    }
+
     public static void sendTitle(Player player, String title, String subtitle) {
         player.sendTitle(title, subtitle, 10, 40, 10);
     }
 
     public static void displayIndicator(Player player, String message) {
-        player.sendActionBar(Component.text(message));
+        player.sendActionBar(LegacyComponentSerializer.legacySection().deserialize(
+                message.replace('&', '\u00A7')
+        ));
     }
 
     public static void addHealth(Player player, double amount) {

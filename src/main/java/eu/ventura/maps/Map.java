@@ -32,6 +32,8 @@ public interface Map {
 
     PitLocation getLeaderboardLocation();
 
+    PitLocation[] getLauncherTargets(int quadrant);
+
     @RequiredArgsConstructor
     @Getter
     public static class Hologram {

@@ -9,6 +9,7 @@ import eu.ventura.listener.*;
 import eu.ventura.service.BossBarService;
 import eu.ventura.service.BugService;
 import eu.ventura.service.CombatService;
+import eu.ventura.service.EventService;
 import eu.ventura.service.LeaderboardService;
 import eu.ventura.service.PitBlockService;
 import eu.ventura.service.PlayerService;
@@ -99,8 +100,12 @@ public class Pit extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ResourceListener(), this);
         getServer().getPluginManager().registerEvents(new WorldListener(), this);
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
+        getServer().getPluginManager().registerEvents(new RenownListener(), this);
+        getServer().getPluginManager().registerEvents(new LauncherListener(), this);
 
         autoSaveTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, PlayerService::saveAll, 1200L, 1200L);
+
+        EventService.getInstance().start();
     }
 
     @Override
@@ -118,6 +123,7 @@ public class Pit extends JavaPlugin {
         CombatService.getInstance().stop();
         BossBarService.getInstance().stop();
         LeaderboardService.getInstance(VenturaCore.getHologramApi(), map.getInstance().getLeaderboardLocation().of()).stop();
+        EventService.getInstance().stop();
 
         HandlerList.unregisterAll(this);
     }

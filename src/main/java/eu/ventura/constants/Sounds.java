@@ -1,5 +1,9 @@
 package eu.ventura.constants;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import eu.ventura.Pit;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -8,8 +12,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: ekkoree
@@ -35,13 +39,59 @@ public class Sounds {
     public static final SoundEffect ITEM_PURCHASE = new SoundEffect(Sound.ENTITY_PLAYER_LEVELUP, 1.0, 2.0);
     public static final SoundEffect GOLDEN_HEADS = new SoundEffect(Sound.ENTITY_GENERIC_EAT, 1.0, 0.85);
     public static final SoundEffect GOLDEN_HEADS_COOLDOWN = new SoundEffect(Sound.ENTITY_VILLAGER_NO, 1.0, 1.0);
-    public static final SoundEffect GOLDEN_APPLE = new SoundEffect(Sound.ENTITY_GENERIC_EAT, 1.0, 1.0);
-    public static final SoundEffect GOLDEN_APPLE_COOLDOWN = new SoundEffect(Sound.ENTITY_VILLAGER_NO, 1.0, 1.0);
 
     public static final SoundEffect MAJOR_END = new SoundEffect()
             .add(new SoundMoment(0).add(Sound.ENTITY_PLAYER_BURP, 1.0, 0.6984127))
             .add(new SoundMoment(5).add(Sound.ENTITY_PLAYER_BURP, 1.0, 0.5873016))
             .add(new SoundMoment(10).add(Sound.ENTITY_PLAYER_BURP, 1.0, 0.4920635));
+
+    public static final SoundEffect MAJOR_EVENT_SCHEDULE = new SoundEffect()
+            .add(new SoundMoment(0)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 0.571429)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 0.777778))
+            .add(new SoundMoment(0)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 0.571429)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 0.777778))
+            .add(new SoundMoment(2)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 0.777778)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 0.920635))
+            .add(new SoundMoment(4)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 0.777778)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 0.920635))
+            .add(new SoundMoment(6)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 0.920635)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 1.15873))
+            .add(new SoundMoment(8)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 0.920635)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 1.15873))
+            .add(new SoundMoment(10)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 0.571429)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 0.777778)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 0.920635)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 1.15873)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 1.301587)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 1.555556))
+            .add(new SoundMoment(14)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 0.571429)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 0.777778)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 0.920635)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 1.15873)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 1.301587)
+                    .add(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0, 1.555556))
+            .add(new SoundMoment(16)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 0.571429)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 0.777778)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 0.920635)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 1.15873)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 1.301587)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 1.555556))
+            .add(new SoundMoment(18)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 0.571429)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 0.777778)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 0.920635)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 1.15873)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 1.301587)
+                    .add(Sound.BLOCK_NOTE_BLOCK_HARP, 1.0, 1.555556));
 
     public static final SoundEffect DOUBLE_KILL = new SoundEffect()
             .add(new SoundMoment(0).add(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5, 1.8))
@@ -86,73 +136,130 @@ public class Sounds {
             return this;
         }
 
-        public void play(Location location, double radius) {
-            for(Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if(onlinePlayer.getWorld() != location.getWorld() || onlinePlayer.getLocation().distance(location) > radius)
-                    continue;
-                play(onlinePlayer, -1, -1);
-            }
-        }
-
-        public void play(Location location, double radius, float volume, float pitch) {
-            for(Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if(onlinePlayer.getWorld() != location.getWorld() || onlinePlayer.getLocation().distance(location) > radius)
-                    continue;
-                play(onlinePlayer, volume, pitch);
-            }
-        }
-
         public void play(LivingEntity checkPlayer) {
             play(checkPlayer, -1, -1);
         }
 
         public void play(LivingEntity checkPlayer, float volume, float pitch) {
-            if(!(checkPlayer instanceof Player player)) return;
+            if (!(checkPlayer instanceof Player player)) return;
+            if (!player.isOnline()) return;
 
-            if(!player.isOnline()) return;
-            if(soundMoment != null) {
-                if(volume >= 0 && pitch >= 0) soundMoment.play(player, volume, pitch);
-                else soundMoment.play(player);
+            if (soundMoment != null) {
+                if (volume >= 0 && pitch >= 0) {
+                    soundMoment.play(player, volume, pitch);
+                } else {
+                    soundMoment.play(player);
+                }
                 return;
             }
-            List<SoundMoment> soundTimeList = new ArrayList<>(this.soundTimeList);
-            new BukkitRunnable() {
-                int count = 0;
-                @Override
-                public void run() {
-                    for(SoundMoment soundMoment : new ArrayList<>(soundTimeList)) {
-                        if(soundMoment.tick != count) continue;
-                        soundTimeList.remove(soundMoment);
-                        soundMoment.play(player);
-                    }
-                    if(soundTimeList.isEmpty()) cancel();
-                    count++;
+
+            Map<Integer, List<SoundMoment.BukkitSound>> grouped = new TreeMap<>();
+            for (SoundMoment moment : soundTimeList) {
+                grouped.computeIfAbsent(moment.tick, k -> new ArrayList<>()).addAll(moment.bukkitSounds);
+            }
+
+            for (Map.Entry<Integer, List<SoundMoment.BukkitSound>> entry : grouped.entrySet()) {
+                int delay = entry.getKey();
+                List<SoundMoment.BukkitSound> soundsAtTick = entry.getValue();
+
+                if (delay == 0) {
+                    playSounds(player, soundsAtTick, volume, pitch);
+                } else {
+                    Bukkit.getScheduler().runTaskLater(Pit.instance, () -> {
+                        if (!player.isOnline()) return;
+                        playSounds(player, soundsAtTick, volume, pitch);
+                    }, delay);
                 }
-            }.runTaskTimer(Pit.instance, 0L, 1L);
+            }
         }
 
         public void play(Location location) {
-            if(soundMoment != null) {
+            if (soundMoment != null) {
                 soundMoment.play(location);
                 return;
             }
-            List<SoundMoment> soundTimeList = new ArrayList<>(this.soundTimeList);
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    int count = 0;
-                    List<SoundMoment> toRemove = new ArrayList<>();
-                    for(SoundMoment soundMoment : soundTimeList) {
-                        if(soundMoment.tick == count) {
-                            toRemove.add(soundMoment);
-                            soundMoment.play(location);
-                        }
-                        count++;
-                    }
-                    soundTimeList.removeAll(toRemove);
-                    if(soundTimeList.isEmpty()) cancel();
+
+            Map<Integer, List<SoundMoment.BukkitSound>> grouped = new HashMap<>();
+            for (SoundMoment moment : soundTimeList) {
+                grouped.computeIfAbsent(moment.tick, k -> new ArrayList<>()).addAll(moment.bukkitSounds);
+            }
+
+            for (Map.Entry<Integer, List<SoundMoment.BukkitSound>> entry : grouped.entrySet()) {
+                int delay = entry.getKey();
+                List<SoundMoment.BukkitSound> soundsAtTick = entry.getValue();
+
+                if (delay == 0) {
+                    playSounds(location, soundsAtTick);
+                } else {
+                    Bukkit.getScheduler().runTaskLater(Pit.instance, () -> {
+                        playSounds(location, soundsAtTick);
+                    }, delay);
                 }
-            }.runTaskTimer(Pit.instance, 0L, 1L);
+            }
+        }
+
+        public void play(Location location, double radius) {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (onlinePlayer.getWorld() != location.getWorld() || onlinePlayer.getLocation().distance(location) > radius) {
+                    continue;
+                }
+                play(onlinePlayer, -1, -1);
+            }
+        }
+
+        public void play(Location location, double radius, float volume, float pitch) {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (onlinePlayer.getWorld() != location.getWorld() || onlinePlayer.getLocation().distance(location) > radius) {
+                    continue;
+                }
+                play(onlinePlayer, volume, pitch);
+            }
+        }
+
+        private void playSounds(Player player, List<SoundMoment.BukkitSound> sounds, float overrideVolume, float overridePitch) {
+            Location location = player.getLocation();
+
+            for (SoundMoment.BukkitSound bukkitSound : sounds) {
+                float volume = overrideVolume >= 0 ? overrideVolume : bukkitSound.volume;
+                float pitch = overridePitch >= 0 ? overridePitch : bukkitSound.pitch;
+
+                if (bukkitSound.sound != null) {
+                    sendSoundPacket(player, location, bukkitSound.sound, volume, pitch);
+                } else if (bukkitSound.soundString != null) {
+                    player.playSound(location, bukkitSound.soundString, volume, pitch);
+                }
+            }
+        }
+
+        private void playSounds(Location location, List<SoundMoment.BukkitSound> sounds) {
+            for (Player player : location.getWorld().getPlayers()) {
+                for (SoundMoment.BukkitSound bukkitSound : sounds) {
+                    if (bukkitSound.sound != null) {
+                        sendSoundPacket(player, location, bukkitSound.sound, bukkitSound.volume, bukkitSound.pitch);
+                    }
+                }
+            }
+        }
+
+        private void sendSoundPacket(Player player, Location location, Sound sound, float volume, float pitch) {
+            PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.NAMED_SOUND_EFFECT);
+
+            packet.getSoundEffects().write(0, sound);
+            packet.getSoundCategories().write(0, EnumWrappers.SoundCategory.RECORDS);
+            packet.getIntegers()
+                    .write(0, (int) (location.getX() * 8.0))
+                    .write(1, (int) (location.getY() * 8.0))
+                    .write(2, (int) (location.getZ() * 8.0));
+            packet.getFloat()
+                    .write(0, volume)
+                    .write(1, pitch);
+            packet.getLongs().write(0, ThreadLocalRandom.current().nextLong());
+
+            try {
+                ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

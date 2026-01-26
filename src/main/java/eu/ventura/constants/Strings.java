@@ -168,6 +168,21 @@ public class Strings {
         LEADERBOARD_HEADER("&b&lɴᴀᴊᴡɪᴇᴋѕᴢᴇ ɴᴇʀᴅʏ", "&b&lᴛᴏᴘ ᴀᴄᴛɪᴠᴇ ᴘʟᴀʏᴇʀѕ"),
         LEADERBOARD_SUBTITLE("&7ᴘᴏᴢɪᴏᴍ ᴘɪᴛ", "&7ᴘɪᴛ ʟᴇᴠᴇʟ"),
 
+        RENOWN_SHOP_TITLE("§8Renown Shop"),
+        RENOWN_UPGRADES_TITLE("§8Renown Upgrades"),
+        RENOWN_PERKS_TITLE("§8Renown Perks"),
+        RENOWN_ITEMS_TITLE("§8Renown Shop Items"),
+        RENOWN_KILLSTREAKS_TITLE("§8Renown Killstreaks"),
+        RENOWN_NOT_ENOUGH("§cYou don't have enough renown to afford this!", "§cNie masz wystarczająco renown!"),
+        RENOWN_PRESTIGE_TOO_LOW("§cYou are too low prestige to acquire this!", "§cJesteś zbyt niskiego prestige!"),
+        RENOWN_ALREADY_UNLOCKED("§aYou already unlocked this upgrade!", "§aJuż odblokowałeś to ulepszenie!"),
+        RENOWN_AUTOFAIL("§c§lAUTOFAIL!§7 Not enough gold for ", "§c§lAUTOFAIL!§7 Niewystarczająco złota na "),
+
+        MAJOR_EVENT_ONE_MINUTE("§5§lDUZY EVENT! §7Zaczyna sie za §e1 minute", "§5§lMAJOR EVENT! §7Starting in §e1 minute"),
+        MAJOR_EVENT_ONE_MINUTE_PLURAL("§5§lDUZY EVENT! §7Zaczyna sie za §e{0} minuty", "§5§lMAJOR EVENT! §7Starting in §e{0} minutes"),
+
+        TIME_ONE_MINUTE("§e1 minuta", "§e1 minute"),
+
         ;
 
         private final String polish;
@@ -251,7 +266,11 @@ public class Strings {
         PRESTIGE_RENOWN_SHOP_LORE_5("§7§oresetu prestige.", "§7§oprestige reset."),
         PRESTIGE_CLICK_TO_BROWSE("§eKliknij żeby przeglądać!", "§eClick to browse!"),
         LEADERBOARD_ENTRY("§e{0}. §f{1} §e{2}§7 - §b{3} XP"),
-        LEADERBOARD_SUFFIX("&7Posiadasz: &b{0} XP", "&7You have: &b{0} XP")
+        LEADERBOARD_SUFFIX("&7Posiadasz: &b{0} XP", "&7You have: &b{0} XP"),
+        MAJOR_EVENT_STARTING("§5§lDUZY EVENT!§5§l {0}!§7 Zaczyna sie za {1}", "§5§lMAJOR EVENT!§5§l {0}!§7 Starting in {1}"),
+        MAJOR_EVENT_CHAT("§5§lDUZY EVENT! {0} §7za {1} min{2}", "§5§lMAJOR EVENT! {0} §7in {1} min{2}"),
+        MAJOR_EVENT_BOSSBAR_STARTING("§7Zaczyna sie za §a{0}", "§7Starting in §a{0}"),
+        TIME_MINUTES("§e{0} minuty", "§e{0} minutes")
         ;
 
         private final String polish;

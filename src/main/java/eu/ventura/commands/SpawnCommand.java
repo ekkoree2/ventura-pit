@@ -9,6 +9,7 @@ import eu.ventura.constants.Strings;
 import eu.ventura.event.PitRespawnEvent;
 import eu.ventura.model.CommandCooldownModel;
 import eu.ventura.model.PlayerModel;
+import eu.ventura.util.PlayerUtil;
 import eu.ventura.util.RegionHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -61,7 +62,7 @@ public class SpawnCommand extends BaseCommand {
             Sounds.ENDERMAN_NO.play(player);
             return;
         }
-        player.damage(Double.MAX_VALUE);
+        PlayerUtil.killPlayer(player);
         commandCooldownModel.setCooldown("spawn", player, 10);
     }
 }

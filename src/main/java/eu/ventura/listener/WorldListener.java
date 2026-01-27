@@ -1,24 +1,20 @@
 package eu.ventura.listener;
 
 import eu.ventura.Pit;
+import eu.ventura.menu.EnderChestGUI;
 import eu.ventura.service.PitBlockService;
 import eu.ventura.util.NBTHelper;
 import eu.ventura.util.RegionHelper;
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
@@ -30,6 +26,16 @@ import java.util.Set;
  */
 public class WorldListener implements Listener {
     private final Set<PitBlockModel> placedBlocks = new HashSet<>();
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onInteract(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (block != null && block.getType() == Material.ENDER_CHEST && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            Player player = event.getPlayer();
+            event.setCancelled(true);
+            new EnderChestGUI(player, () -> player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.9f, 1.0f)).open();
+        }
+    }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {

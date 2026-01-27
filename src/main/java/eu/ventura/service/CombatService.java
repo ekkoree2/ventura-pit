@@ -1,12 +1,8 @@
 package eu.ventura.service;
 
 import eu.ventura.Pit;
-import eu.ventura.model.PlayerModel;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * author: ekkoree
@@ -35,16 +31,14 @@ public class CombatService implements Runnable {
 
     @Override
     public void run() {
-        ConcurrentHashMap<Player, PlayerModel> players = new ConcurrentHashMap<>(PlayerService.players);
-
-        players.values().forEach(player -> {
-            if (player.combatTime > 0) {
+        PlayerService.players.values().forEach(model -> {
+            if (model.combatTime > 0) {
                 Bukkit.getScheduler().runTask(Pit.instance, () -> {
-                    player.combatTime--;
+                    model.combatTime--;
 
-                    if (player.combatTime == 0) {
-                        player.updateStatus();
-                        player.lastAttacker = null;
+                    if (model.combatTime == 0) {
+                        model.updateStatus();
+                        model.lastAttacker = null;
                     }
                 });
             }

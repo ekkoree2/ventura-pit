@@ -116,6 +116,11 @@ public class PlayerListener implements Listener {
 
         if (Pit.event == null) {
             playerModel.streak += 1;
+            int streak = playerModel.streak;
+            if (((streak % 5 == 0 && streak <= 5) || streak % 10 == 0) && streak > 0) {
+                String streakMessage = Strings.Formatted.STREAK_BROADCAST.format(attacker, streak, PlayerUtil.getDisplayName(attacker));
+                Bukkit.getOnlinePlayers().forEach(target -> target.sendMessage(streakMessage));
+            }
         }
 
         String message = Strings.Formatted.KILL_MESSAGE.format(

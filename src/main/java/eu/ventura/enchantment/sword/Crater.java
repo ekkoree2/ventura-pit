@@ -33,7 +33,7 @@ public class Crater implements PitEnchant {
 
     @Override
     public EnchantRarity getRarity() {
-        return EnchantRarity.RARE;
+        return EnchantRarity.REGULAR;
     }
 
     @Override

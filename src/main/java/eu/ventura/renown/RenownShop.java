@@ -1,5 +1,6 @@
 package eu.ventura.renown;
 
+import eu.ventura.constants.Strings;
 import eu.ventura.event.PitKillEvent;
 import eu.ventura.event.PitRespawnEvent;
 import eu.ventura.model.PlayerModel;
@@ -70,12 +71,20 @@ public abstract class RenownShop {
         return null;
     }
 
+    public String getCurrentBoost(int tier, Strings.Language lang) {
+        return getCurrentBoost(tier);
+    }
+
     public Perk getPerkInstance() {
         return null;
     }
 
     public List<String> getMaxedTierInfo(int tier) {
         return getTier(tier).getLore();
+    }
+
+    public List<String> getMaxedTierInfo(int tier, Strings.Language lang) {
+        return getTier(tier).getLore(lang);
     }
 
     public RenownTierModel getTier(int tierLevel) {

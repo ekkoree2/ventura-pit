@@ -4,7 +4,10 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import com.google.common.collect.HashMultimap;
 import eu.ventura.Pit;
+import eu.ventura.constants.Strings;
+import eu.ventura.model.PlayerModel;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -133,6 +136,16 @@ public class ItemHelper {
                 Material.ARROW,
                 "§aGo Back",
                 List.of("§7To " + panel),
+                true
+        );
+    }
+
+    public static ItemStack getReturnMenu(Player player, String panel) {
+        Strings.Language lang = PlayerModel.getInstance(player).language;
+        return createItem(
+                Material.ARROW,
+                Strings.Simple.RENOWN_GO_BACK.get(lang),
+                List.of(Strings.Formatted.RENOWN_TO_PANEL.format(lang, panel)),
                 true
         );
     }

@@ -6,6 +6,7 @@ import eu.ventura.event.PitKillEvent;
 import eu.ventura.events.major.impl.RagePit;
 import eu.ventura.model.DeathModel;
 import eu.ventura.model.PlayerModel;
+import eu.ventura.perks.permanent.Rambo;
 import eu.ventura.service.PlayerService;
 import org.bukkit.Bukkit;
 import net.kyori.adventure.text.Component;
@@ -43,15 +44,31 @@ public class PlayerUtil {
     }
 
     @SuppressWarnings("ALL")
-    public static void updateMaxHealth(Player player, boolean heal) {
+    public static double getMaxHealth(Player player) {
+        PlayerModel playerModel = PlayerService.getPlayer(player);
         double base = 20.0;
+        if (playerModel.hasEquippedPerk(Rambo.class)) {
+            base = 16.0;
+        }
         if (Pit.event instanceof RagePit) {
             base *= 2;
         }
+        return base;
+    }
+
+
+    @SuppressWarnings("ALL")
+    public static void updateMaxHealth(Player player, boolean heal) {
+        double base = getMaxHealth(player);
         player.setMaxHealth(base);
         if (heal) {
             player.setHealth(base);
         }
+    }
+
+    public static void heal(Player player, double amount) {
+        double max = getMaxHealth(player);
+        player.setHealth(Math.min(max, player.getHealth() + amount));
     }
 
     public static void die(Player victim) {
@@ -93,7 +110,7 @@ public class PlayerUtil {
         player.setAbsorptionAmount(player.getAbsorptionAmount() + amount);
     }
 
-    private static User getUser(Player player) {
+    public static User getUser(Player player) {
         return luckPerms.getUserManager().getUser(player.getUniqueId());
     }
 

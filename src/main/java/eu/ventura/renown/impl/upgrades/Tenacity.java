@@ -1,13 +1,11 @@
 package eu.ventura.renown.impl.upgrades;
 
+import eu.ventura.constants.Strings;
 import eu.ventura.event.PitKillEvent;
-import eu.ventura.model.PlayerModel;
 import eu.ventura.renown.RenownCategory;
 import eu.ventura.renown.RenownShop;
-import eu.ventura.service.PlayerService;
-import eu.ventura.util.LoreBuilder;
+import eu.ventura.util.PlayerUtil;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -18,23 +16,24 @@ import java.util.List;
 public class Tenacity extends RenownShop {
     public Tenacity() {
         super(RenownCategory.UPGRADES, Material.MAGMA_CREAM,
-                repeatTiers(getLore(),
+                repeatTiers(Strings.Lore.TENACITY.compile(Strings.Language.POLISH),
                         t(1, 10, 1),
                         t(2, 50, 1)
                 )
         );
     }
 
-    private static List<String> getLore() {
-        return new LoreBuilder()
-                .add("§7Each tier:")
-                .addNewline("§7Heal §c0.5❤§7 on kill.")
-                .compile();
+    @Override
+    public String getCurrentBoost(int tier, Strings.Language lang) {
+        double healAmount = getHealAmount(tier);
+        return lang == Strings.Language.POLISH
+                ? "§7Ulecz §c" + healAmount + "❤§7 po zabójstwie."
+                : "§7Heal §c" + healAmount + "❤§7 on kill.";
     }
 
     @Override
-    public String getCurrentBoost(int tier) {
-        return "§7Heal §c" + getHealAmount(tier) + "❤§7 on kill.";
+    public List<String> getMaxedTierInfo(int tier, Strings.Language lang) {
+        return Strings.Lore.TENACITY.compile(lang);
     }
 
     private static double getHealAmount(int tier) {
@@ -43,11 +42,6 @@ public class Tenacity extends RenownShop {
 
     @Override
     public void onKill(PitKillEvent event, int tierLevel) {
-        double health = getHealAmount(tierLevel) * 2;
-        Player attacker = event.data.trueAttacker;
-        if (attacker != null) {
-            double newHealth = Math.min(attacker.getMaxHealth(), attacker.getHealth() + health);
-            attacker.setHealth(newHealth);
-        }
+        PlayerUtil.heal(event.data.trueAttacker, tierLevel);
     }
 }

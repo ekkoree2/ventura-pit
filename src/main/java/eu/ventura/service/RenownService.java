@@ -1,8 +1,11 @@
 package eu.ventura.service;
 
 import eu.ventura.model.PlayerModel;
+import eu.ventura.perks.permanent.Dirty;
+import eu.ventura.perks.permanent.Rambo;
 import eu.ventura.renown.RenownCategory;
 import eu.ventura.renown.RenownShop;
+import eu.ventura.renown.impl.perks.RenownPerk;
 import eu.ventura.renown.impl.upgrades.Tenacity;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -25,6 +28,8 @@ public class RenownService {
 
     static {
         addItem(new Tenacity());
+        addItem(RenownPerk.of(Dirty::new));
+        addItem(RenownPerk.of(Rambo::new));
     }
 
     public static <T extends RenownShop> T getInstance(Class<T> clazz) {

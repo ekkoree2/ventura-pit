@@ -81,12 +81,11 @@ public class BountyListener implements Listener {
     }
 
     private boolean randomBounty(Player player, int streak, long secondsBetweenKills) {
-        if (streak < 6) return false;
+        if (streak < 5) return false;
 
-        double base = Math.min(streak / 160.0, 0.4);
-        double speed = 1.0 + Math.max(0, (4.0 - secondsBetweenKills)) * 0.03;
-        double multi = 0.6;
+        double base = Math.min(streak / 8.0, 0.7);
+        double speed = 1.0 + Math.max(0, (5.0 - secondsBetweenKills)) * 0.3;
 
-        return ThreadLocalRandom.current().nextDouble() < base * speed * multi;
+        return ThreadLocalRandom.current().nextDouble() < base * speed * 1.2;
     }
 }

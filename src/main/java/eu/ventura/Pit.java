@@ -79,6 +79,7 @@ public class Pit extends JavaPlugin {
         ArcticAPI.init(this, "", "");
 
         PaperCommandManager commandManager = new PaperCommandManager(this);
+        commandManager.getCommandCompletions().registerAsyncCompletion("dbplayers", c -> PlayerService.getAllUsernames());
         commandManager.registerCommand(new SpawnCommand());
         commandManager.registerCommand(new EnchantCommand());
         commandManager.registerCommand(new FreshCommand());
@@ -87,6 +88,8 @@ public class Pit extends JavaPlugin {
         commandManager.registerCommand(new BugCommand());
         commandManager.registerCommand(new PitEventCommand());
         commandManager.registerCommand(new RemoveBlockCommand());
+        commandManager.registerCommand(new InvSeeCommand());
+        commandManager.registerCommand(new VanishCommand());
 
         getServer().getPluginManager().registerEvents(new PlayerListener(
                 VenturaCore.getNpcManager(),
@@ -102,6 +105,7 @@ public class Pit extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
         getServer().getPluginManager().registerEvents(new RenownListener(), this);
         getServer().getPluginManager().registerEvents(new LauncherListener(), this);
+        getServer().getPluginManager().registerEvents(new VanishListener(), this);
 
         autoSaveTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, PlayerService::saveAll, 1200L, 1200L);
 

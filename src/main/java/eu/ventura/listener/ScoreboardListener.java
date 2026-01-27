@@ -77,7 +77,7 @@ public class ScoreboardListener implements Listener {
         newLines.add(Strings.Formatted.LEVEL.format(player, LevelUtil.getFormattedLevelFromValuesChat(model)));
         newLines.add(model.getLevel() == 120
                 ? Strings.Simple.MAXED.get(player)
-                : Strings.Formatted.NEEDED_XP.format(player, model.requiredXP));
+                : Strings.Formatted.NEEDED_XP.format(player, NumberFormat.DEF.of(model.requiredXP)));
         newLines.add("");
         newLines.add(Strings.Formatted.GOLD.format(player, format.of(model.getGold())));
         newLines.add("");
@@ -85,7 +85,7 @@ public class ScoreboardListener implements Listener {
         if (model.combatTime <= 5 && model.status == eu.ventura.constants.Status.FIGHTING) {
             status += String.format("§7 (%d)", model.combatTime);
         }
-        if (Pit.event != null) {
+        if (Pit.event != null && model.getPrestige() > 0) {
             status = "§6Event";
         }
         newLines.add(Strings.Formatted.STATUS.format(player, status));

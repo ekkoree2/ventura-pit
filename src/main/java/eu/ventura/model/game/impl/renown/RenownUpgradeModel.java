@@ -2,6 +2,7 @@ package eu.ventura.model.game.impl.renown;
 
 import dev.kyro.arcticapi.gui.AGUI;
 import eu.ventura.constants.Sounds;
+import eu.ventura.constants.Strings;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.model.RenownTierModel;
 import eu.ventura.model.TriggerModel;
@@ -36,22 +37,26 @@ public abstract class RenownUpgradeModel extends GameModel {
     @Override
     public Runnable getChildTask(Integer slot) {
         return () -> {
+            Strings.Language lang = playerModel.language;
             int cost = upgrade.getTier(currentTier + 1).getRenown();
             playerModel.setRenown(playerModel.getRenown() - cost);
             playerModel.setRenownPerkTier(upgrade, currentTier + 1);
 
             String message = upgrade.getDisplayName();
             Sounds.ITEM_PURCHASE.play(player);
-            player.sendMessage("§a§lPURCHASE!§6 " + message);
+            player.sendMessage(Strings.Formatted.RENOWN_PURCHASE_MSG.format(lang, message));
             gui.open();
         };
     }
 
     @Override
     public TriggerModel getTrigger() {
+        Strings.Language lang = playerModel.language;
         RenownTierModel nextTier = upgrade.getTier(currentTier + 1);
         if (nextTier == null) {
-            String message = upgrade.getTiers().size() > 1 ? "§aYou already unlocked last upgrade!" : "§aYou already unlocked this upgrade!";
+            String message = upgrade.getTiers().size() > 1
+                    ? Strings.Simple.RENOWN_ALREADY_UNLOCKED_LAST.get(lang)
+                    : Strings.Simple.RENOWN_ALREADY_UNLOCKED.get(lang);
             return new TriggerModel(
                     Sounds.NO,
                     message,
@@ -61,14 +66,14 @@ public abstract class RenownUpgradeModel extends GameModel {
         if (playerModel.getPrestige() < upgrade.getTier(1).getPrestige() || playerModel.getPrestige() < nextTier.getPrestige()) {
             return new TriggerModel(
                     Sounds.NO,
-                    "§cYou are too low prestige to acquire this!",
+                    Strings.Simple.RENOWN_PRESTIGE_TOO_LOW.get(lang),
                     TriggerModel.Mode.PASS
             );
         }
         if (playerModel.getRenown() < nextTier.getRenown()) {
             return new TriggerModel(
                     Sounds.NO,
-                    "§cYou don't have enough renown to afford this!",
+                    Strings.Simple.RENOWN_NOT_ENOUGH.get(lang),
                     TriggerModel.Mode.PASS
             );
         }
@@ -77,6 +82,7 @@ public abstract class RenownUpgradeModel extends GameModel {
 
     @Override
     public String getDisplayName() {
+        Strings.Language lang = playerModel.language;
         RenownTierModel firstTier = upgrade.getTier(1);
         RenownTierModel nextTier = upgrade.getTier(currentTier + 1);
 
@@ -85,7 +91,7 @@ public abstract class RenownUpgradeModel extends GameModel {
         }
 
         if (firstTier.getPrestige() > playerModel.getPrestige()) {
-            return "§cUnknown upgrade";
+            return Strings.Simple.RENOWN_UNKNOWN_UPGRADE.get(lang);
         }
 
         boolean hasRenown = nextTier == null || playerModel.getRenown() >= nextTier.getRenown();
@@ -98,30 +104,33 @@ public abstract class RenownUpgradeModel extends GameModel {
 
     @Override
     public List<String> getLore() {
+        Strings.Language lang = playerModel.language;
         List<String> lore = new ArrayList<>();
         RenownTierModel tierLow = upgrade.getTier(1);
         RenownTierModel nextTier = upgrade.getTier(currentTier + 1);
 
         if (tierLow.getPrestige() > playerModel.getPrestige()) {
-            return Collections.singletonList("§7Prestige: §e" + MathUtil.roman(tierLow.getPrestige()));
+            return Collections.singletonList(Strings.Formatted.RENOWN_PRESTIGE_DISPLAY.format(lang, MathUtil.roman(tierLow.getPrestige())));
         }
 
         if (nextTier == null) {
-            String message = upgrade.getTiers().size() > 1 ? "§aMax tier unlocked!" : "§aUnlocked!";
+            String message = upgrade.getTiers().size() > 1
+                    ? Strings.Simple.RENOWN_MAX_TIER_UNLOCKED.get(lang)
+                    : Strings.Simple.RENOWN_UNLOCKED.get(lang);
             lore.add(message);
         } else if (nextTier.getPrestige() > playerModel.getPrestige()) {
             lore.add("");
-            lore.add("§7Required prestige: §e" + MathUtil.roman(nextTier.getPrestige()));
-            lore.add("§cToo low prestige!");
+            lore.add(Strings.Formatted.RENOWN_REQUIRED_PRESTIGE.format(lang, MathUtil.roman(nextTier.getPrestige())));
+            lore.add(Strings.Simple.RENOWN_TOO_LOW_PRESTIGE.get(lang));
         } else {
-            lore.add("§7Cost: §e" + nextTier.getRenown() + " Renown");
-            lore.add("§7You have: §e" + playerModel.getRenown() + " Renown");
+            lore.add(Strings.Formatted.RENOWN_COST.format(lang, nextTier.getRenown()));
+            lore.add(Strings.Formatted.RENOWN_YOU_HAVE.format(lang, playerModel.getRenown()));
             lore.add("");
 
             if (nextTier.getRenown() > playerModel.getRenown()) {
-                lore.add("§cNot enough renown!");
+                lore.add(Strings.Simple.RENOWN_NOT_ENOUGH_SHORT.get(lang));
             } else {
-                lore.add("§eClick to purchase!");
+                lore.add(Strings.Simple.RENOWN_CLICK_TO_PURCHASE.get(lang));
             }
         }
 

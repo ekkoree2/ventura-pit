@@ -1,6 +1,7 @@
 package eu.ventura.model.game.impl.renown.impl;
 
 import eu.ventura.constants.Sounds;
+import eu.ventura.constants.Strings;
 import eu.ventura.menu.renown.RenownPerksGUI;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.model.RenownTierModel;
@@ -8,9 +9,12 @@ import eu.ventura.model.TriggerModel;
 import eu.ventura.model.game.impl.renown.RenownUpgradeModel;
 import eu.ventura.perks.Perk;
 import eu.ventura.renown.RenownShop;
+import eu.ventura.util.LevelUtil;
 import eu.ventura.util.MathUtil;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -25,39 +29,41 @@ public class RenownPerksModel extends RenownUpgradeModel {
     @Override
     public Runnable getChildTask(Integer slot) {
         return () -> {
+            Strings.Language lang = playerModel.language;
             int cost = upgrade.getTier(currentTier + 1).getRenown();
             playerModel.setRenown(playerModel.getRenown() - cost);
             playerModel.setRenownPerkTier(upgrade, currentTier + 1);
 
             Perk perk = upgrade.getPerkInstance();
-            String message = perk != null ? perk.getDisplayName(playerModel.language) : upgrade.getDisplayName();
+            String message = perk != null ? perk.getDisplayName(lang) : upgrade.getDisplayName();
             Sounds.ITEM_PURCHASE.play(player);
-            player.sendMessage("§a§lUNLOCK!§6 " + message);
+            player.sendMessage(Strings.Formatted.RENOWN_UNLOCK_MSG.format(lang, message));
             gui.open();
         };
     }
 
     @Override
     public TriggerModel getTrigger() {
+        Strings.Language lang = playerModel.language;
         RenownTierModel nextTier = upgrade.getTier(currentTier + 1);
         if (nextTier == null) {
             return new TriggerModel(
                     Sounds.NO,
-                    "§aYou already unlocked this perk!",
+                    Strings.Simple.RENOWN_ALREADY_UNLOCKED_PERK.get(lang),
                     TriggerModel.Mode.PASS
             );
         }
         if (playerModel.getPrestige() < nextTier.getPrestige()) {
             return new TriggerModel(
                     Sounds.NO,
-                    "§cYou are too low prestige to acquire this!",
+                    Strings.Simple.RENOWN_PRESTIGE_TOO_LOW.get(lang),
                     TriggerModel.Mode.PASS
             );
         }
         if (playerModel.getRenown() < nextTier.getRenown()) {
             return new TriggerModel(
                     Sounds.NO,
-                    "§cYou don't have enough renown to afford this!",
+                    Strings.Simple.RENOWN_NOT_ENOUGH.get(lang),
                     TriggerModel.Mode.PASS
             );
         }
@@ -66,26 +72,36 @@ public class RenownPerksModel extends RenownUpgradeModel {
 
     @Override
     protected void getExtraInfo(List<String> lore) {
+        Strings.Language lang = playerModel.language;
         RenownTierModel nextTier = upgrade.getTier(currentTier + 1);
-        List<String> extra = new ArrayList<>();
-
         Perk perk = upgrade.getPerkInstance();
-        if (perk != null) {
-            extra.addAll(perk.getDescription(playerModel.language).compile());
-            extra.add("");
-            extra.add("§7Level: §a" + perk.getLevel());
-            extra.add("§7Gold cost: §6" + (int) perk.getGold() + "g");
-            extra.add("");
-        }
+
+        String formatted = LevelUtil.getFormattedLevelFromValues(playerModel.getPrestige(), perk.getLevel());
+
+        List<String> fixed = new ArrayList<>(Arrays.asList(
+                Strings.Formatted.RENOWN_LEVEL.format(lang, formatted),
+                Strings.Formatted.RENOWN_GOLD_COST.format(lang, NumberFormat.getInstance().format((int) perk.getGold())),
+                "",
+                "§e" + perk.getDisplayName(lang)
+        ));
+        fixed.addAll(perk.getDescription(lang).compile());
+        fixed.add("");
+        fixed.addAll(Arrays.asList(
+                Strings.Simple.RENOWN_PERK_UNLOCK_1.get(lang),
+                Strings.Simple.RENOWN_PERK_UNLOCK_2.get(lang),
+                Strings.Simple.RENOWN_PERK_UNLOCK_3.get(lang),
+                Strings.Simple.RENOWN_PERK_UNLOCK_4.get(lang),
+                ""
+        ));
 
         if (nextTier == null) {
-            extra.add("§aUnlocked!");
+            fixed.add(Strings.Simple.RENOWN_UNLOCKED.get(lang));
         } else {
             if (nextTier.getPrestige() > playerModel.getPrestige()) {
-                extra.add("§7Prestige: §e" + MathUtil.roman(nextTier.getPrestige()));
+                fixed.add(Strings.Formatted.RENOWN_PRESTIGE_DISPLAY.format(lang, MathUtil.roman(nextTier.getPrestige())));
             }
         }
 
-        lore.addAll(0, extra);
+        lore.addAll(0, fixed);
     }
 }

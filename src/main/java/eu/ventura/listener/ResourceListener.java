@@ -33,6 +33,10 @@ public class ResourceListener implements Listener {
             event.data.xp += 4;
         }
 
+        int levelXpBonus = Math.min(attackerModel.getLevel() / 5, 15);
+        int prestigeXpBonus = Math.min((attackerModel.getPrestige() / 5) * 6, 25);
+        event.data.xp += levelXpBonus + prestigeXpBonus;
+
         int lvl = victimModel.getLevel() - attackerModel.getLevel();
         if (lvl > 0) {
             event.data.xp += lvl / 5;

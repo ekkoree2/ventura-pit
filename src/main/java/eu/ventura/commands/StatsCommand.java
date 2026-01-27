@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.*;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.service.PlayerService;
+import eu.ventura.util.LevelUtil;
 import org.bukkit.entity.Player;
 
 @CommandPermission("rank.owner")
@@ -18,14 +19,25 @@ public class StatsCommand extends BaseCommand {
         help.showHelp();
     }
 
+    @Subcommand("renown set")
+    @Syntax("player")
+    public void renown(Player player, OnlinePlayer target, int amount) {
+        Player victim = target.getPlayer();
+        PlayerModel victimModel = PlayerService.getPlayer(victim);
+        victimModel.setRenown(amount);
+        player.sendMessage("§aSuccess!");
+    }
+
     @CommandPermission("rank.admin")
     @Subcommand("prestige set")
     @Syntax("player")
     private void prestigeSet(Player player, OnlinePlayer target, int amount) {
         Player victim = target.getPlayer();
-        amount = Math.min(50, amount);
+        amount = Math.min(35, amount);
         PlayerModel victimModel = PlayerService.getPlayer(victim);
+        victimModel.requiredXP = LevelUtil.xpToNextLevel(amount, victimModel.getLevel());
         victimModel.setPrestige(amount);
+        player.sendMessage("§aSuccess!");
     }
 
     @CommandPermission("rank.admin")
@@ -57,6 +69,7 @@ public class StatsCommand extends BaseCommand {
         Player victim = target.getPlayer();
         PlayerModel victimModel = PlayerService.getPlayer(victim);
         victimModel.setLevel(level);
+        victimModel.requiredXP = LevelUtil.xpToNextLevel(victimModel.getPrestige(), level);
         player.sendMessage("§aUpdated level for " + victim.getDisplayName());
     }
 
@@ -78,5 +91,33 @@ public class StatsCommand extends BaseCommand {
         PlayerModel victimModel = PlayerService.getPlayer(victim);
         victimModel.streak = amount;
         player.sendMessage("§aUpdated streak for " + victim.getDisplayName());
+    }
+
+    @Subcommand("wipe")
+    @Syntax("[username]")
+    @CommandCompletion("@dbplayers")
+    public void wipe(Player player, @Optional String username) {
+        if (username == null || username.isEmpty()) {
+            player.sendMessage("§cYou must specify a username!");
+            return;
+        }
+        PlayerService.wipe(username);
+        player.sendMessage("§aWiped " + username + "!");
+    }
+
+    @Subcommand("move")
+    @Syntax("<from> <to>")
+    @CommandCompletion("@dbplayers @dbplayers")
+    public void move(Player player, String fromUsername, String toUsername) {
+        if (fromUsername.equals(toUsername)) {
+            player.sendMessage("§cCannot move data to the same account!");
+            return;
+        }
+        boolean success = PlayerService.move(fromUsername, toUsername);
+        if (success) {
+            player.sendMessage("§aMoved data from " + fromUsername + " to " + toUsername + "!");
+        } else {
+            player.sendMessage("§cFailed to move data!");
+        }
     }
 }

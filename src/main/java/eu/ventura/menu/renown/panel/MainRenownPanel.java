@@ -2,6 +2,7 @@ package eu.ventura.menu.renown.panel;
 
 import dev.kyro.arcticapi.gui.AGUI;
 import dev.kyro.arcticapi.gui.AGUIPanel;
+import eu.ventura.constants.Strings;
 import eu.ventura.menu.PrestigeGUI;
 import eu.ventura.menu.renown.RenownPerksGUI;
 import eu.ventura.menu.renown.RenownUpgradesGUI;
@@ -28,15 +29,16 @@ import java.util.Set;
  * created at: 1/24/2026
  */
 public class MainRenownPanel extends AGUIPanel {
-    private final PlayerModel playerModel = PlayerService.getPlayer(player);
+    private PlayerModel playerModel;
 
     public MainRenownPanel(AGUI gui) {
         super(gui);
+        this.playerModel = PlayerService.getPlayer(player);
     }
 
     @Override
     public String getName() {
-        return "§8Renown Shop";
+        return Strings.Simple.RENOWN_SHOP_TITLE.get(player);
     }
 
     @Override
@@ -68,25 +70,26 @@ public class MainRenownPanel extends AGUIPanel {
 
     @Override
     public void onOpen(InventoryOpenEvent event) {
+        Strings.Language lang = playerModel.language;
         RenownIconModel.clearIcons();
-        getInventory().setItem((getRows() - 1) * 9 + 4, ItemHelper.getReturnMenu("Prestige & Renown"));
+        getInventory().setItem((getRows() - 1) * 9 + 4, ItemHelper.getReturnMenu(player, Strings.Simple.PRESTIGE_MENU_TITLE.get(lang)));
 
         RenownIconModel upgrades = RenownIconModel.create(
                 Material.EMERALD,
-                "§aUpgrades",
+                Strings.Simple.RENOWN_UPGRADES_ICON.get(lang),
                 getUpgradesLore(Arrays.asList(
-                        "§7Variety of upgrades, buffs and",
-                        "§7special unlocks."
+                        Strings.Simple.RENOWN_UPGRADES_DESC_1.get(lang),
+                        Strings.Simple.RENOWN_UPGRADES_DESC_2.get(lang)
                 ), RenownCategory.UPGRADES),
                 12,
                 RenownUpgradesGUI.class
         );
         RenownIconModel perks = RenownIconModel.create(
                 Material.DIAMOND,
-                "§bPerks",
+                Strings.Simple.RENOWN_PERKS_ICON.get(lang),
                 getUpgradesLore(Arrays.asList(
-                        "§7Unlock new perks available for",
-                        "§7purchase at the upgrades npc."
+                        Strings.Simple.RENOWN_PERKS_DESC_1.get(lang),
+                        Strings.Simple.RENOWN_PERKS_DESC_2.get(lang)
                 ), RenownCategory.PERKS),
                 14,
                 RenownPerksGUI.class
@@ -101,6 +104,7 @@ public class MainRenownPanel extends AGUIPanel {
     }
 
     private List<String> getUpgradesLore(List<String> extraInfo, RenownCategory category) {
+        Strings.Language lang = playerModel.language;
         List<RenownShop> all = RenownService.fromCategory(category);
         int totalUnlockedTiers = 0;
         int totalTiers = 0;
@@ -123,21 +127,21 @@ public class MainRenownPanel extends AGUIPanel {
         List<String> lore = new ArrayList<>(extraInfo);
         lore.add("");
         int unknowns = lockedPerks.size();
-        String unlocked = "§7Unlocked: §e" + totalUnlockedTiers + "/" + totalTiers;
+        String unlocked = Strings.Formatted.RENOWN_UNLOCKED_COUNT.format(lang, totalUnlockedTiers, totalTiers);
         if (totalTiers == totalUnlockedTiers && totalTiers > 0) {
-            unlocked += " §a§lNICE!!";
+            unlocked += " " + Strings.Simple.RENOWN_NICE.get(lang);
         }
         lore.add(unlocked);
 
         if (unknowns > 0) {
-            lore.add("§8Unknowns: " + unknowns);
+            lore.add(Strings.Formatted.RENOWN_UNKNOWNS.format(lang, unknowns));
         }
 
         lore.addAll(Arrays.asList(
                 "",
-                "§7Renown: §e" + playerModel.getRenown() + " Renown",
+                Strings.Formatted.RENOWN_DISPLAY.format(lang, playerModel.getRenown()),
                 "",
-                "§eClick to browse!"
+                Strings.Simple.RENOWN_CLICK_TO_BROWSE.get(lang)
         ));
         return lore;
     }

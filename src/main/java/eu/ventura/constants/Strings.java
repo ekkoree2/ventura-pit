@@ -69,13 +69,16 @@ public class Strings {
         PERK_VAMPIRE("Wampir", "Vampire"),
         RAGE_PIT_DIDNT_PARTICIPATE("&7Nie uczestniczyles!", "&7Didn't participate!"),
 
-        CANT_DROP("&c&lNIE!&7 Nie mozesz wyrzucic tego przedmiotu!", "§c§lNOPE!§7 You cannot drop this item!"),
+        NOTE_BUG("&e&lEJ!&7 Jezeli znalazles jakis bug i chcesz by zostal naprawiony, uzyj &9/bug report&7!", "&6&lNOTE! If you found a bug and you want it fixed, use &9/bug report&7!"),
+
+        CANT_DROP("1&c&lNIE!&7 Nie mozesz wyrzucic tego przedmiotu!", "§c§lNOPE!§7 You cannot drop this item!"),
 
         OOF_CD("§c§lKURWA!§7 Mozesz uzywac /oof co 10 sekund!", "§c§lCHILL OUT!§7 You may only /oof every 10 seconds!"),
         OOF_NO("&c&lNIE KURWA!&7 Nie mozesz uzywac /oof na spawnie!", "§c§lNOPE!§7 Can't /oof in spawn!"),
 
         HEADER("&bGrasz na &e&lHVH.VENTURACLIENT.EU", "&bYou are playing on &e&lHVH.VENTURACLIENT.EU"),
         FOOTER("&aDolacz na discorda!&9 discord.gg/venturaclient", "&aJoin us at discord!&9 discord.gg/venturaclient"),
+        IGNITION("Zapłon", "Ignition"),
 
         KILL_1("§a§lZABÓJSTWO!", "§a§lKILL!"),
         KILL_2("§a§lPODWÓJNE ZABÓJSTWO!", "§a§lDOUBLE KILL!"),
@@ -87,7 +90,10 @@ public class Strings {
         RESPAWN_COOLDOWN("§cMozesz uzyc /respawn co 10 sekund!", "§cYou may only /respawn every 10 seconds!"),
         LANG_CD("&cSpowolnij!", "&cWoah there, slow down!"),
         PERK_BACK("&aWróć", "&aCome back"),
+        PERK_LUCKY_DIAMOND("Szczęśliwy diament", "Lucky Diamond"),
         STREAKER("Streaker"),
+        PERK_DIRTY("Brudny", "Dirty"),
+        PERK_RAMBO("Rambo"),
         PERK_NO_PERK("&cBez perka", "&cNo perk"),
         PERK_SLOT_LOCKED_MSG("&cSlot nie jest jeszcze odblokowany!", "&cSlot not unlocked yet!"),
         PERK_TOO_LOW_LEVEL("&cJesteś zbyt niskiego poziomu aby zakupić ten perk!", "&cYou are too low level to acquire this perk!"),
@@ -168,15 +174,37 @@ public class Strings {
         LEADERBOARD_HEADER("&b&lɴᴀᴊᴡɪᴇᴋѕᴢᴇ ɴᴇʀᴅʏ", "&b&lᴛᴏᴘ ᴀᴄᴛɪᴠᴇ ᴘʟᴀʏᴇʀѕ"),
         LEADERBOARD_SUBTITLE("&7ᴘᴏᴢɪᴏᴍ ᴘɪᴛ", "&7ᴘɪᴛ ʟᴇᴠᴇʟ"),
 
-        RENOWN_SHOP_TITLE("§8Renown Shop"),
-        RENOWN_UPGRADES_TITLE("§8Renown Upgrades"),
-        RENOWN_PERKS_TITLE("§8Renown Perks"),
-        RENOWN_ITEMS_TITLE("§8Renown Shop Items"),
-        RENOWN_KILLSTREAKS_TITLE("§8Renown Killstreaks"),
-        RENOWN_NOT_ENOUGH("§cYou don't have enough renown to afford this!", "§cNie masz wystarczająco renown!"),
-        RENOWN_PRESTIGE_TOO_LOW("§cYou are too low prestige to acquire this!", "§cJesteś zbyt niskiego prestige!"),
-        RENOWN_ALREADY_UNLOCKED("§aYou already unlocked this upgrade!", "§aJuż odblokowałeś to ulepszenie!"),
-        RENOWN_AUTOFAIL("§c§lAUTOFAIL!§7 Not enough gold for ", "§c§lAUTOFAIL!§7 Niewystarczająco złota na "),
+        RENOWN_SHOP_TITLE("§8Sklep Renown", "§8Renown Shop"),
+        RENOWN_UPGRADES_TITLE("§8Ulepszenia Renown", "§8Renown Upgrades"),
+        RENOWN_PERKS_TITLE("§8Perki Renown", "§8Renown Perks"),
+        RENOWN_ITEMS_TITLE("§8Przedmioty Renown", "§8Renown Shop Items"),
+        RENOWN_KILLSTREAKS_TITLE("§8Killstreaki Renown", "§8Renown Killstreaks"),
+        RENOWN_NOT_ENOUGH("§cNie masz wystarczająco renown!", "§cYou don't have enough renown to afford this!"),
+        RENOWN_PRESTIGE_TOO_LOW("§cJesteś zbyt niskiego prestige!", "§cYou are too low prestige to acquire this!"),
+        RENOWN_ALREADY_UNLOCKED("§aJuż odblokowałeś to ulepszenie!", "§aYou already unlocked this upgrade!"),
+        RENOWN_ALREADY_UNLOCKED_LAST("§aJuż odblokowałeś ostatnie ulepszenie!", "§aYou already unlocked last upgrade!"),
+        RENOWN_ALREADY_UNLOCKED_PERK("§aJuż odblokowałeś ten perk!", "§aYou already unlocked this perk!"),
+        RENOWN_AUTOFAIL("§c§lAUTOFAIL!§7 Niewystarczająco złota na ", "§c§lAUTOFAIL!§7 Not enough gold for "),
+        RENOWN_UPGRADES_ICON("§aUlepszenia", "§aUpgrades"),
+        RENOWN_PERKS_ICON("§bPerki", "§bPerks"),
+        RENOWN_UPGRADES_DESC_1("§7Różne ulepszenia, buffy i", "§7Variety of upgrades, buffs and"),
+        RENOWN_UPGRADES_DESC_2("§7specjalne odblokowania.", "§7special unlocks."),
+        RENOWN_PERKS_DESC_1("§7Odblokuj nowe perki dostępne do", "§7Unlock new perks available for"),
+        RENOWN_PERKS_DESC_2("§7zakupu w sklepie perków.", "§7purchase at the upgrades npc."),
+        RENOWN_MAX_TIER_UNLOCKED("§aOdblokowano max tier!", "§aMax tier unlocked!"),
+        RENOWN_UNLOCKED("§aOdblokowano!", "§aUnlocked!"),
+        RENOWN_UNKNOWN_UPGRADE("§cNieznane ulepszenie", "§cUnknown upgrade"),
+        RENOWN_TOO_LOW_PRESTIGE("§cZa niski prestige!", "§cToo low prestige!"),
+        RENOWN_NOT_ENOUGH_SHORT("§cNiewystarczająco renown!", "§cNot enough renown!"),
+        RENOWN_CLICK_TO_PURCHASE("§eKliknij aby zakupić!", "§eClick to purchase!"),
+        RENOWN_CLICK_TO_BROWSE("§eKliknij aby przeglądać!", "§eClick to browse!"),
+        RENOWN_NICE("§a§lNICE!!"),
+        RENOWN_GO_BACK("§aWróć", "§aGo Back"),
+        RENOWN_EACH_TIER("§7Każdy tier:", "§7Each tier:"),
+        RENOWN_PERK_UNLOCK_1("§7§oTo jest odblokowanie perka.", "§7§oThis is a perk unlock."),
+        RENOWN_PERK_UNLOCK_2("§7§oMusisz jeszcze kupić", "§7§oYou still have to purchase"),
+        RENOWN_PERK_UNLOCK_3("§7§oten perk w sklepie", "§7§othe perk in the upgrades"),
+        RENOWN_PERK_UNLOCK_4("§7§oulepszeń.", "§7§oshop."),
 
         MAJOR_EVENT_ONE_MINUTE("§5§lDUZY EVENT! §7Zaczyna sie za §e1 minute", "§5§lMAJOR EVENT! §7Starting in §e1 minute"),
         MAJOR_EVENT_ONE_MINUTE_PLURAL("§5§lDUZY EVENT! §7Zaczyna sie za §e{0} minuty", "§5§lMAJOR EVENT! §7Starting in §e{0} minutes"),
@@ -248,6 +276,7 @@ public class Strings {
                 "&c&lPIZDA!&7 {0} wszystkich zabojstw z 600 wymaganych",
                 "&c&lFAILED!&7 {0} total kills out of 600 needed"
         ),
+        SHARP_ENCH("&7Zadawaj &c+{0}%&7 wiecej obrazen", "&7Deal &c+{0}%&7 more damage"),
         RAGE_PIT_PLACE("&c{0}❤ zadane &7(ranga #{1})", "&c{0}❤ dealt &7(ranked #{1})"),
         RAGE_PIT_TOP_ENTRY("  &e&l#{0} {1}&e z &c{2}❤ zadanym", "  &e&l#{0} {1}&e with &c{2}❤ dealt"),
         PRESTIGE_SUBTITLE("§7Odblokowałeś prestiż §e{0}", "§7You unlocked prestige §e{0}"),
@@ -270,7 +299,24 @@ public class Strings {
         MAJOR_EVENT_STARTING("§5§lDUZY EVENT!§5§l {0}!§7 Zaczyna sie za {1}", "§5§lMAJOR EVENT!§5§l {0}!§7 Starting in {1}"),
         MAJOR_EVENT_CHAT("§5§lDUZY EVENT! {0} §7za {1} min{2}", "§5§lMAJOR EVENT! {0} §7in {1} min{2}"),
         MAJOR_EVENT_BOSSBAR_STARTING("§7Zaczyna sie za §a{0}", "§7Starting in §a{0}"),
-        TIME_MINUTES("§e{0} minuty", "§e{0} minutes")
+        TIME_MINUTES("§e{0} minuty", "§e{0} minutes"),
+        STREAK_BROADCAST("§c§lSTREAK!§7 z §c{0}§7 killi przez {1}", "§c§lSTREAK!§7 of §c{0}§7 kills by {1}"),
+        LUCKY_DIAMOND_MSG("§b§lSZCZĘŚLIWY DIAMENT!§7 {0}", "§b§lLUCKY DIAMOND!§7 {0}"),
+        RENOWN_UNLOCKED_COUNT("§7Odblokowano: §e{0}/{1}", "§7Unlocked: §e{0}/{1}"),
+        RENOWN_UNKNOWNS("§8Nieznane: {0}", "§8Unknowns: {0}"),
+        RENOWN_DISPLAY("§7Renown: §e{0} Renown"),
+        RENOWN_COST("§7Koszt: §e{0} Renown", "§7Cost: §e{0} Renown"),
+        RENOWN_YOU_HAVE("§7Posiadasz: §e{0} Renown", "§7You have: §e{0} Renown"),
+        RENOWN_REQUIRED_PRESTIGE("§7Wymagany prestige: §e{0}", "§7Required prestige: §e{0}"),
+        RENOWN_PRESTIGE_DISPLAY("§7Prestige: §e{0}"),
+        RENOWN_CURRENT("§7Aktualny: {0}", "§7Current: {0}"),
+        RENOWN_TIER("§7Tier: §a{0}"),
+        RENOWN_LEVEL("§7Wymagany poziom: {0}", "§7Required level: {0}"),
+        RENOWN_GOLD_COST("§7Koszt: §6{0}", "§7Cost: §6{0}"),
+        RENOWN_PURCHASE_MSG("§a§lZAKUP!§6 {0}", "§a§lPURCHASE!§6 {0}"),
+        RENOWN_UNLOCK_MSG("§a§lODBLOKOWANO!§6 {0}", "§a§lUNLOCK!§6 {0}"),
+        RENOWN_TO_PANEL("§7Do {0}", "§7To {0}"),
+        RENOWN_PERK_PREFIX("Perk: {0}")
         ;
 
         private final String polish;
@@ -392,7 +438,50 @@ public class Strings {
                         .addNewline("§9Resistance II (0:08)")
                         .addNewline("§7HEALS 1 HEART!!")
                         .addNewline("§72 ABSORPTION HEARTS!!")
-        ))
+        )),
+        MOMENTUM(new LoreBuilderWrapper(
+           new LoreBuilder()
+                   .add("&7Zdobywaj §c3❤&7 i &9Speed I &7(0:08) po zabojstwie."),
+           new LoreBuilder()
+                   .add("§7Heal §c3❤ §7and gain §9Speed I &7(0:08) on kill.")
+        )),
+        IGNITION(new LoreBuilderWrapper(
+           new LoreBuilder()
+                   .add("§7Pierwsze §dkilka killi §7każdego życia daje §b+12 XP §6+9g§7."),
+           new LoreBuilder()
+                   .add("§7First &dfew kills&7 each life reward &b+12 XP &6+9g&7.")
+        )),
+        LUCKY_DIAMOND(new LoreBuilderWrapper(
+           new LoreBuilder()
+                   .add("§79% szans na ulepszenie zalozynej zbroi do §bdiamentu§7 po zabojstwie."),
+           new LoreBuilder()
+                   .add("§79% chance to upgrade equipped armor to §bdiamond§7 on kill.")
+        )),
+        TENACITY(new LoreBuilderWrapper(
+           new LoreBuilder()
+                   .add("§7Każdy tier:")
+                   .addNewline("§7Ulecz §c0.5❤§7 po zabójstwie."),
+           new LoreBuilder()
+                   .add("§7Each tier:")
+                   .addNewline("§7Heal §c0.5❤§7 on kill.")
+        )),
+        DIRTY_DESC(new LoreBuilderWrapper(
+           new LoreBuilder()
+                   .add("§7Zdobywaj &9Resistance II&7 (0:04) po zabójstwie."),
+           new LoreBuilder()
+                   .add("§7Gain &9Resistance II&7 (0:04) on kill.")
+        )),
+        RAMBO_DESC(new LoreBuilderWrapper(
+           new LoreBuilder()
+                   .add("§7Nie zdobywasz złotych jabłek.")
+                   .addNewline("§7Maks. zdrowie: §c8❤")
+                   .addNewline("§7Uzupełnij całe zdrowie po zabójstwie."),
+           new LoreBuilder()
+                   .add("§7Don't earn golden apples.")
+                   .addNewline("§7Max health: §c8❤")
+                   .addNewline("§7Refill all health on kill.")
+        )),
+
         ;
 
         private final LoreBuilderWrapper wrapper;

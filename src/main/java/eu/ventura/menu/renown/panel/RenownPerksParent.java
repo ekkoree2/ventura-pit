@@ -1,6 +1,7 @@
 package eu.ventura.menu.renown.panel;
 
 import dev.kyro.arcticapi.gui.AGUI;
+import eu.ventura.constants.Strings;
 import eu.ventura.menu.renown.RenownPerksGUI;
 import eu.ventura.model.PlayerModel;
 import eu.ventura.model.game.impl.renown.impl.RenownPerksModel;
@@ -29,7 +30,7 @@ public class RenownPerksParent extends RenownParent<RenownPerksModel> {
 
     @Override
     protected String getPanelTitle() {
-        return "§8Renown Perks";
+        return Strings.Simple.RENOWN_PERKS_TITLE.get(player);
     }
 
     @Override

@@ -167,30 +167,30 @@ public class KingsMap implements Map {
                 new PitLocation(-19.5, 71, 13.5),
                 new PitLocation(-19.5, 71, 12.5),
 
-                new PitLocation(12.5, 95, 15.5),
-                new PitLocation(13.5, 95, 14.5),
-                new PitLocation(14.5, 95, 13.5),
-                new PitLocation(15.5, 95, 12.5),
+                new PitLocation(12.5, 94, 15.5),
+                new PitLocation(13.5, 94, 14.5),
+                new PitLocation(14.5, 94, 13.5),
+                new PitLocation(15.5, 94, 12.5),
 
-                new PitLocation(15.5, 95, -11.5),
-                new PitLocation(14.5, 95, -12.5),
-                new PitLocation(13.5, 95, -13.5),
-                new PitLocation(12.5, 95, -14.5),
+                new PitLocation(15.5, 94, -11.5),
+                new PitLocation(14.5, 94, -12.5),
+                new PitLocation(13.5, 94, -13.5),
+                new PitLocation(12.5, 94, -14.5),
 
-                new PitLocation(-11.5, 95, -14.5),
-                new PitLocation(-12.5, 95, -13.5),
-                new PitLocation(-13.5, 95, -12.5),
-                new PitLocation(-14.5, 95, -11.5),
+                new PitLocation(-11.5, 94, -14.5),
+                new PitLocation(-12.5, 94, -13.5),
+                new PitLocation(-13.5, 94, -12.5),
+                new PitLocation(-14.5, 94, -11.5),
 
-                new PitLocation(-11.5, 95, -14.5),
-                new PitLocation(-12.5, 95, -13.5),
-                new PitLocation(-13.5, 95, -12.5),
-                new PitLocation(-14.5, 95, -11.5),
+                new PitLocation(-11.5, 94, -14.5),
+                new PitLocation(-12.5, 94, -13.5),
+                new PitLocation(-13.5, 94, -12.5),
+                new PitLocation(-14.5, 94, -11.5),
 
-                new PitLocation(-14.5, 95, 12.5),
-                new PitLocation(-13.5, 95, 13.5),
-                new PitLocation(-12.5, 95, 14.5),
-                new PitLocation(-11.5, 95, 15.5)
+                new PitLocation(-14.5, 94, 12.5),
+                new PitLocation(-13.5, 94, 13.5),
+                new PitLocation(-12.5, 94, 14.5),
+                new PitLocation(-11.5, 94, 15.5)
         );
     }
 }

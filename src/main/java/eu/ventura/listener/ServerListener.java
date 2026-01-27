@@ -1,12 +1,9 @@
 package eu.ventura.listener;
 
 import eu.ventura.Pit;
-import eu.ventura.constants.PitEvent;
 import eu.ventura.constants.Strings;
 import eu.ventura.event.PitDamageEvent;
 import eu.ventura.event.PitKillEvent;
-import eu.ventura.perks.Perk;
-import eu.ventura.service.PerkService;
 import eu.ventura.util.NBTHelper;
 import eu.ventura.util.NBTTag;
 import org.bukkit.Bukkit;
@@ -21,12 +18,39 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
 * author: ekkoree
 * created at: 12/26/2025
   */
 public class ServerListener implements Listener {
+    private static final int MIN_TICKS = 3600;
+    private static final int MAX_TICKS = 14400;
+
+    public ServerListener() {
+        schedule();
+    }
+
+    private void schedule() {
+        int delay = ThreadLocalRandom.current().nextInt(MIN_TICKS, MAX_TICKS + 1);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                remind();
+                schedule();
+            }
+        }.runTaskLater(Pit.instance, delay);
+    }
+
+    private void remind() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendMessage(Strings.Simple.NOTE_BUG.get(player));
+        }
+    }
+
     @EventHandler
     public void onWeatherChange(WeatherChangeEvent event) {
         World world = event.getWorld();

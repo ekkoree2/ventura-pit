@@ -43,7 +43,7 @@ public class ChoosePerkPanel extends AGUIPanel {
 
     @Override
     public int getRows() {
-        int rows = 4;
+        int rows = 3;
         int total = PerkService.getPerks().size();
         if (total > 0) {
             rows += (int) Math.ceil(total / 7.0);

@@ -10,14 +10,19 @@ public class PerkService {
     private static final Map<String, Perk> perks = new LinkedHashMap<>();
 
     static {
-        registerPerk(new GoldenHeads());
-        registerPerk(new GravityMace());
-        registerPerk(new Calculated());
-        registerPerk(new Streaker());
-        registerPerk(new Vampire());
+        addPerk(new GoldenHeads());
+        addPerk(new GravityMace());
+        addPerk(new Momentum());
+        addPerk(new Calculated());
+        addPerk(new LuckyDiamond());
+        addPerk(new Ignition());
+        addPerk(new Streaker());
+        addPerk(new Vampire());
+        addPerk(new Dirty());
+        addPerk(new Rambo());
     }
 
-    public static void registerPerk(Perk perk) {
+    public static void addPerk(Perk perk) {
         perks.put(perk.getId(), perk);
     }
 

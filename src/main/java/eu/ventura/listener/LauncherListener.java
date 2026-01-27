@@ -57,7 +57,9 @@ public class LauncherListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onDamage(EntityDamageEvent e) {
-        if (e.getEntity().isInsideVehicle()) e.setCancelled(true);
+        if (e.getEntity().isInsideVehicle()) {
+            e.setCancelled(true);
+        }
     }
 
     private Location getTarget(Player p) {
@@ -108,20 +110,26 @@ public class LauncherListener implements Listener {
 
         @Override
         public void run() {
+            double cube = MathUtil.easeInOutCubic(t);
+            Location location = MathUtil.cubicBezierLocationFromPoints(cube, from, c1, c2, to);
+
+            if (!p.isInsideVehicle()) {
+                Bukkit.getScheduler().runTask(Pit.instance, () -> p.teleport(location));
+                this.cancel();
+                return;
+            }
+
             if (t <= 1.0) {
-                double et = MathUtil.easeInOutCubic(t);
-                Location cur = MathUtil.cubicBezierLocationFromPoints(et, from, c1, c2, to);
+                location.setYaw(MathUtil.lerpAngle(yaw0, yaw1, (float) cube));
 
-                cur.setYaw(MathUtil.lerpAngle(yaw0, yaw1, (float) et));
-
-                double dx = cur.getX() - last.getX();
-                double dy = cur.getY() - last.getY();
-                double dz = cur.getZ() - last.getZ();
+                double dx = location.getX() - last.getX();
+                double dy = location.getY() - last.getY();
+                double dz = location.getZ() - last.getZ();
                 double hd = Math.sqrt(dx * dx + dz * dz);
-                cur.setPitch(Math.max(-60, Math.min(60, (float) -Math.toDegrees(Math.atan2(dy, hd)))));
+                location.setPitch(Math.max(-60, Math.min(60, (float) -Math.toDegrees(Math.atan2(dy, hd)))));
 
-                move(stand, cur);
-                last = cur.clone();
+                move(stand, location);
+                last = location.clone();
                 t += 0.02;
             } else {
                 end();
@@ -191,7 +199,7 @@ public class LauncherListener implements Listener {
 
     private boolean isOnCd(Player p) {
         Long last = cd.get(p.getUniqueId());
-        return last != null && System.currentTimeMillis() - last < 100;
+        return last != null && System.currentTimeMillis() - last < 3000;
     }
 
     private void setCd(Player p) {

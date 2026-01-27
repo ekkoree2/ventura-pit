@@ -4,6 +4,7 @@ import eu.ventura.enchantment.EnchantItem;
 import eu.ventura.enchantment.EnchantRarity;
 import eu.ventura.enchantment.PitEnchant;
 import eu.ventura.enchantment.sword.Crater;
+import eu.ventura.enchantment.sword.Sharp;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -18,6 +19,7 @@ public class EnchantmentService {
 
     static {
         registerEnchantment(new Crater());
+        registerEnchantment(new Sharp());
     }
 
     public static void registerEnchantment(PitEnchant enchant) {

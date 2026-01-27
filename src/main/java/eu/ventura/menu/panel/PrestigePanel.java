@@ -96,23 +96,23 @@ public class PrestigePanel extends AGUIPanel {
                 getLore(),
                 true
         ));
-//        getInventory().setItem(15, ItemHelper.createItem(
-//                Material.BEACON,
-//                Strings.Simple.PRESTIGE_RENOWN_SHOP.get(lang),
-//                new LoreBuilder()
-//                        .add(Strings.Formatted.PRESTIGE_RENOWN_SHOP_LORE_1.format(lang))
-//                        .addNewline(Strings.Formatted.PRESTIGE_RENOWN_SHOP_LORE_2.format(lang))
-//                        .addNewline(Strings.Formatted.PRESTIGE_RENOWN_SHOP_LORE_3.format(lang))
-//                        .addNewline()
-//                        .addNewline(Strings.Formatted.PRESTIGE_RENOWN_SHOP_LORE_4.format(lang))
-//                        .addNewline(Strings.Formatted.PRESTIGE_RENOWN_SHOP_LORE_5.format(lang))
-//                        .addNewline()
-//                        .addNewline(Strings.Formatted.PRESTIGE_RENOWN_DISPLAY.format(lang, playerModel.getRenown()))
-//                        .addNewline()
-//                        .addNewline(Strings.Formatted.PRESTIGE_CLICK_TO_BROWSE.format(lang))
-//                        .compile(),
-//                true
-//        ));
+        getInventory().setItem(15, ItemHelper.createItem(
+                Material.BEACON,
+                Strings.Simple.PRESTIGE_RENOWN_SHOP.get(lang),
+                new LoreBuilder()
+                        .add(Strings.Formatted.PRESTIGE_RENOWN_SHOP_LORE_1.format(lang))
+                        .addNewline(Strings.Formatted.PRESTIGE_RENOWN_SHOP_LORE_2.format(lang))
+                        .addNewline(Strings.Formatted.PRESTIGE_RENOWN_SHOP_LORE_3.format(lang))
+                        .addNewline()
+                        .addNewline(Strings.Formatted.PRESTIGE_RENOWN_SHOP_LORE_4.format(lang))
+                        .addNewline(Strings.Formatted.PRESTIGE_RENOWN_SHOP_LORE_5.format(lang))
+                        .addNewline()
+                        .addNewline(Strings.Formatted.PRESTIGE_RENOWN_DISPLAY.format(lang, playerModel.getRenown()))
+                        .addNewline()
+                        .addNewline(Strings.Formatted.PRESTIGE_CLICK_TO_BROWSE.format(lang))
+                        .compile(),
+                true
+        ));
     }
 
     @Override

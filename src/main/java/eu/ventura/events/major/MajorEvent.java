@@ -167,6 +167,10 @@ public abstract class MajorEvent {
     }
 
     public void start() {
+        if (Pit.event != null) {
+            return;
+        }
+
         Pit.event = this;
         time = getDuration();
         phase = 0;

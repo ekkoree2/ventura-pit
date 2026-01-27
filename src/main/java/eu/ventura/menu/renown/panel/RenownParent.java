@@ -2,6 +2,7 @@ package eu.ventura.menu.renown.panel;
 
 import dev.kyro.arcticapi.gui.AGUI;
 import dev.kyro.arcticapi.gui.AGUIPanel;
+import eu.ventura.constants.Strings;
 import eu.ventura.menu.ConfirmGUI;
 import eu.ventura.menu.renown.MainRenownGUI;
 import eu.ventura.model.PlayerModel;
@@ -27,10 +28,11 @@ import java.util.Map;
  * created at: 1/24/2026
  */
 public abstract class RenownParent<T extends GameModel> extends AGUIPanel {
-    protected final PlayerModel playerModel = PlayerService.getPlayer(player);
+    protected PlayerModel playerModel;
 
     public RenownParent(AGUI gui) {
         super(gui);
+        this.playerModel = PlayerService.getPlayer(player);
     }
 
     protected abstract RenownCategory getCategory();
@@ -99,7 +101,7 @@ public abstract class RenownParent<T extends GameModel> extends AGUIPanel {
 
     @Override
     public void onOpen(InventoryOpenEvent event) {
-        getInventory().setItem((getRows() - 1) * 9 + 4, ItemHelper.getReturnMenu("Renown Shop"));
+        getInventory().setItem((getRows() - 1) * 9 + 4, ItemHelper.getReturnMenu(player, Strings.Simple.RENOWN_SHOP_TITLE.get(playerModel.language)));
 
         Map<RenownShop, Integer> slots = RenownService.getUpgrades(getInventory(), getRows(), getCategory());
         for (Map.Entry<RenownShop, Integer> entry : slots.entrySet()) {

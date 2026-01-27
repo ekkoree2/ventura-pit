@@ -86,6 +86,8 @@ public class PlayerModel {
     @Save public Set<String> purchasedPerks = new HashSet<>();
     @Save public Map<Integer, String> equippedPerks = new HashMap<>();
 
+    public boolean vanished = false;
+
     @Save private ItemStack[] inventory = new ItemStack[36];
     @Save private ItemStack[] armor = new ItemStack[4];
     @Setter
@@ -348,6 +350,16 @@ public class PlayerModel {
         return false;
     }
 
+    public <T extends Perk> boolean hasEquippedPerk(Class<T> clazz) {
+        for (String perkId : equippedPerks.values()) {
+            Perk perk = PerkService.getPerk(perkId);
+            if (perk != null && clazz.isInstance(perk)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void clearItemsByTag(NBTTag tag) {
         ItemStack[] contents = player.getInventory().getContents();
         for (int i = 0; i < contents.length; i++) {
@@ -455,14 +467,13 @@ public class PlayerModel {
                 }
             }
         }
-
         collection.replaceOne(new Document("_id", player.getUniqueId().toString()), doc,
                 new ReplaceOptions().upsert(true));
     }
 
     @SuppressWarnings("unchecked")
     public void load() {
-        CompletableFuture<Void> loadFuture = CompletableFuture.runAsync(() -> {
+        CompletableFuture<Boolean> loadFuture = CompletableFuture.supplyAsync(() -> {
             MongoCollection<Document> collection = MongoUtil.getCollection("players");
             Document doc = collection.find(new Document("_id", player.getUniqueId().toString())).first();
 
@@ -505,11 +516,17 @@ public class PlayerModel {
                         }
                     }
                 }
+                return true;
             }
+            return false;
         });
 
         try {
-            loadFuture.get(5, TimeUnit.SECONDS);
+            boolean exists = loadFuture.get(5, TimeUnit.SECONDS);
+            if (!exists) {
+                System.out.println("[PlayerModel] New player detected: " + username + ", saving to database");
+                save();
+            }
             getItems();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             System.out.println("Failed to load player data for " + player.getName() + ": " + e.getMessage());

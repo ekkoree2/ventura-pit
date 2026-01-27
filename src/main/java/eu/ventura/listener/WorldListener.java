@@ -1,21 +1,29 @@
 package eu.ventura.listener;
 
 import eu.ventura.Pit;
+import eu.ventura.constants.Sounds;
 import eu.ventura.menu.EnderChestGUI;
 import eu.ventura.service.PitBlockService;
 import eu.ventura.util.NBTHelper;
 import eu.ventura.util.RegionHelper;
+import io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,6 +42,52 @@ public class WorldListener implements Listener {
             Player player = event.getPlayer();
             event.setCancelled(true);
             new EnderChestGUI(player, () -> player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.9f, 1.0f)).open();
+        }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        Team team = scoreboard.getTeam("collision");
+
+        if (team == null) {
+            team = scoreboard.registerNewTeam("collision");
+            team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.ALWAYS);
+        }
+
+        team.addEntry(player.getName());
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onProjectile(ProjectileLaunchEvent event) {
+        Location launchLoc = event.getEntity().getLocation();
+        boolean launchedFromSpawn = RegionHelper.isInSpawn(launchLoc);
+
+        if (launchedFromSpawn) {
+            event.setCancelled(true);
+            if (event.getEntity().getShooter() instanceof Player shooter) {
+                Sounds.NO.play(shooter);
+            }
+            return;
+        }
+
+        if (event.getEntity() instanceof Arrow arrow) {
+            Bukkit.getScheduler().runTaskLater(Pit.instance, () -> {
+                if (arrow.isValid()) {
+                    arrow.remove();
+                }
+            }, 100L);
+        }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        Team team = scoreboard.getTeam("collision");
+
+        if (team != null) {
+            team.removeEntry(event.getPlayer().getName());
         }
     }
 
@@ -59,7 +113,7 @@ public class WorldListener implements Listener {
             return;
         }
 
-        if (RegionHelper.isInSpawn(player)) {
+        if (RegionHelper.isInSpawn(event.getBlockPlaced().getLocation()) || RegionHelper.isInMiddle(event.getBlockPlaced().getLocation())) {
             event.setCancelled(true);
             return;
         }

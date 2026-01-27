@@ -52,7 +52,7 @@ public class ConsumableUtil {
             });
         }
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 2));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 160, 0));
     }
 

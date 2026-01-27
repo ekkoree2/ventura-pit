@@ -9,10 +9,14 @@ import eu.ventura.events.major.impl.RagePit;
 import eu.ventura.maps.Map;
 import eu.ventura.model.DeathModel;
 import eu.ventura.model.PlayerModel;
+import eu.ventura.perks.permanent.GoldenApple;
 import eu.ventura.service.BossBarService;
+import eu.ventura.service.BugService;
 import eu.ventura.service.LeaderboardService;
 import eu.ventura.service.MapService;
+import eu.ventura.service.PerkService;
 import eu.ventura.service.PlayerService;
+import org.bson.Document;
 import eu.ventura.util.EnchantmentHelper;
 import eu.ventura.util.EquipmentUtil;
 import eu.ventura.util.LevelUtil;
@@ -33,6 +37,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -83,21 +88,22 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
+    public void onExpChange(PlayerExpChangeEvent event) {
+        event.setAmount(0);
+    }
+
+    @EventHandler
     public void onConsume(PlayerItemConsumeEvent event) {
         if (event.getItem().getType() != Material.GOLDEN_APPLE) {
             return;
         }
 
         Player player = event.getPlayer();
-        Bukkit.getScheduler().runTask(Pit.instance, () -> {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 80, 1));
-
-            double abs = player.getAbsorptionAmount();
-            double newAbs = Math.min(abs + 6, 10);
-            if (newAbs > abs) {
-                PlayerUtil.setAbs(player, newAbs);
-            }
-        });
+        double currentAbs = player.getAbsorptionAmount();
+        GoldenApple perk = PerkService.getPerk(GoldenApple.class);
+        if (perk != null) {
+            perk.applyEffects(player, currentAbs);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -184,8 +190,20 @@ public class PlayerListener implements Listener {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
         setupNameTag(player);
+        checkPendingBugReward(player);
         PitRespawnEvent pitRespawnEvent = new PitRespawnEvent(player, RespawnReason.JOIN);
         Bukkit.getPluginManager().callEvent(pitRespawnEvent);
+    }
+
+    private void checkPendingBugReward(Player player) {
+        Document pending = BugService.getPendingReward(player.getUniqueId().toString());
+        if (pending != null) {
+            PlayerModel playerModel = PlayerModel.getInstance(player);
+            playerModel.addXp(pending.getInteger("xp"));
+            playerModel.addGold(pending.getDouble("gold"));
+            player.sendMessage(Strings.Formatted.BUG_APPROVED.format(player, pending.getString("bugId")));
+            BugService.removePendingReward(player.getUniqueId().toString());
+        }
     }
 
     @EventHandler
@@ -316,6 +334,7 @@ public class PlayerListener implements Listener {
 
         EquipmentUtil.giveDefaultGear(player);
         EnchantmentHelper.syncInventory(player);
+        model.updateXpBar();
     }
 
     private void clearShopItems(Player player) {

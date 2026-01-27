@@ -100,14 +100,14 @@ public abstract class MajorEvent {
     protected String getTimerBossy(Player player, int phase) {
         int c = phase % 88;
         String m = "§5§lMAJOR EVENT!";
-        String r = " " + getDisplayName();
+        String r = " " + getDisplayName() + "!";
 
         if (c < 12) {
             m = animWave("MAJOR EVENT!", "§d§l", "§f§l", "§5§l", c);
         } else if (c >= 16 && c < 28) {
             m = animWave("MAJOR EVENT!", "§d§l", "§f§l", "§5§l", c - 16);
         } else if (c >= 48 && c < 68) {
-            r = (c - 48) % 10 < 5 ? " " + getDisplayName().replace("§c", "§d") : " " + getDisplayName() + "!";
+            r = (c - 48) % 10 < 5 ? " " + getDisplayName().replace("§c", "§d")  + "!" : " " + getDisplayName() + "!";
         }
 
         String timer = String.format("%02d:%02d", seconds / 60, seconds % 60);

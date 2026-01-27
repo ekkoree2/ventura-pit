@@ -1,5 +1,6 @@
 package eu.ventura.util;
 
+import eu.ventura.Pit;
 import eu.ventura.maps.Map;
 import eu.ventura.service.MapService;
 import org.bukkit.Location;
@@ -13,9 +14,8 @@ import java.util.List;
  * created at: 1/15/2025
  */
 public class RegionHelper {
-    public static boolean isInSpawn(Location location) {
+    public static boolean isInRegion(Location location, List<Vector> aabb) {
         Map map = MapService.getCurrentMap();
-        List<Vector> aabb = map.getSpawnAABB();
         if (aabb.isEmpty()) {
             return false;
         }
@@ -46,9 +46,20 @@ public class RegionHelper {
         return locVec.isInAABB(min, max);
     }
 
+    public static boolean isInMiddle(Player player) {
+        return isInMiddle(player.getLocation());
+    }
+
+    public static boolean isInMiddle(Location location) {
+        return isInRegion(location, Pit.map.getInstance().getMiddleAABB());
+    }
 
     public static boolean isInSpawn(Player player) {
         return isInSpawn(player.getLocation());
+    }
+
+    public static boolean isInSpawn(Location location) {
+        return isInRegion(location, Pit.map.getInstance().getSpawnAABB());
     }
 
     public static boolean isInRadiusOfBlock(Player player, org.bukkit.Material block, int radius) {

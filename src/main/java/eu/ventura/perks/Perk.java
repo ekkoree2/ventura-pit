@@ -75,6 +75,10 @@ public abstract class Perk {
         return false;
     }
 
+    public boolean isHidden() {
+        return false;
+    }
+
     public void onKill(PitKillEvent event) {}
 
     public void onDeath(PitDeathEvent event) {}

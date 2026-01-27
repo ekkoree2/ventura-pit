@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class MongoUtil {
     private static MongoClient mongoClient;
     private static MongoDatabase database;
-    private static boolean connected = false;
+    public static boolean connected = false;
 
     public static void initialize(String connectionString, String dbName) {
         try {
@@ -38,6 +38,7 @@ public class MongoUtil {
             database = mongoClient.getDatabase(dbName);
             database.runCommand(new Document("ping", 1));
             connected = true;
+            System.out.println("[MongoUtil] Connected to MongoDB");
         } catch (MongoException e) {
             connected = false;
             System.err.println("[MongoUtil] Failed to connect to MongoDB: " + e.getMessage());

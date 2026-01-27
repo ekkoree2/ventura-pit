@@ -1,7 +1,16 @@
 package eu.ventura.service;
 
 import eu.ventura.perks.Perk;
-import eu.ventura.perks.permanent.*;
+import eu.ventura.perks.permanent.Dirty;
+import eu.ventura.perks.permanent.GoldenApple;
+import eu.ventura.perks.permanent.GoldenHeads;
+import eu.ventura.perks.permanent.GravityMace;
+import eu.ventura.perks.permanent.Ignition;
+import eu.ventura.perks.permanent.LuckyDiamond;
+import eu.ventura.perks.permanent.Momentum;
+import eu.ventura.perks.permanent.Rambo;
+import eu.ventura.perks.permanent.Streaker;
+import eu.ventura.perks.permanent.Vampire;
 
 import java.util.*;
 
@@ -10,10 +19,11 @@ public class PerkService {
     private static final Map<String, Perk> perks = new LinkedHashMap<>();
 
     static {
+        addPerk(new GoldenApple());
         addPerk(new GoldenHeads());
         addPerk(new GravityMace());
         addPerk(new Momentum());
-        addPerk(new Calculated());
+        //addPerk(new Calculated());
         addPerk(new LuckyDiamond());
         addPerk(new Ignition());
         addPerk(new Streaker());
@@ -44,6 +54,6 @@ public class PerkService {
     }
 
     public static List<Perk> getSortedPerks() {
-        return new LinkedList<>(perks.values());
+        return perks.values().stream().filter(p -> !p.isHidden()).toList();
     }
 }

@@ -65,6 +65,16 @@ public class KingsMap implements Map {
     }
 
     @Override
+    public List<Vector> getMiddleAABB() {
+        return List.of(
+                new Vector(8.5, 70, -8.5),
+                new Vector(-8.5, 85, 8.5),
+                new Vector(8.5, 70, 8.5),
+                new Vector(-8.5, 85, -8.5)
+        );
+    }
+
+    @Override
     public PitLocation getLeaderboardLocation() {
         return new PitLocation(14.5, 99, 0.5);
     }

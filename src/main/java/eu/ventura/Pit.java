@@ -62,7 +62,9 @@ public class Pit extends JavaPlugin {
         Properties env = new Properties();
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(".env")) {
             if (is != null) env.load(is);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+
+        }
 
         String mongoUri = env.getProperty("MONGO_URI", "mongodb://localhost:27017");
         String mongoDatabase = env.getProperty("MONGO_DATABASE", "ventura_pit");

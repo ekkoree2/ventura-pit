@@ -31,13 +31,14 @@ public class BugCommand extends BaseCommand {
             return;
         }
 
-        int id = BugService.getNextId();
+        String id = BugService.generateId();
         BugModel bugModel = new BugModel(
                 id,
                 player.getUniqueId(),
                 player.getName(),
                 PlayerUtil.getRankColor(player),
-                bug
+                bug,
+                false
         );
 
         BugService.addBug(bugModel);

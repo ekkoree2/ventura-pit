@@ -31,6 +31,8 @@ public class Sounds {
     public static final SoundEffect MAJOR_START = new SoundEffect(Sound.ENTITY_ENDER_DRAGON_GROWL, 1.3, 1.1);
     public static final SoundEffect PRESTIGE = new SoundEffect(Sound.ENTITY_ENDER_DRAGON_GROWL, 1.2, 1.1);
 
+    public static final SoundEffect BUG_REMOVE = new SoundEffect(Sound.UI_BUTTON_CLICK, 0.4f, 1.2);
+
     // gui
     public static final SoundEffect NO = new SoundEffect(Sound.ENTITY_VILLAGER_NO, 1.1, 1.0);
     public static final SoundEffect SUCCESS = new SoundEffect(Sound.BLOCK_NOTE_BLOCK_PLING, 1.1, 4.0555f);

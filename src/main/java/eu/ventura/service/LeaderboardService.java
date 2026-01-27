@@ -31,6 +31,8 @@ public class LeaderboardService {
     private final ConcurrentHashMap<UUID, Hologram> holograms = new ConcurrentHashMap<>();
     private final Location leaderboardLocation;
     private BukkitTask updateTask;
+    private volatile List<PlayerStats> cachedTopPlayers = new ArrayList<>();
+    private volatile boolean dataLoaded = false;
 
     public static LeaderboardService getInstance(HologramApi hologramApi, Location location) {
         if (instance == null) {
@@ -45,7 +47,14 @@ public class LeaderboardService {
     }
 
     public void start() {
-        updateTask = Bukkit.getScheduler().runTaskTimer(Pit.instance, this::updateAllHolograms, 1L, 100L);
+        updateTask = Bukkit.getScheduler().runTaskTimerAsynchronously(Pit.instance, () -> {
+            List<PlayerStats> fetched = fetchTopPlayers();
+            Bukkit.getScheduler().runTask(Pit.instance, () -> {
+                cachedTopPlayers = fetched;
+                dataLoaded = true;
+                updateAllHolograms();
+            });
+        }, 1L, 100L);
     }
 
     public void stop() {
@@ -60,19 +69,28 @@ public class LeaderboardService {
 
     private void updateAllHolograms() {
         for (UUID uuid : new ArrayList<>(holograms.keySet())) {
-            Hologram hologram = holograms.get(uuid);
-            if (hologram != null) {
-                Player player = Bukkit.getPlayer(uuid);
-                if (player != null && player.isOnline()) {
-                    showHologram(player);
-                }
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null && player.isOnline()) {
+                updateHologram(player, getLeaderboardLines(player));
             }
         }
     }
 
     public void showHologram(Player player) {
-        List<String> lines = getLeaderboardLines(player);
-        updateHologram(player, lines);
+        if (dataLoaded) {
+            updateHologram(player, getLeaderboardLines(player));
+        } else {
+            Bukkit.getScheduler().runTaskAsynchronously(Pit.instance, () -> {
+                List<PlayerStats> fetched = fetchTopPlayers();
+                Bukkit.getScheduler().runTask(Pit.instance, () -> {
+                    cachedTopPlayers = fetched;
+                    dataLoaded = true;
+                    if (player.isOnline()) {
+                        updateHologram(player, getLeaderboardLines(player));
+                    }
+                });
+            });
+        }
     }
 
     public void removeHologram(Player player) {
@@ -108,10 +126,8 @@ public class LeaderboardService {
         lines.add(Strings.Simple.LEADERBOARD_SUBTITLE.get(model.language));
         lines.add("");
 
-        List<PlayerStats> topPlayers = getTopPlayers();
         int position = 1;
-
-        for (PlayerStats stats : topPlayers) {
+        for (PlayerStats stats : cachedTopPlayers) {
             String level = LevelUtil.getFormattedLevelFromValues(stats.prestige, stats.level);
             String rankColor = stats.rankColor != null ? stats.rankColor.replace("&", "§") : "§7";
             String formattedXP = NumberFormat.formatLarge(stats.score);
@@ -126,7 +142,7 @@ public class LeaderboardService {
         return lines;
     }
 
-    private List<PlayerStats> getTopPlayers() {
+    private List<PlayerStats> fetchTopPlayers() {
         List<PlayerStats> result = new ArrayList<>();
         MongoCollection<Document> collection = MongoUtil.getCollection("players");
         for (Document doc : collection.find()) {
@@ -142,9 +158,14 @@ public class LeaderboardService {
                 int prestige;
                 Player onlinePlayer = Bukkit.getPlayer(uuid);
                 if (onlinePlayer != null && onlinePlayer.isOnline()) {
-                    PlayerModel model = PlayerModel.getInstance(onlinePlayer);
-                    level = model.getLevel();
-                    prestige = model.getPrestige();
+                    PlayerModel model = PlayerService.players.get(uuid);
+                    if (model != null) {
+                        level = model.getLevel();
+                        prestige = model.getPrestige();
+                    } else {
+                        level = doc.getInteger("level", 1);
+                        prestige = doc.getInteger("prestige", 0);
+                    }
                 } else {
                     level = doc.getInteger("level", 1);
                     prestige = doc.getInteger("prestige", 0);

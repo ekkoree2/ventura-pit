@@ -22,6 +22,8 @@ public interface Map {
 
     List<PitLocation> getSpawnLocations();
 
+    List<Vector> getMiddleAABB();
+
     PitMap getMap();
 
     Hologram[] getHolograms();

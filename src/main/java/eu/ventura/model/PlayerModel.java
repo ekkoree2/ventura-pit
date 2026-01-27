@@ -183,14 +183,6 @@ public class PlayerModel {
         renownPerks.put(shop.getId(), tier);
     }
 
-    public void setHatActive(boolean active) {
-        this.hatActive = active;
-    }
-
-    public void setHatColor(String color) {
-        this.hatColor = color;
-    }
-
     public Set<Shop> getAutobuyItems() {
         Set<Shop> items = new HashSet<>();
         for (String id : autobuyItems) {
@@ -229,6 +221,7 @@ public class PlayerModel {
         for (Player random : Bukkit.getOnlinePlayers()) {
             random.sendMessage(msg);
         }
+        updateXpBar();
     }
 
     public void addXp(int xp) {
@@ -252,6 +245,22 @@ public class PlayerModel {
             Sounds.LEVEL_UP.play(player);
             player.sendMessage(Strings.Formatted.LEVEL_UP_MESSAGE.format(language, levelProgression));
         }
+        updateXpBar();
+    }
+
+    public void updateXpBar() {
+        if (level >= 120) {
+            player.setLevel(level);
+            player.setExp(0.99f);
+            return;
+        }
+
+        int totalXpForLevel = LevelUtil.xpToNextLevel(prestige, level);
+        int currentXp = totalXpForLevel - requiredXP;
+        float progress = Math.max(0, Math.min(0.99f, (float) currentXp / totalXpForLevel));
+
+        player.setLevel(level);
+        player.setExp(progress);
     }
 
     public void updateStatus() {
@@ -353,7 +362,7 @@ public class PlayerModel {
     public <T extends Perk> boolean hasEquippedPerk(Class<T> clazz) {
         for (String perkId : equippedPerks.values()) {
             Perk perk = PerkService.getPerk(perkId);
-            if (perk != null && clazz.isInstance(perk)) {
+            if (clazz.isInstance(perk)) {
                 return true;
             }
         }

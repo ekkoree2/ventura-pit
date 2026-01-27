@@ -70,6 +70,10 @@ public class Strings {
         RAGE_PIT_DIDNT_PARTICIPATE("&7Nie uczestniczyles!", "&7Didn't participate!"),
 
         NOTE_BUG("&e&lEJ!&7 Jezeli znalazles jakis bug i chcesz by zostal naprawiony, uzyj &9/bug report&7!", "&6&lNOTE! If you found a bug and you want it fixed, use &9/bug report&7!"),
+        BUG_RIGHT_CLICK("&aPrawy klik aby zaakceptowac!", "&aRight-click to approve!"),
+        BUG_LEFT_CLICK("&cLewy klik aby usunac!", "&cLeft-click to delete!"),
+        BUG_APPROVED_HEADER("&a&lNICE!", "&a&lDOBRA ROBOTA!"),
+        BUG_NOT_FOUND("&c&lNIE!&7 Nie znaleziono gracza o nicku %s!", "&c&lNOPE!&7 Player %s not found!"),
 
         CANT_DROP("1&c&lNIE!&7 Nie mozesz wyrzucic tego przedmiotu!", "§c§lNOPE!§7 You cannot drop this item!"),
 
@@ -316,7 +320,10 @@ public class Strings {
         RENOWN_PURCHASE_MSG("§a§lZAKUP!§6 {0}", "§a§lPURCHASE!§6 {0}"),
         RENOWN_UNLOCK_MSG("§a§lODBLOKOWANO!§6 {0}", "§a§lUNLOCK!§6 {0}"),
         RENOWN_TO_PANEL("§7Do {0}", "§7To {0}"),
-        RENOWN_PERK_PREFIX("Perk: {0}")
+        RENOWN_PERK_PREFIX("Perk: {0}"),
+        BUG_APPROVED(
+                "&a&lDOBRA ROBOTA!&7 Blad &e#{0}&7 zostal zaakceptowany i zostanie naprawiony! &b+1,000XP &6+3,000g",
+                "&a&lNICE!&7 Your bug &e#{0}&7 has been accepted and scheduled to fix! &b+1,000XP &6+3,000g")
         ;
 
         private final String polish;
@@ -353,13 +360,13 @@ public class Strings {
                 new LoreBuilder()
                         .add("§7Przedmiot Perka")
                         .addNewline("§9Prędkość I (0:08)")
-                        .addNewline("§9Regeneracja II (0:05)")
+                        .addNewline("§9Regeneracja III (0:05)")
                         .addNewline("§62❤ absorpcji!")
                         .addNewline("§71 sekunda między jedzeniem"),
                 new LoreBuilder()
                         .add("§7Perk Item")
                         .addNewline("§9Speed I (0:08)")
-                        .addNewline("§9Regeneration II (0:05)")
+                        .addNewline("§9Regeneration III (0:05)")
                         .addNewline("§62❤ absorption!")
                         .addNewline("§71 second between eats")
         )),

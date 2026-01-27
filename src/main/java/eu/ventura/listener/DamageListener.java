@@ -51,6 +51,11 @@ public class DamageListener implements Listener {
         if (cancelledCauses.contains(event.getCause())) {
             event.setCancelled(true);
         }
+        if (event.getEntity() instanceof Player victim) {
+            if (RegionHelper.isInSpawn(victim)) {
+                event.setCancelled(true);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
